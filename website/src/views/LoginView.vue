@@ -11,7 +11,7 @@ const API_BASE_URL = ref<string>(import.meta.env.VITE_API_BASE_URL);
         <h1 class="welcome-text">Welcome!</h1>
         <p class="subtext">Login or signup to Examduler.</p>
         <div class="oauth-providers">
-            <OAuthButton provider="Google" :href="API_BASE_URL + '/api/auth/google/'" class="oauth-button"></OAuthButton>
+            <OAuthButton provider="Google" :href="API_BASE_URL + '/api/oauth2/google/'" class="oauth-button"></OAuthButton>
         </div>
     </div>
 </template>
@@ -30,8 +30,8 @@ const API_BASE_URL = ref<string>(import.meta.env.VITE_API_BASE_URL);
     height: fit-content;
     padding: 20px;
     transform: translate(-50%, -50%);
-    background-color: var(--md-sys-color-surface-container);
-    color: var(--md-sys-color-on-surface-container);
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
     border-radius: 25px;
     box-sizing: border-box;
     gap: 20px;
@@ -59,10 +59,11 @@ const API_BASE_URL = ref<string>(import.meta.env.VITE_API_BASE_URL);
         top: unset;
         bottom: 0;
         width: 100%;
-        height: 75vh;
+        height: 40vh;
         transform: translate(-50%, 0);
         border-radius: 25px 25px 0 0;
-        justify-content: flex-start;
+        justify-content: center;
+        gap: 40px;
     }
 
     .welcome-text {

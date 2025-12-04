@@ -10,7 +10,13 @@ const router = createRouter({
 });
 
 router.afterEach((to: RouteLocationNormalized) => {
-    document.title = `${to.meta.title as string} | Examduler` || 'Examduler';
+    const pageTitle = to.meta.title;
+
+    if (pageTitle) {
+        document.title = `${to.meta.title as string} | Examduler`;
+    } else {
+        document.title = 'Examduler';
+    }
 });
 
 export default router;

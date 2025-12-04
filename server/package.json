@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "dev": "nodemon",
+    "dev": "tsx src/index.ts",
     "start": "node dist/index.js"
   },
   "keywords": [],
@@ -21,7 +21,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^7.0.0",
     "passport": "^0.7.0",
-    "passport-google-oidc": "^0.1.0"
+    "passport-google-oauth20": "^2.0.0",
+    "passport-google-oidc": "^0.1.0",
+    "passport-oauth2": "^1.8.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
@@ -31,7 +33,8 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "@types/passport": "^1.0.17",
-    "nodemon": "^3.1.11",
+    "@types/passport-google-oauth20": "^2.0.17",
+    "@types/passport-oauth2": "^1.8.0",
     "ts-node": "^10.9.2"
   },
   "type": "module"

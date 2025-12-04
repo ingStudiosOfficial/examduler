@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import '@material/web/button/filled-tonal-button.js';
+import '@material/web/button/filled-button.js';
 
 const props = defineProps({
     provider: {
@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <md-filled-tonal-button :href="props.href" class="login-button"> Continue with {{ props.provider }} </md-filled-tonal-button>
+    <md-filled-button :href="props.href" class="login-button">Continue with {{ props.provider }}</md-filled-button>
 </template>
 
 <style scoped></style>
