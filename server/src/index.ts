@@ -19,8 +19,8 @@ dotenv.config({
 
 const mongoURI = process.env.MONGODB_URI;
 if (!mongoURI) {
-	console.error('MongoDB URI not found:', mongoURI);
-	process.exit(1);
+    console.error('MongoDB URI not found:', mongoURI);
+    process.exit(1);
 }
 
 const client: MongoClient = new MongoClient(mongoURI);
@@ -46,21 +46,21 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/api/oauth2/', authRouter);
 
 async function connectToMongo() {
-	try {
-		await client.connect();
-		database = client.db('examduler');
-		console.log('Successfully connected to MongoDB.');
-	} catch (error) {
-		console.error('Error while connecting to MongoDB:', error);
-		process.exit(1);
-	}
+    try {
+        await client.connect();
+        database = client.db('examduler');
+        console.log('Successfully connected to MongoDB.');
+    } catch (error) {
+        console.error('Error while connecting to MongoDB:', error);
+        process.exit(1);
+    }
 }
 
 async function startServer() {
-	await connectToMongo();
-	app.listen(Number(process.env.PORT), () => {
-		console.log('Server started successfully!');
-	});
+    await connectToMongo();
+    app.listen(Number(process.env.PORT), () => {
+        console.log('Server started successfully!');
+    });
 }
 
 startServer();

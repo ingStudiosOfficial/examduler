@@ -1,5 +1,5 @@
-import type { Db } from "mongodb";
-import type { IReqUser } from "../interfaces/ReqUser.ts";
+import type { Db } from 'mongodb';
+import type { IReqUser } from '../interfaces/ReqUser.ts';
 
 declare global {
     namespace Express {

@@ -1,7 +1,7 @@
 export function getDomain(email: string): string {
     if (!email) {
         console.error('No email found.');
-        throw new Error('No email found.')
+        throw new Error('No email found.');
     }
 
     const regex = /@(.*)/;
