@@ -103,7 +103,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                     const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                    return cb(null, { token });
+                    return cb(null, { token: token });
                 }
 
                 const fetchedUser = await usersCollection.findOne({ _id: credential.userId });
@@ -126,7 +126,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                 const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                return cb(null, { token });
+                return cb(null, { token: token });
             } catch (error) {
                 console.error('Error while fetching Google OAuth:', error);
                 return cb(error);

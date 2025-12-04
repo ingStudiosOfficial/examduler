@@ -1,4 +1,5 @@
 import express, { type NextFunction, type Request, type Response } from 'express';
+import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
 import { Db, MongoClient, ObjectId } from 'mongodb';
@@ -9,7 +10,7 @@ import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-import { authRouter } from './routes/oauth.js';
+import { authRouter, setupPassport } from './routes/oauth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,6 +38,16 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
+if (!process.env.SESSION_SECRET) {
+    console.error('Session secret missing.');
+    process.exit(1);
+}
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: process.env.NODE_ENV === 'production' }
+}))
 app.use(passport.initialize());
 app.use((req: Request, res: Response, next: NextFunction) => {
     req.db = database;
@@ -58,6 +69,7 @@ async function connectToMongo() {
 
 async function startServer() {
     await connectToMongo();
+    setupPassport(database.collection('usersCollection'), database.collection('credsCollection'));
     app.listen(Number(process.env.PORT), () => {
         console.log('Server started successfully!');
     });
