@@ -1,9 +1,9 @@
 <script setup lang="ts">
-
+import ExaminationsContainer from '@/components/ExaminationsContainer.vue';
 </script>
 
 <template>
-    <p>u made it to the dashboard!</p>
+    <ExaminationsContainer></ExaminationsContainer>
 </template>
 
 <style scoped>
