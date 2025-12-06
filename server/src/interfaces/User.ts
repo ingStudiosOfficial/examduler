@@ -6,5 +6,6 @@ export interface IUser {
     domain: string;
     name: string;
     exams: ObjectId[];
+    role: 'student' | 'teacher' | 'admin';
     tokenVersion: number;
 }

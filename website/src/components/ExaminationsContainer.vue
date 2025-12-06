@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // Vue utils
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 // Views
 import ExaminationCard from './ExaminationCard.vue';
+import ExaminationDialog from './ExaminationDialog.vue';
 
 // Sample examination data
 import sampleExams from '../samples/sample_exams.json' with { type: 'json' };
@@ -15,14 +16,41 @@ import type { Exam } from '@/interfaces/Exam';
 import { parseExams, sortExams } from '@/utils/exam_utils';
 
 const exams = ref<Exam[]>(sortExams(parseExams(JSON.stringify(sampleExams))));
+
+const examOpened = ref<boolean>(false);
+const examDetails = ref<Exam | null>(null)
+
+function displayExamDialog(examInfo: Exam) {
+    examDetails.value = examInfo;
+    examOpened.value = true;
+}
+
+function closeExamDialog() {
+    console.log('Exam dialog closing...');
+    examOpened.value = false;
+    examDetails.value = null;
+}
+
+watch(examOpened, (isOpen: boolean) => {
+    const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') closeExamDialog();
+    };
+
+    if (isOpen) {
+        document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => document.addEventListener('keydown', handleEscape);
+});
 </script>
 
 <template>
     <div class="content-wrapper">
         <h1 class="examinations-header">Your Examinations</h1>
         <div class="examinations">
-            <ExaminationCard v-for="exam in exams" :key="exam._id" :_id="exam._id" :name="exam.name" :date="exam.date" :description="exam.description" :meta="exam.meta" :seating="exam.seating"></ExaminationCard>
+            <ExaminationCard v-for="exam in exams" :key="exam._id" v-bind="exam" @exam-click="displayExamDialog"></ExaminationCard>
         </div>
+        <ExaminationDialog v-show="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.meta && examDetails.seating" v-bind="examDetails"></ExaminationDialog>
     </div>
 </template>
 
@@ -48,5 +76,16 @@ const exams = ref<Exam[]>(sortExams(parseExams(JSON.stringify(sampleExams))));
     box-sizing: border-box;
     align-items: stretch;
     justify-content: stretch;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .examinations {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+    }
 }
 </style>

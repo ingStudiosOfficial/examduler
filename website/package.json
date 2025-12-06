@@ -32,5 +32,8 @@
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue-tsc": "^3.1.5"
   },
+  "prettier": {
+    "vueIndentScriptAndStyle": false
+  },
   "license": "Apache-2.0"
 }

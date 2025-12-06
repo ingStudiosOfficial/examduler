@@ -31,7 +31,7 @@ export function constructName(firstName?: string, middleName?: string, lastName?
     return name;
 }
 
-function authenticateToken(collection: UsersCollection) {
+export function authenticateToken(collection: UsersCollection) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const jwtSecretKey = process.env.JWT_SECRET_KEY;
         if (!jwtSecretKey) {

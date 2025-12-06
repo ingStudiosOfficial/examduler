@@ -58,6 +58,8 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                             domain: userDomain,
                             name: userName,
                             exams: [],
+                            role: 'admin',
+                            tokenVersion: 0,
                         };
 
                         const result = await usersCollection.insertOne(userDataToStore);
