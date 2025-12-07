@@ -6,8 +6,9 @@ declare global {
     namespace Express {
         interface Request {
             db: Db;
-            user?: JwtPayload;
         }
+
+        interface User extends IReqUser {}
     }
 }
 

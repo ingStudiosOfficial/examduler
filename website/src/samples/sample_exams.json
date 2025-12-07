@@ -8,9 +8,57 @@
             "additional_data1": "description1",
             "additional_data2": "description2"
         },
-        "seating": {
-            "A1": "yourname@yourdomain.com"
-        }
+        "seating": [
+            [
+                {
+                    "seat": "A1",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                },
+                {
+                    "seat": "A2",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                },
+                {
+                    "seat": "A3",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                },
+                {
+                    "seat": "A4",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                },
+                {
+                    "seat": "A5",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                },
+                {
+                    "seat": "A6",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                },
+                {
+                    "seat": "A7",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                },
+                {
+                    "seat": "A8",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                }
+            ],
+            [
+                {
+                    "seat": "B1",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                }
+            ]
+        ]
     },
     {
         "_id": "69324bbfcd93fc363e047401",
@@ -21,8 +69,14 @@
             "additional_data1": "description1",
             "additional_data2": "description2"
         },
-        "seating": {
-            "A1": "yourname@yourdomain.com"
-        }
+        "seating": [
+            [
+                {
+                    "seat": "A1",
+                    "name": "Ethan Lee",
+                    "email": "ingstudiosofficial@gmail.com"
+                }
+            ]
+        ]
     }
 ]

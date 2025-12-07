@@ -1,11 +1,5 @@
 import { Router, type Request, type Response } from 'express';
-import { createGoogleStrategy } from '../auth/strategies.js';
 import passport from 'passport';
-import type { CredsCollection, UsersCollection } from '../types/mongodb.js';
-
-export function setupPassport(usersCollection: UsersCollection, credsCollection: CredsCollection) {
-    passport.use(createGoogleStrategy(usersCollection, credsCollection));
-}
 
 export const authRouter = Router();
 

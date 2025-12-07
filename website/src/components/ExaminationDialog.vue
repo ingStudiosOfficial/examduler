@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SeatingContainer from './SeatingContainer.vue';
+
 import type { Exam } from '@/interfaces/Exam';
 
 const props = defineProps<Partial<Exam>>();
@@ -7,9 +9,11 @@ const props = defineProps<Partial<Exam>>();
 <template>
     <div class="backdrop">
         <div class="dialog">
-            <h1>{{ props.name }}</h1>
+            <h1 class="exam-name">{{ props.name }}</h1>
             <p>{{ props.date }}</p>
             <p>{{ props.description }}</p>
+            <h1 class="section-header">Seating</h1>
+            <SeatingContainer :seating="props.seating" class="seating"></SeatingContainer>
         </div>
     </div>
 </template>
@@ -38,5 +42,20 @@ const props = defineProps<Partial<Exam>>();
     align-items: center;
     text-align: center;
     border-radius: 25px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+}
+
+.exam-name {
+    font-size: 35px;
+}
+
+.section-header {
+    font-size: 25px;
+}
+
+.seating {
+    max-width: 100%;
+    overflow-x: scroll;
 }
 </style>

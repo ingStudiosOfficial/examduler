@@ -10,7 +10,10 @@ import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-import { authRouter, setupPassport } from './routes/oauth.js';
+import { authRouter } from './routes/oauth.js';
+import { sessionRouter } from './routes/session.js';
+
+import { setupPassport } from './utils/auth_utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -55,6 +58,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use('/api/oauth2/', authRouter);
+app.use('/api/session/', sessionRouter);
 
 async function connectToMongo() {
     try {

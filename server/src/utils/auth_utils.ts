@@ -1,8 +1,10 @@
 import type { NextFunction } from "express";
-import type { UsersCollection } from "../types/mongodb.js";
+import type { UsersCollection, CredsCollection } from "../types/mongodb.js";
 import type { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { ObjectId } from "mongodb";
+import { createGoogleStrategy } from '../auth/strategies.js';
+import passport from 'passport';
 
 export function getDomain(email: string): string {
     if (!email) {
@@ -31,8 +33,12 @@ export function constructName(firstName?: string, middleName?: string, lastName?
     return name;
 }
 
-export function authenticateToken(collection: UsersCollection) {
+export function authenticateToken() {
     return async (req: Request, res: Response, next: NextFunction) => {
+        console.log('Attempting to authenticate user...');
+
+        const collection = req.db.collection('usersCollection');
+        
         const jwtSecretKey = process.env.JWT_SECRET_KEY;
         if (!jwtSecretKey) {
             console.error('JWT secret key not found.');
@@ -79,4 +85,8 @@ export function authenticateToken(collection: UsersCollection) {
             }
         });
     };
+}
+
+export function setupPassport(usersCollection: UsersCollection, credsCollection: CredsCollection) {
+    passport.use(createGoogleStrategy(usersCollection, credsCollection));
 }
