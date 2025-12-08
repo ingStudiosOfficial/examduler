@@ -1,4 +1,5 @@
 import type { Exam } from "@/interfaces/Exam";
+import type { Seating } from "@/interfaces/Seating";
 
 export function parseExams(exams: string): Exam[] {
     try {
@@ -11,7 +12,7 @@ export function parseExams(exams: string): Exam[] {
 }
 
 export function sortExams(exams: Exam[]): Exam[] {
-    return [...exams].sort((a, b) => {
+    return [...exams].sort((b, a) => {
         const timeA = new Date(a.date).getTime();
         const timeB = new Date(b.date).getTime();
 
@@ -27,4 +28,29 @@ export function sortExams(exams: Exam[]): Exam[] {
         
         return timeB - timeA;
     });
+}
+
+export function getUserSeat(seating: Seating[][], userEmail: string): Seating {
+    for (const row of seating) {
+        for (const seat of row) {
+            if (seat.email === userEmail) {
+                return seat;
+            } else {
+                continue;
+            }
+        }
+    }
+
+    console.error('No seat found for user.');
+    throw new Error('No seat found for user.');
+}
+
+export function formatExamDate(examDate: string): string {
+    const parsedDate = new Date(examDate);
+
+    const day = parsedDate.getDate();
+    const month = parsedDate.toLocaleString('default', { month: 'long' });
+    const year = parsedDate.getFullYear();
+
+    return `${day} ${month} ${year}`;
 }

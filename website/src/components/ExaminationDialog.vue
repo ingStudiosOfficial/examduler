@@ -2,18 +2,30 @@
 import SeatingContainer from './SeatingContainer.vue';
 
 import type { Exam } from '@/interfaces/Exam';
+import type { User } from '@/interfaces/User';
 
-const props = defineProps<Partial<Exam>>();
+import { formatExamDate } from '@/utils/exam_utils';
+
+interface ComponentProps {
+    exam: Exam;
+    user: User;
+}
+
+const props = defineProps<ComponentProps>();
+
+const userData = props.user;
 </script>
 
 <template>
     <div class="backdrop">
         <div class="dialog">
-            <h1 class="exam-name">{{ props.name }}</h1>
-            <p>{{ props.date }}</p>
-            <p>{{ props.description }}</p>
+            <h1 class="exam-name">{{ props.exam.name }}</h1>
+            <p>{{ formatExamDate(props.exam.date) }}</p>
+            <p>{{ props.exam.description }}</p>
             <h1 class="section-header">Seating</h1>
-            <SeatingContainer :seating="props.seating" class="seating"></SeatingContainer>
+            <div class="seating-wrapper">
+                <SeatingContainer :seating="props.exam.seating" :email="userData.email" class="seating"></SeatingContainer>
+            </div>
         </div>
     </div>
 </template>
@@ -44,6 +56,7 @@ const props = defineProps<Partial<Exam>>();
     border-radius: 25px;
     overflow-y: scroll;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .exam-name {
@@ -54,8 +67,20 @@ const props = defineProps<Partial<Exam>>();
     font-size: 25px;
 }
 
+.seating-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
 .seating {
-    max-width: 100%;
-    overflow-x: scroll;
+    max-width: 90%;
+}
+
+@media (max-width: 768px) {
+    .seating {
+        display: none;
+    }
 }
 </style>

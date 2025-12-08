@@ -7,7 +7,7 @@ import { dirname } from 'path';
 import type { ObjectId } from 'mongodb';
 import type { Profile } from 'passport';
 import type { CredsCollection, UsersCollection } from '../types/mongodb.js';
-import { constructName, getDomain } from '../utils/auth_utils.js';
+import { constructName, getDomain } from '../utils/user_utils.js';
 import type { IUser } from '../interfaces/User.js';
 import type { IJWTPayload } from '../interfaces/JWTPayload.js';
 import type { VerifyCallback } from 'passport-oauth2';
@@ -51,6 +51,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                     const userExists = await usersCollection.findOne({ email: userEmail });
 
                     let userId: ObjectId;
+                    let tokenVersion: number;
 
                     if (!userExists) {
                         const userDataToStore: IUser = {
@@ -69,8 +70,10 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                         }
 
                         userId = result.insertedId;
+                        tokenVersion = userDataToStore.tokenVersion;
                     } else {
                         userId = userExists._id;
+                        tokenVersion = userExists.tokenVersion;
                     }
 
                     const credsResult = await credsCollection.insertOne({
@@ -85,15 +88,10 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                     let payload;
 
-                    if (!userExists) {
-                        payload = {
-                            id: userId.toString(),
-                        } as IJWTPayload;
-                    } else {
-                        payload = {
-                            id: userExists._id.toString(),
-                        } as IJWTPayload;
-                    }
+                    payload = {
+                        id: userId.toString(),
+                        tokenVersion: tokenVersion,
+                    } as IJWTPayload;
 
                     const jwtSecretKey: string | undefined = process.env.JWT_SECRET_KEY;
                     if (!jwtSecretKey) {
@@ -105,7 +103,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                     const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                    return cb(null, { token: token });
+                    return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion });
                 }
 
                 const fetchedUser = await usersCollection.findOne({ _id: credential.userId });
@@ -116,6 +114,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                 const payload = {
                     id: fetchedUser._id.toString(),
+                    tokenVersion: fetchedUser.tokenVersion,
                 } as IJWTPayload;
 
                 const jwtSecretKey: string | undefined = process.env.JWT_SECRET_KEY;
@@ -128,7 +127,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                 const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                return cb(null, { token: token });
+                return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion });
             } catch (error) {
                 console.error('Error while fetching Google OAuth:', error);
                 return cb(error);

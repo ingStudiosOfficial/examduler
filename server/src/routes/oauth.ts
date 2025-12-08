@@ -17,7 +17,7 @@ authRouter.get(
         const DURATION_DAYS = 7;
         const cookieAgeMs = DURATION_DAYS * 24 * 60 * 60 * 1000;
 
-        res.status(200)
+        return res.status(200)
             .cookie('auth_token', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',

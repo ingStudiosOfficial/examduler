@@ -2,7 +2,7 @@
     {
         "_id": "69324553d432958b6f0f4b12",
         "name": "Mid Term Examinations",
-        "date": "2027-13-6",
+        "date": "2027-12-6",
         "description": "Please prepare for your mid-terms.",
         "meta": {
             "additional_data1": "description1",
@@ -17,45 +17,73 @@
                 },
                 {
                     "seat": "A2",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 1",
+                    "email": "unique.email.01@example.com"
                 },
                 {
                     "seat": "A3",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 2",
+                    "email": "unique.email.02@example.com"
                 },
                 {
                     "seat": "A4",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 3",
+                    "email": "unique.email.03@example.com"
                 },
                 {
                     "seat": "A5",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 4",
+                    "email": "unique.email.04@example.com"
                 },
                 {
                     "seat": "A6",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 5",
+                    "email": "unique.email.05@example.com"
                 },
                 {
                     "seat": "A7",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 6",
+                    "email": "unique.email.06@example.com"
                 },
                 {
                     "seat": "A8",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 7",
+                    "email": "unique.email.07@example.com"
                 }
             ],
             [
                 {
                     "seat": "B1",
-                    "name": "Ethan Lee",
-                    "email": "ingstudiosofficial@gmail.com"
+                    "name": "Person 8",
+                    "email": "unique.email.08@example.com"
+                }
+            ],
+            [
+                {
+                    "seat": "C1",
+                    "name": "Person 9",
+                    "email": "unique.email.09@example.com"
+                },
+                {
+                    "seat": "C2",
+                    "name": "Person 10",
+                    "email": "unique.email.10@example.com"
+                },
+                {
+                    "seat": "C3",
+                    "name": "Person 11",
+                    "email": "unique.email.11@example.com"
+                },
+                {
+                    "seat": "C4",
+                    "name": "",
+                    "email": "",
+                    "isBlank": true
+                },
+                {
+                    "seat": "C5",
+                    "name": "Person 12",
+                    "email": "unique.email.12@example.com"
                 }
             ]
         ]

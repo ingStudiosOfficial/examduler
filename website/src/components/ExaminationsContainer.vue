@@ -11,9 +11,16 @@ import sampleExams from '../samples/sample_exams.json' with { type: 'json' };
 
 // Interfaces
 import type { Exam } from '@/interfaces/Exam';
+import type { User } from '@/interfaces/User';
 
 // Utils
 import { parseExams, sortExams } from '@/utils/exam_utils';
+
+interface ComponentProps {
+    user: User;
+}
+
+const props = defineProps<ComponentProps>();
 
 const exams = ref<Exam[]>(sortExams(parseExams(JSON.stringify(sampleExams))));
 
@@ -48,9 +55,9 @@ watch(examOpened, (isOpen: boolean) => {
     <div class="content-wrapper">
         <h1 class="examinations-header">Your Examinations</h1>
         <div class="examinations">
-            <ExaminationCard v-for="exam in exams" :key="exam._id" v-bind="exam" @exam-click="displayExamDialog"></ExaminationCard>
+            <ExaminationCard v-for="exam in exams" :key="exam._id" :exam="exam" :user="props.user" @exam-click="displayExamDialog"></ExaminationCard>
         </div>
-        <ExaminationDialog v-show="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.meta && examDetails.seating" v-bind="examDetails"></ExaminationDialog>
+        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.meta && examDetails.seating" :exam="examDetails" :user="props.user"></ExaminationDialog>
     </div>
 </template>
 

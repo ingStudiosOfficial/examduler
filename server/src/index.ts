@@ -12,6 +12,7 @@ import { dirname } from 'path';
 
 import { authRouter } from './routes/oauth.js';
 import { sessionRouter } from './routes/session.js';
+import { userRouter } from './routes/user.js';
 
 import { setupPassport } from './utils/auth_utils.js';
 
@@ -59,6 +60,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use('/api/oauth2/', authRouter);
 app.use('/api/session/', sessionRouter);
+app.use('/api/user/', userRouter);
 
 async function connectToMongo() {
     try {
@@ -73,7 +75,7 @@ async function connectToMongo() {
 
 async function startServer() {
     await connectToMongo();
-    setupPassport(database.collection('usersCollection'), database.collection('credsCollection'));
+    setupPassport(database.collection('users'), database.collection('creds'));
     app.listen(Number(process.env.PORT), () => {
         console.log('Server started successfully!');
     });
