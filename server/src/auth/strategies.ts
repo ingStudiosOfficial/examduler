@@ -10,6 +10,7 @@ import type { CredsCollection, UsersCollection } from '../types/mongodb.js';
 import { constructName, getDomain } from '../utils/user_utils.js';
 import type { IUser } from '../interfaces/User.js';
 import type { IJWTPayload } from '../interfaces/JWTPayload.js';
+import type { Role } from '../types/user.js';
 import type { VerifyCallback } from 'passport-oauth2';
 import { Strategy as GoogleOAuthStrategy } from 'passport-google-oauth20';
 
@@ -52,6 +53,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                     let userId: ObjectId;
                     let tokenVersion: number;
+                    let role: Role;
 
                     if (!userExists) {
                         const userDataToStore: IUser = {
@@ -71,9 +73,11 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                         userId = result.insertedId;
                         tokenVersion = userDataToStore.tokenVersion;
+                        role = userDataToStore.role;
                     } else {
                         userId = userExists._id;
                         tokenVersion = userExists.tokenVersion;
+                        role = userExists.role;
                     }
 
                     const credsResult = await credsCollection.insertOne({
@@ -91,6 +95,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                     payload = {
                         id: userId.toString(),
                         tokenVersion: tokenVersion,
+                        role: role,
                     } as IJWTPayload;
 
                     const jwtSecretKey: string | undefined = process.env.JWT_SECRET_KEY;
@@ -103,7 +108,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                     const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                    return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion });
+                    return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion, role: payload.role });
                 }
 
                 const fetchedUser = await usersCollection.findOne({ _id: credential.userId });
@@ -115,6 +120,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                 const payload = {
                     id: fetchedUser._id.toString(),
                     tokenVersion: fetchedUser.tokenVersion,
+                    role: fetchedUser.role,
                 } as IJWTPayload;
 
                 const jwtSecretKey: string | undefined = process.env.JWT_SECRET_KEY;
@@ -127,7 +133,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                 const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion });
+                return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion, role: payload.role });
             } catch (error) {
                 console.error('Error while fetching Google OAuth:', error);
                 return cb(error);

@@ -1,5 +1,5 @@
 import type { Db } from 'mongodb';
-import type { IReqUser } from '../interfaces/ReqUser.ts';
+import type { IReqUser } from '../interfaces/ReqUser.js';
 import type { JwtPayload } from 'jsonwebtoken';
 
 declare global {

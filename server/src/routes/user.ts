@@ -33,7 +33,7 @@ userRouter.get('/fetch/', authenticateToken(), async (req: Request, res: Respons
     } catch (error) {
         console.error('Error while fetching user:', error);
         return res.status(500).json({
-            message: 'An internal server error occurred',
+            message: 'An internal server error occurred.',
         });
     }
 });

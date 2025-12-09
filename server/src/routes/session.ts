@@ -8,5 +8,4 @@ sessionRouter.get('/verify/', authenticateToken(), (req: Request, res: Response)
     return res.status(200).json({
         message: 'Successfully authenticated user.',
     });
-    return;
 });

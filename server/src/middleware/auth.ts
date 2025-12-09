@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
 import { ObjectId } from "mongodb";
+import type { Role } from "../types/user.js";
 
 export function authenticateToken() {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -52,8 +53,57 @@ export function authenticateToken() {
                 next();
             } catch (error) {
                 console.error('Error fetching user:', error);
-                return res.status(500).json({ message: 'Internal server error.' });
+                return res.status(500).json({ message: 'An internal server error occurred.' });
             }
         });
     };
+}
+
+function getRoleLevel(role: Role): number {
+    let roleLevel: number;
+
+    switch (role) {
+        case 'student':
+            roleLevel = 0;
+            break;
+        case 'teacher':
+            roleLevel = 1;
+            break;
+        case 'admin':
+            roleLevel = 2;
+            break;
+        default:
+            throw new Error(`Invalid role: '${role}'`);
+    }
+
+    return roleLevel;
+}
+
+export function verifyRole(role: Role) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        if (!req.user?.role) {
+            return res.status(401).json({
+                message: 'Role not provided',
+            })
+        }
+
+        let requestRoleLevel: number;
+        let userRoleLevel: number;
+
+        try {
+            requestRoleLevel = getRoleLevel(role);
+            userRoleLevel = getRoleLevel(req.user.role as Role);
+        } catch (error) {
+            console.error('Error while getting role level:', error);
+            return res.status(500).json({
+                message: 'An internal server error occurred during role lookup.',
+            });
+        }
+
+        if (userRoleLevel < requestRoleLevel) {
+            return res.status(403).json({
+                message: `Access denied, insufficient permissions.`,
+            });
+        }
+    }
 }

@@ -13,7 +13,7 @@ const userData = ref<User | null>(null);
 onMounted(async () => {
     try {
         userData.value = await fetchUserData();
-    } catch(error) {
+    } catch (error) {
         console.error('Error while fetching user:', error);
     }
 });

@@ -24,7 +24,7 @@ export async function fetchUserData(): Promise<User> {
             console.error('Error while fetching user:', response.status);
             throw new Error('Error while fetching user.');
         }
-    } catch(error) {
+    } catch (error) {
         console.error('Error while fetching user:', error);
         throw error;
     }

@@ -5,7 +5,7 @@ export function parseExams(exams: string): Exam[] {
     try {
         const parsedExams: Exam[] = JSON.parse(exams);
         return parsedExams;
-    } catch(error) {
+    } catch (error) {
         console.error('An error occurred while parsing exams:', error);
         return [];
     }

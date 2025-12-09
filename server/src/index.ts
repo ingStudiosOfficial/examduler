@@ -3,7 +3,6 @@ import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
 import { Db, MongoClient, ObjectId } from 'mongodb';
-import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import * as dotenv from 'dotenv';
@@ -13,6 +12,7 @@ import { dirname } from 'path';
 import { authRouter } from './routes/oauth.js';
 import { sessionRouter } from './routes/session.js';
 import { userRouter } from './routes/user.js';
+import { examRouter } from './routes/exam.js';
 
 import { setupPassport } from './utils/auth_utils.js';
 
@@ -61,6 +61,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/api/oauth2/', authRouter);
 app.use('/api/session/', sessionRouter);
 app.use('/api/user/', userRouter);
+app.use('/api/exam/', examRouter);
 
 async function connectToMongo() {
     try {

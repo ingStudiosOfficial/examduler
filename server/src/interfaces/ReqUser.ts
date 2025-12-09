@@ -4,4 +4,5 @@ export interface IReqUser {
     token: string;
     id: string;
     tokenVersion: number;
+    role: 'student' | 'teacher' | 'admin';
 }

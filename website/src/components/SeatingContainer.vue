@@ -20,7 +20,7 @@ function tryGetUserSeat() {
         }
 
         userSeat.value = getUserSeat(props.seating, props.email);
-    } catch(error) {
+    } catch (error) {
         console.error('Error while fetching user seat:', error);
     }
 }

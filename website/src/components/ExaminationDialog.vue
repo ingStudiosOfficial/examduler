@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import '@material/web/iconbutton/icon-button.js';
+import '@material/web/icon/icon.js';
+
 import SeatingContainer from './SeatingContainer.vue';
 
 import type { Exam } from '@/interfaces/Exam';
@@ -13,12 +16,23 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
+const emit = defineEmits(['close']);
+
+function closeDialog() {
+    emit('close');
+}
+
 const userData = props.user;
 </script>
 
 <template>
     <div class="backdrop">
         <div class="dialog">
+            <div class="top-panel">
+                <md-icon-button @click="closeDialog()">
+                    <md-icon>close</md-icon>
+                </md-icon-button>
+            </div>
             <h1 class="exam-name">{{ props.exam.name }}</h1>
             <p>{{ formatExamDate(props.exam.date) }}</p>
             <p>{{ props.exam.description }}</p>
@@ -76,6 +90,22 @@ const userData = props.user;
 
 .seating {
     max-width: 90%;
+}
+
+.top-panel {
+    position: sticky;
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    border-bottom: 1px solid var(--md-sys-color-outline);
 }
 
 @media (max-width: 768px) {

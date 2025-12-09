@@ -4,7 +4,7 @@ import { ref, watch } from 'vue';
 import '@material/web/ripple/ripple.js';
 import '@material/web/focus/md-focus-ring.js';
 
-import type { Exam } from '@/interfaces/Exam.ts';
+import type { Exam } from '@/interfaces/Exam.js';
 import type { User } from '@/interfaces/User';
 import type { Seating } from '@/interfaces/Seating';
 
@@ -33,7 +33,7 @@ function tryGetUserSeat() {
         }
 
         userSeat.value = getUserSeat(props.exam.seating, props.user.email);
-    } catch(error) {
+    } catch (error) {
         console.error('Error while fetching user seat:', error);
     }
 }
