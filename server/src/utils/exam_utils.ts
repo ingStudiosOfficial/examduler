@@ -22,12 +22,12 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
                 const studentEmail = seat.email;
                 const examId = new ObjectId(exam._id);
 
-                const result = await req.db.collection<UsersCollection>('users').findOneAndUpdate(
+                const result = await req.db.collection<UsersCollection>('users').updateOne(
                     { email: studentEmail },
                     { $push: { exams: examId } },
                 );
 
-                if (!result) {
+                if (result.matchedCount === 0) {
                     console.error('User not found.');
                 }
             }

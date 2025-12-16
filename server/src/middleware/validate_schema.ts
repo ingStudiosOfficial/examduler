@@ -1,17 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
-import type { ValidationOptions } from "joi";
+import type { Err, ObjectSchema, ValidationError, ValidationOptions } from "joi";
 
 import { examCreateSchema } from "../schemas/exam.js";
+import { orgCreateSchema } from "../schemas/org.js";
 
-export function validateCreateBotSchema(req: Request, res: Response, next: NextFunction) {
-    const validationOptions: ValidationOptions = {
-        abortEarly: false,
-        allowUnknown: false,
-        stripUnknown: true,
-    };
-
-    const { error, value } = examCreateSchema.validate(req.body, validationOptions);
-
+function validateSchema(schema: ObjectSchema, body: object, options: ValidationOptions, req: Request, res: Response, next: NextFunction) {
+    const { error, value } = schema.validate(body, options);
+    
     if (error) {
         const validationErrors = error.details.map(detail => ({
             field: detail.context?.key,
@@ -26,7 +21,27 @@ export function validateCreateBotSchema(req: Request, res: Response, next: NextF
         });
     }
 
-    req.body = value;
+    body = value;
 
     next();
+}
+
+export function validateCreateExamSchema(req: Request, res: Response, next: NextFunction) {
+    const validationOptions: ValidationOptions = {
+        abortEarly: false,
+        allowUnknown: false,
+        stripUnknown: true,
+    };
+
+    validateSchema(examCreateSchema, req.body, validationOptions, req, res, next);
+}
+
+export function validateCreateOrgSchema(req: Request, res: Response, next: NextFunction) {
+    const validationsOptions: ValidationOptions = {
+        abortEarly: false,
+        allowUnknown: false,
+        stripUnknown: true,
+    };
+
+    validateSchema(orgCreateSchema, req.body, validationsOptions, req, res, next);
 }

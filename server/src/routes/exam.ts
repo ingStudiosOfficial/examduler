@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from "express";
 import { authenticateToken, verifyRole } from "../middleware/auth.js";
 import { ObjectId } from "mongodb";
 import type { IExam } from "../interfaces/Exam.js";
-import { validateCreateBotSchema } from "../middleware/validate_schema.js";
+import { validateCreateExamSchema } from "../middleware/validate_schema.js";
 import { assignExamToUsers } from "../utils/exam_utils.js";
 
 export const examRouter = Router();
@@ -43,7 +43,7 @@ examRouter.get('/fetch/:id/', authenticateToken(), async (req: Request, res: Res
     }
 });
 
-examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validateCreateBotSchema, async (req, res) => {
+examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validateCreateExamSchema, async (req, res) => {
     try {
         const exam: IExam = req.body;
 

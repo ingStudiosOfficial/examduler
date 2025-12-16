@@ -7,7 +7,7 @@ import type { IExam } from "../interfaces/Exam.js";
 
 export const examsRouter = Router();
 
-examsRouter.get('/fetch-from-user/:id/', authenticateToken(), async (req, res) => {
+examsRouter.get('/fetch/:id/', authenticateToken(), async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({
             message: 'User ID missing.',
