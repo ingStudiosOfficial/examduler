@@ -1,10 +1,11 @@
 <script setup lang="ts">
-
+import OrganizationCreateContainer from './OrganizationCreateContainer.vue';
 </script>
 
 <template>
     <div class="content-wrapper">
         <h1 class="org-header">Your Organization</h1>
+        <OrganizationCreateContainer></OrganizationCreateContainer>
     </div>
 </template>
 
