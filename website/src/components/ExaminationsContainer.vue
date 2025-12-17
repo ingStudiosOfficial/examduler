@@ -25,7 +25,7 @@ const props = defineProps<ComponentProps>();
 const exams = ref<Exam[]>(sortExams(parseExams(JSON.stringify(sampleExams))));
 
 const examOpened = ref<boolean>(false);
-const examDetails = ref<Exam | null>(null)
+const examDetails = ref<Exam | null>(null);
 
 function displayExamDialog(examInfo: Exam) {
     examDetails.value = examInfo;

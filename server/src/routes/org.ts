@@ -1,10 +1,10 @@
-import { Router, type Request, type Response } from "express";
-import { authenticateToken, verifyRole } from "../middleware/auth.js";
-import { ObjectId } from "mongodb";
-import { validateCreateOrgSchema } from "../middleware/validate_schema.js";
-import type { IOrg } from "../interfaces/Org.js";
-import { createVerificationToken, verifyDomain } from "../utils/org_utils.js";
-import type { IDomain } from "../interfaces/Domain.js";
+import { Router, type Request, type Response } from 'express';
+import { authenticateToken, verifyRole } from '../middleware/auth.js';
+import { ObjectId } from 'mongodb';
+import { validateCreateOrgSchema } from '../middleware/validate_schema.js';
+import type { IOrg } from '../interfaces/Org.js';
+import { createVerificationToken, verifyDomain } from '../utils/org_utils.js';
+import type { IDomain } from '../interfaces/Domain.js';
 
 export const orgRouter = Router();
 
@@ -41,7 +41,7 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
         console.error('Error while fetching organization:', error);
         return res.status(500).json({
             message: 'An internal server error occurred while fetching the organization.',
-        })
+        });
     }
 });
 
@@ -76,7 +76,7 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
             console.error('Failed to insert organization.');
             return res.status(500).json({
                 message: 'An internal server error occurred while inserting exam',
-            })
+            });
         }
     } catch (error) {
         console.error('An error occurred while creating organization:', error);
@@ -135,10 +135,7 @@ orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req,
             });
         }
 
-        const updatedResult = await req.db.collection('organizations').updateOne(
-            { _id: orgId, 'domains.domain': domainToVerify },
-            { $set: { 'domains.$.verified': true } },
-        );
+        const updatedResult = await req.db.collection('organizations').updateOne({ _id: orgId, 'domains.domain': domainToVerify }, { $set: { 'domains.$.verified': true } });
 
         if (updatedResult.matchedCount === 0) {
             console.error('Could not find organization.');

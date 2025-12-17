@@ -47,12 +47,14 @@ if (!process.env.SESSION_SECRET) {
     console.error('Session secret missing.');
     process.exit(1);
 }
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === 'production' }
-}))
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: process.env.NODE_ENV === 'production' },
+    }),
+);
 app.use(passport.initialize());
 app.use((req: Request, res: Response, next: NextFunction) => {
     req.db = database;

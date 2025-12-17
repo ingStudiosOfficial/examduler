@@ -17,9 +17,7 @@ export function getDomain(email: string): string {
 export function constructName(firstName?: string, middleName?: string, lastName?: string): string {
     const nameParts = [firstName, middleName, lastName];
 
-    const name = nameParts
-        .filter(part => !!part)
-        .join(' ');
+    const name = nameParts.filter((part) => !!part).join(' ');
 
     if (name === '') {
         throw new Error('Name is empty.');

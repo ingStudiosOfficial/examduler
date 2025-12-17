@@ -1,4 +1,4 @@
-import type { Seating } from "./Seating";
+import type { Seating } from './Seating';
 
 export interface Exam {
     _id: string;

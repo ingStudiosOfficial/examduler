@@ -4,6 +4,6 @@ declare module 'vue-router' {
     interface RouteMeta {
         title: string;
         requiresAuth: boolean;
-        access?: 'student' | 'teacher' | 'admin'
+        access?: 'student' | 'teacher' | 'admin';
     }
 }

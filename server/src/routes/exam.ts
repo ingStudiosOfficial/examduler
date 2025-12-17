@@ -1,9 +1,9 @@
-import { Router, type Request, type Response } from "express";
-import { authenticateToken, verifyRole } from "../middleware/auth.js";
-import { ObjectId } from "mongodb";
-import type { IExam } from "../interfaces/Exam.js";
-import { validateCreateExamSchema } from "../middleware/validate_schema.js";
-import { assignExamToUsers } from "../utils/exam_utils.js";
+import { Router, type Request, type Response } from 'express';
+import { authenticateToken, verifyRole } from '../middleware/auth.js';
+import { ObjectId } from 'mongodb';
+import type { IExam } from '../interfaces/Exam.js';
+import { validateCreateExamSchema } from '../middleware/validate_schema.js';
+import { assignExamToUsers } from '../utils/exam_utils.js';
 
 export const examRouter = Router();
 

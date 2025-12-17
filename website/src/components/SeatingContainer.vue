@@ -25,21 +25,30 @@ function tryGetUserSeat() {
     }
 }
 
-watch(() => props.seating, (newSeating: Seating[][]) => {
-    if (newSeating && newSeating.length > 0) {
-        tryGetUserSeat();
-    }
-}, { immediate: true });
+watch(
+    () => props.seating,
+    (newSeating: Seating[][]) => {
+        if (newSeating && newSeating.length > 0) {
+            tryGetUserSeat();
+        }
+    },
+    { immediate: true },
+);
 </script>
 
 <template>
     <div class="content-wrapper">
         <table class="seating-table">
             <tr v-for="(row, index) in props.seating" :key="'row' + index" class="seating-row">
-                <td v-for="seat in row" :key="seat.seat" class="seating-seat" :class="{
-                    'is-blank': seat.isBlank,
-                    'user-seat': seat.email === userSeat?.email,
-                }">
+                <td
+                    v-for="seat in row"
+                    :key="seat.seat"
+                    class="seating-seat"
+                    :class="{
+                        'is-blank': seat.isBlank,
+                        'user-seat': seat.email === userSeat?.email,
+                    }"
+                >
                     <div class="seating-container">
                         <p class="seat-id">{{ seat.seat }}</p>
                         <p class="seat-name">{{ seat.name }}</p>

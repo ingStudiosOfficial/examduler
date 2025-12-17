@@ -1,46 +1,42 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/icon/icon.js';
+import '@material/web/textfield/outlined-text-field.js';
 
-import SeatingContainer from './SeatingContainer.vue';
-
-import type { Exam } from '@/interfaces/Exam';
-import type { User } from '@/interfaces/User';
-
-import { formatExamDate } from '@/utils/exam_utils';
-
-interface ComponentProps {
-    exam: Exam;
-    user: User;
-}
-
-const props = defineProps<ComponentProps>();
+import type { Organization } from '@/interfaces/Org';
 
 const emit = defineEmits(['close']);
+
+const organizationToCreate = ref<Organization>({
+    name: '',
+    domains: [''],
+    members: [],
+});
 
 function closeDialog() {
     emit('close');
 }
-
-const userData = props.user;
 </script>
 
 <template>
     <div class="backdrop">
-        <div class="dialog">
+        <form class="dialog">
             <div class="top-panel">
                 <md-icon-button @click="closeDialog()">
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
-            <h1 class="exam-name">{{ props.exam.name }}</h1>
-            <p>{{ formatExamDate(props.exam.date) }}</p>
-            <p>{{ props.exam.description }}</p>
-            <h1 class="section-header">Seating</h1>
-            <div class="seating-wrapper">
-                <SeatingContainer :seating="props.exam.seating" :email="userData.email" class="seating"></SeatingContainer>
+            <h1 class="header-title">Create Organization</h1>
+            <h2 class="subheader">General</h2>
+            <md-outlined-text-field class="dialog-settings-field" v-model="organizationToCreate.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization."> </md-outlined-text-field>
+            <h2 class="subheader">Domains</h2>
+            <div class="domains">
+                <md-outlined-text-field v-for="(domain, index) in organizationToCreate.domains" :key="'domain' + index" class="dialog-settings-field" v-model="organizationToCreate.domains[index]" :label="`Domain ${index}`" required no-asterisk="true" supporting-text="A domain linked to the organization."> </md-outlined-text-field>
             </div>
-        </div>
+            <h2 class="subheader">Members</h2>
+        </form>
     </div>
 </template>
 
@@ -76,25 +72,6 @@ const userData = props.user;
     position: relative;
 }
 
-.exam-name {
-    font-size: 35px;
-}
-
-.section-header {
-    font-size: 25px;
-}
-
-.seating-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.seating {
-    max-width: 90%;
-}
-
 .top-panel {
     position: sticky;
     background-color: var(--md-sys-color-primary-container);
@@ -111,9 +88,17 @@ const userData = props.user;
     border-bottom: 1px solid var(--md-sys-color-outline);
 }
 
-@media (max-width: 768px) {
-    .seating {
-        display: none;
-    }
+.header-title,
+.subheader {
+    font-size: 35px;
+}
+
+.dialog-settings-field {
+    width: 40%;
+    color: var(--md-sys-color-on-primary-container);
+}
+
+.domains {
+    width: 100%;
 }
 </style>

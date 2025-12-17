@@ -1,5 +1,5 @@
-import { Router, type Request, type Response } from "express";
-import { authenticateToken } from "../middleware/auth.js";
+import { Router, type Request, type Response } from 'express';
+import { authenticateToken } from '../middleware/auth.js';
 
 export const sessionRouter = Router();
 

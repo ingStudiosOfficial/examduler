@@ -1,14 +1,14 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { ObjectId } from "mongodb";
-import type { Role } from "../types/user.js";
+import { ObjectId } from 'mongodb';
+import type { Role } from '../types/user.js';
 
 export function authenticateToken() {
     return async (req: Request, res: Response, next: NextFunction) => {
         console.log('Attempting to authenticate user...');
 
         const collection = req.db.collection('users');
-        
+
         const jwtSecretKey = process.env.JWT_SECRET_KEY;
         if (!jwtSecretKey) {
             console.error('JWT secret key not found.');
@@ -29,7 +29,7 @@ export function authenticateToken() {
             if (!decoded) {
                 console.error('Decoded missing.');
                 return res.status(401).json({
-                    message: 'Error while decoding JWT'
+                    message: 'Error while decoding JWT',
                 });
             }
 
@@ -38,8 +38,8 @@ export function authenticateToken() {
             try {
                 console.log('Decoded user ID:', decoded.id);
 
-                const userFromDatabase = await collection.findOne({ 
-                    '_id': new ObjectId(decoded.id)
+                const userFromDatabase = await collection.findOne({
+                    _id: new ObjectId(decoded.id),
                 });
 
                 console.log('User from database:', userFromDatabase);
@@ -84,7 +84,7 @@ export function verifyRole(role: Role) {
         if (!req.user?.role) {
             return res.status(401).json({
                 message: 'Role not provided',
-            })
+            });
         }
 
         let requestRoleLevel: number;
@@ -105,5 +105,5 @@ export function verifyRole(role: Role) {
                 message: `Access denied, insufficient permissions.`,
             });
         }
-    }
+    };
 }

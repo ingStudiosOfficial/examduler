@@ -1,6 +1,6 @@
-import { Router, type Request, type Response } from "express";
-import { authenticateToken } from "../middleware/auth.js";
-import { ObjectId } from "mongodb";
+import { Router, type Request, type Response } from 'express';
+import { authenticateToken } from '../middleware/auth.js';
+import { ObjectId } from 'mongodb';
 
 export const userRouter = Router();
 

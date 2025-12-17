@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { authenticateToken } from "../middleware/auth.js";
-import { ObjectId } from "mongodb";
-import type { IUser } from "../interfaces/User.js";
-import { use } from "passport";
-import type { IExam } from "../interfaces/Exam.js";
+import { Router } from 'express';
+import { authenticateToken } from '../middleware/auth.js';
+import { ObjectId } from 'mongodb';
+import type { IUser } from '../interfaces/User.js';
+import { use } from 'passport';
+import type { IExam } from '../interfaces/Exam.js';
 
 export const examsRouter = Router();
 

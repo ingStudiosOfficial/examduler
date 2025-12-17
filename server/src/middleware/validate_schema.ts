@@ -1,14 +1,14 @@
-import type { Request, Response, NextFunction } from "express";
-import type { Err, ObjectSchema, ValidationError, ValidationOptions } from "joi";
+import type { Request, Response, NextFunction } from 'express';
+import type { Err, ObjectSchema, ValidationError, ValidationOptions } from 'joi';
 
-import { examCreateSchema } from "../schemas/exam.js";
-import { orgCreateSchema } from "../schemas/org.js";
+import { examCreateSchema } from '../schemas/exam.js';
+import { orgCreateSchema } from '../schemas/org.js';
 
 function validateSchema(schema: ObjectSchema, body: object, options: ValidationOptions, req: Request, res: Response, next: NextFunction) {
     const { error, value } = schema.validate(body, options);
-    
+
     if (error) {
-        const validationErrors = error.details.map(detail => ({
+        const validationErrors = error.details.map((detail) => ({
             field: detail.context?.key,
             message: detail.message.replace(/['"]/g, ''),
         }));

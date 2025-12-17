@@ -7,13 +7,20 @@ const props = defineProps({
 
 <template>
     <div class="loader-wrapper">
-        <span class="loader" :style="{
-            'border-color': props.loaderColor,
-            'border-bottom-color': 'transparent',
-        }"></span>
-        <p class="loader-text" :style="{
-            'color': props.loaderColor,
-        }">{{ props.loadingText }}</p>
+        <span
+            class="loader"
+            :style="{
+                'border-color': props.loaderColor,
+                'border-bottom-color': 'transparent',
+            }"
+        ></span>
+        <p
+            class="loader-text"
+            :style="{
+                color: props.loaderColor,
+            }"
+            >{{ props.loadingText }}</p
+        >
     </div>
 </template>
 
@@ -29,11 +36,11 @@ const props = defineProps({
     height: 48px;
     border-width: 5px;
     border-style: solid;
-    
-    border-color: #FFF; 
-    
-    border-bottom-color: transparent; 
-    
+
+    border-color: #fff;
+
+    border-bottom-color: transparent;
+
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;

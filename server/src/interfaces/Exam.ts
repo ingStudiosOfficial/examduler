@@ -1,6 +1,6 @@
-import type { ObjectId } from "mongodb";
+import type { ObjectId } from 'mongodb';
 
-import type { ISeating } from "./Seating.js";
+import type { ISeating } from './Seating.js';
 
 export interface IExam {
     _id?: ObjectId;

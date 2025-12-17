@@ -38,17 +38,21 @@ function tryGetUserSeat() {
     }
 }
 
-watch(() => props.exam.seating, (newSeating: Seating[][]) => {
-    if (newSeating && newSeating.length > 0) {
-        tryGetUserSeat();
-    }
-}, { immediate: true });
+watch(
+    () => props.exam.seating,
+    (newSeating: Seating[][]) => {
+        if (newSeating && newSeating.length > 0) {
+            tryGetUserSeat();
+        }
+    },
+    { immediate: true },
+);
 </script>
 
 <template>
     <button class="card" @click="showExamDialog(props.exam)">
         <md-ripple></md-ripple>
-        <md-focus-ring style="--md-focus-ring-shape: 25px;"></md-focus-ring>
+        <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
         <h1>{{ props.exam.name }}</h1>
         <p class="exam-date">{{ formatExamDate(props.exam.date) }}</p>
         <p v-show="userSeat" class="exam-seat">Seat {{ userSeat?.seat }}</p>
@@ -71,7 +75,8 @@ watch(() => props.exam.seating, (newSeating: Seating[][]) => {
     text-align: center;
 }
 
-.exam-date, .exam-seat {
+.exam-date,
+.exam-seat {
     font-weight: bold;
 }
 </style>

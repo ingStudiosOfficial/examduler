@@ -1,5 +1,5 @@
-import type { Exam } from "@/interfaces/Exam";
-import type { Seating } from "@/interfaces/Seating";
+import type { Exam } from '@/interfaces/Exam';
+import type { Seating } from '@/interfaces/Seating';
 
 export function parseExams(exams: string): Exam[] {
     try {
@@ -25,7 +25,7 @@ export function sortExams(exams: Exam[]): Exam[] {
         if (isInvalidA) return 1;
         // B invalid, move to the end
         if (isInvalidB) return -1;
-        
+
         return timeB - timeA;
     });
 }

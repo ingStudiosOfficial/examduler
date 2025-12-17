@@ -1,10 +1,37 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
+
 import '@material/web/button/filled-button.js';
+
+import OrganizationCreateDialog from './OrganizationCreateDialog.vue';
+
+const dialogOpened = ref<boolean>(false);
+
+function openCreateOrgDialog() {
+    dialogOpened.value = true;
+}
+
+function closeCreateOrgDialog() {
+    dialogOpened.value = false;
+}
+
+watch(dialogOpened, (isOpen: boolean) => {
+    const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') closeCreateOrgDialog();
+    };
+
+    if (isOpen) {
+        document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => document.addEventListener('keydown', handleEscape);
+});
 </script>
 
 <template>
     <p class="no-org-text">You don't look like you have any organizations yet.</p>
-    <md-filled-button class="org-create-btn">Create an organization</md-filled-button>
+    <md-filled-button class="org-create-btn" @click="openCreateOrgDialog()">Create an organization</md-filled-button>
+    <OrganizationCreateDialog v-if="dialogOpened" @close="closeCreateOrgDialog()"></OrganizationCreateDialog>
 </template>
 
 <style scoped>
