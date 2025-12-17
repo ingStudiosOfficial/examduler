@@ -56,6 +56,7 @@ const userData = props.user;
     justify-content: center;
     user-select: auto;
     background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 }
 
 .dialog {
@@ -71,6 +72,8 @@ const userData = props.user;
     overflow-y: scroll;
     box-sizing: border-box;
     overflow-x: hidden;
+    z-index: 1000;
+    position: relative;
 }
 
 .exam-name {

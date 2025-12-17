@@ -15,6 +15,5 @@ import '@material/web/button/filled-button.js';
 
 .org-create-btn {
     margin: 10px 0;
-    display: flex;
 }
 </style>

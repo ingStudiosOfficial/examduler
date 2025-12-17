@@ -32,6 +32,7 @@ onMounted(async () => {
 .content-wrapper {
     width: 100%;
     box-sizing: border-box;
+    overflow: visible;
 }
 
 .loader-container {
