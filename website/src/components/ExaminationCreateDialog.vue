@@ -1,46 +1,44 @@
 <script setup lang="ts">
-import '@material/web/iconbutton/icon-button.js';
-import '@material/web/icon/icon.js';
-
-import SeatingContainer from './SeatingContainer.vue';
-
+import { ref } from 'vue';
 import type { Exam } from '@/interfaces/Exam';
-import type { User } from '@/interfaces/User';
 
-import { formatExamDate } from '@/utils/exam_utils';
+import '@material/web/textfield/outlined-text-field.js';
 
-interface ComponentProps {
-    exam: Exam;
-    user: User;
-}
-
-const props = defineProps<ComponentProps>();
+import { VueDatePicker } from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const emit = defineEmits(['close']);
+
+const dates = ref();
+
+const examToCreate = ref<Exam>({
+    name: '',
+    date: '',
+    description: '',
+    meta: {},
+    seating: [],
+});
 
 function closeDialog() {
     emit('close');
 }
-
-const userData = props.user;
 </script>
 
 <template>
     <div class="backdrop">
-        <div class="dialog">
+        <form class="dialog">
             <div class="top-panel">
-                <md-icon-button @click="closeDialog()">
+                <md-icon-button type="button" @click="closeDialog()">
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
-            <h1 class="exam-name">{{ props.exam.name }}</h1>
-            <p>{{ formatExamDate(props.exam.date) }}</p>
-            <p>{{ props.exam.description }}</p>
-            <h1 class="section-header">Seating</h1>
-            <div class="seating-wrapper">
-                <SeatingContainer :seating="props.exam.seating" :email="userData.email" class="seating"></SeatingContainer>
-            </div>
-        </div>
+            <h1 class="header-title">Create Examination</h1>
+            <h2 class="subheader">Details</h2>
+            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination."> </md-outlined-text-field>
+            <p>Examination date</p>
+            <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
+            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea"> </md-outlined-text-field>
+        </form>
     </div>
 </template>
 
@@ -74,25 +72,7 @@ const userData = props.user;
     overflow-x: hidden;
     z-index: 1000;
     position: relative;
-}
-
-.exam-name {
-    font-size: 35px;
-}
-
-.section-header {
-    font-size: 25px;
-}
-
-.seating-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.seating {
-    max-width: 90%;
+    gap: 10px;
 }
 
 .top-panel {
@@ -112,9 +92,21 @@ const userData = props.user;
     z-index: 1001;
 }
 
-@media (max-width: 768px) {
-    .seating {
-        display: none;
-    }
+.header-title {
+    font-size: 35px;
+}
+
+.subheader {
+    font-size: 25px;
+}
+
+.dialog-settings-field {
+    width: 40%;
+    color: var(--md-sys-color-on-primary-container);
+}
+
+.date-picker {
+    width: 50%;
+    margin: 10px 0;
 }
 </style>

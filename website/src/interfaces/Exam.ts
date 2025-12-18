@@ -1,7 +1,7 @@
 import type { Seating } from './Seating';
 
 export interface Exam {
-    _id: string;
+    _id?: string;
     name: string;
     date: string;
     description: string;

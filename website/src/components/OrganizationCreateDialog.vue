@@ -163,9 +163,12 @@ function handleFileUpload(e: Event) {
     z-index: 1001;
 }
 
-.header-title,
-.subheader {
+.header-title {
     font-size: 35px;
+}
+
+.subheader {
+    font-size: 25px;
 }
 
 .dialog-settings-field {

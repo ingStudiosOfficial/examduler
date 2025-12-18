@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@material/web": "^2.4.1",
+    "@vuepic/vue-datepicker": "^12.1.0",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
   },
