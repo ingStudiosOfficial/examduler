@@ -144,6 +144,11 @@ function handleFileUpload(e: Event) {
     overflow-x: hidden;
     z-index: 1000;
     position: relative;
+    gap: 20px;
+}
+
+.dialog * {
+    margin: 0;
 }
 
 .top-panel {

@@ -72,7 +72,11 @@ function closeDialog() {
     overflow-x: hidden;
     z-index: 1000;
     position: relative;
-    gap: 10px;
+    gap: 20px;
+}
+
+.dialog * {
+    margin: 0;
 }
 
 .top-panel {
@@ -107,6 +111,5 @@ function closeDialog() {
 
 .date-picker {
     width: 50%;
-    margin: 10px 0;
 }
 </style>
