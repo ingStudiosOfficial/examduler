@@ -12,4 +12,4 @@ export interface IExam {
 
 export type IExamCreate = Omit<IExam, 'seating'> & {
     seating: string;
-}
+};

@@ -1,4 +1,5 @@
 import type { Exam, ExamCreate } from '@/interfaces/Exam';
+import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { Seating } from '@/interfaces/Seating';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -78,7 +79,7 @@ export async function createExam(examDetails: ExamCreate): Promise<ExamCreationP
             credentials: 'include',
         });
 
-        const responseJson = await response.json();
+        const responseJson: ResponseJson = await response.json();
 
         if (!response.ok) {
             console.error('Error while creating exam:', responseJson);

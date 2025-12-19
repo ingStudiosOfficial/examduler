@@ -1,3 +1,4 @@
+import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { User } from '@/interfaces/User';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -9,7 +10,7 @@ export async function fetchUserData(): Promise<User> {
             credentials: 'include',
         });
 
-        const responseJson = await response.json();
+        const responseJson: ResponseJson = await response.json();
 
         console.log('Response:', responseJson);
 

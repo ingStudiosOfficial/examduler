@@ -72,7 +72,7 @@ function handleFileUpload(e: Event) {
         console.log('Read result:', ef.target.result);
 
         examToCreate.value.seating = ef.target.result;
-    }
+    };
 
     reader.readAsText(uploadedFile);
 

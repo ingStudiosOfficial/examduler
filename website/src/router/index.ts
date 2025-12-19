@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type NavigationGuardNext, type RouteLoc
 
 import LoginView from '@/views/LoginView.vue';
 import DashboardView from '@/views/DashboardView.vue';
+import type { ResponseJson } from '@/interfaces/ResponseJson';
 
 const routes = [
     { path: '/login', name: 'login', component: LoginView, meta: { title: 'Login', requiresAuth: false } },
@@ -31,7 +32,7 @@ router.beforeEach(async (to: RouteLocationNormalized, _, next: NavigationGuardNe
 
             console.log('Fetched response.');
 
-            const responseJson = await response.json();
+            const responseJson: ResponseJson = await response.json();
 
             console.log('Response:', responseJson);
 

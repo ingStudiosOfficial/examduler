@@ -38,7 +38,7 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
     }
 }
 
-export function parseExamSeating(seatingString: string): ISeating[][] {
+export async function parseExamSeating(seatingString: string, req: Request): Promise<ISeating[][]> {
     /*
         Expected:
         A1 - seat
@@ -48,7 +48,7 @@ export function parseExamSeating(seatingString: string): ISeating[][] {
 
     console.log('Seating from body:', seatingString);
 
-    const seatingArray = seatingString.split(/\r?\n/).filter(line => line.trim());
+    const seatingArray = seatingString.split(/\r?\n/).filter((line) => line.trim());
 
     const seatingMap = new Map<string, ISeating[]>();
 
@@ -64,7 +64,7 @@ export function parseExamSeating(seatingString: string): ISeating[][] {
         }
 
         const row = seatSeat.match(/^[A-Z]+/)?.[0];
-        
+
         if (!row) {
             console.error(`Invalid seat format: ${seatSeat}`);
             continue;
@@ -80,6 +80,14 @@ export function parseExamSeating(seatingString: string): ISeating[][] {
             formattedSeat.email = '';
         }
 
+        const seatUser = await req.db.collection('users').findOne({ email: seatEmail });
+
+        if (seatUser && seatUser.name) {
+            formattedSeat.name = seatUser.name;
+        } else {
+            console.error('User not found.');
+        }
+
         if (!seatingMap.has(row)) {
             seatingMap.set(row, []);
         }
@@ -87,7 +95,7 @@ export function parseExamSeating(seatingString: string): ISeating[][] {
     }
 
     const sortedRows = Array.from(seatingMap.keys()).sort();
-    const seating: ISeating[][] = sortedRows.map(row => seatingMap.get(row)!);
+    const seating: ISeating[][] = sortedRows.map((row) => seatingMap.get(row)!);
 
     console.log('Parsed seating:', seating);
 

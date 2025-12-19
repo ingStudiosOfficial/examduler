@@ -47,7 +47,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
     try {
         const examBody: IExamCreate = req.body;
         const { seating, ...tempExam } = examBody;
-        const parsedSeating = parseExamSeating(examBody.seating);
+        const parsedSeating = await parseExamSeating(examBody.seating, req);
         const exam = { ...tempExam, seating: parsedSeating };
 
         console.log('Exam:', exam);

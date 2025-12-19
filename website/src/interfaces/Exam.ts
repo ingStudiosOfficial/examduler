@@ -10,4 +10,4 @@ export interface Exam {
 
 export type ExamCreate = Omit<Exam, 'seating'> & {
     seating: string;
-}
+};
