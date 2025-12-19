@@ -1,27 +1,25 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import { ObjectId } from 'mongodb';
-import type { IUser } from '../interfaces/User.js';
-import { use } from 'passport';
 import type { IExam } from '../interfaces/Exam.js';
 
 export const examsRouter = Router();
 
-examsRouter.get('/fetch/:id/', authenticateToken(), async (req, res) => {
-    if (!req.params.id) {
+examsRouter.get('/fetch/user/', authenticateToken(), async (req: Request, res: Response) => {
+    if (!req.user?.id) {
         return res.status(400).json({
             message: 'User ID missing.',
         });
     }
 
-    if (!ObjectId.isValid(req.params.id)) {
+    if (!ObjectId.isValid(req.user.id)) {
         return res.status(400).json({
             message: 'User ID invalid',
         });
     }
 
     try {
-        const userId = new ObjectId(req.params.id);
+        const userId = new ObjectId(req.user.id);
 
         const user = await req.db.collection('users').findOne({ _id: userId });
 

@@ -1,20 +1,18 @@
 <script setup lang="ts">
 // Vue utils
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 // Views
 import ExaminationCard from './ExaminationCard.vue';
 import ExaminationDialog from './ExaminationDialog.vue';
-
-// Sample examination data
-import sampleExams from '../samples/sample_exams.json' with { type: 'json' };
+import LoaderContainer from './LoaderContainer.vue';
 
 // Interfaces
 import type { Exam } from '@/interfaces/Exam';
 import type { User } from '@/interfaces/User';
 
 // Utils
-import { parseExams, sortExams } from '@/utils/exam_utils';
+import { fetchAllExams, sortExams } from '@/utils/exam_utils';
 
 interface ComponentProps {
     user: User;
@@ -22,7 +20,7 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
-const exams = ref<Exam[]>(sortExams(parseExams(JSON.stringify(sampleExams))));
+const exams = ref<Exam[]>();
 
 const examOpened = ref<boolean>(false);
 const examDetails = ref<Exam | null>(null);
@@ -49,14 +47,30 @@ watch(examOpened, (isOpen: boolean) => {
 
     return () => document.addEventListener('keydown', handleEscape);
 });
+
+onMounted(async () => {
+    try {
+        const fetchedExams = await fetchAllExams();
+        exams.value = sortExams(fetchedExams);
+    } catch (error) {
+        console.error('Error while fetching exams:', error);
+        exams.value = [];
+    }
+});
 </script>
 
 <template>
     <div class="content-wrapper">
         <h1 class="examinations-header">Your Examinations</h1>
-        <div class="examinations">
-            <ExaminationCard v-for="exam in exams" :key="exam._id" :exam="exam" :user="props.user" @exam-click="displayExamDialog"></ExaminationCard>
+        <div class="exams-loaded" v-if="exams">
+            <div class="examinations" v-if="exams.length > 0">
+                <ExaminationCard v-for="exam in exams" :key="exam._id" :exam="exam" :user="props.user" @exam-click="displayExamDialog"></ExaminationCard>
+            </div>
+
+            <p v-else class="no-exams">Time to relax! No scheduled examinations at the moment.</p>
         </div>
+        <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your exams..."></LoaderContainer>
+
         <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()"></ExaminationDialog>
     </div>
 </template>
@@ -84,6 +98,16 @@ watch(examOpened, (isOpen: boolean) => {
     align-items: stretch;
     justify-content: stretch;
     width: 100%;
+}
+
+.exams-loaded {
+    width: 100%;
+}
+
+.no-exams {
+    color: var(--md-sys-color-primary);
+    font-size: 1.5rem;
+    text-align: center;
 }
 
 @media (max-width: 768px) {

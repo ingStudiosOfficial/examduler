@@ -94,3 +94,33 @@ export async function createExam(examDetails: ExamCreate): Promise<ExamCreationP
         return { message: 'An unexpected error occurred while creating the examination.', success: false };
     }
 }
+
+export async function fetchAllExams(): Promise<Exam[]> {
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/exams/fetch/user/`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!responseJson.exams) {
+            console.error('No exams returned.');
+            return [];
+        }
+
+        if (!response.ok) {
+            console.error('Failed to fetch all exams:', responseJson);
+            throw new Error(`Failed to fetch exams: ${responseJson.message}`);
+        }
+
+        const exams: Exam[] = responseJson.exams as Exam[];
+
+        console.log('Fetched exams:', exams);
+
+        return exams;
+    } catch (error) {
+        console.error('Error while fetching exams:', error);
+        throw new Error('An unexpected error occurred while fetching exams.');
+    }
+}

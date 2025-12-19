@@ -34,7 +34,7 @@ const userData = props.user;
                 </md-icon-button>
             </div>
             <h1 class="exam-name">{{ props.exam.name }}</h1>
-            <p>{{ formatExamDate(props.exam.date) }}</p>
+            <p class="exam-date">{{ formatExamDate(props.exam.date) }}</p>
             <p>{{ props.exam.description }}</p>
             <h1 class="section-header">Seating</h1>
             <div class="seating-wrapper">
@@ -83,6 +83,10 @@ const userData = props.user;
 
 .exam-name {
     font-size: 35px;
+}
+
+.exam-date {
+    font-weight: bold;
 }
 
 .section-header {

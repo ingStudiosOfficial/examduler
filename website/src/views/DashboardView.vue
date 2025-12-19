@@ -61,7 +61,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
         </md-fab>
     </div>
 
-    <LoaderContainer v-else class="loader-container" loading-text="Please wait while we load the neccessary data." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
+    <LoaderContainer v-else class="loader-container" loading-text="Hang on while we load the neccessary data..." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
 </template>
 
 <style scoped>

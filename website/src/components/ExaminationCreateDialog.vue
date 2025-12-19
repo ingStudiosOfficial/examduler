@@ -32,6 +32,15 @@ const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
 
 function closeDialog() {
+    vibrate([10]);
+
+    examToCreate.value = {
+        name: '',
+        date: '',
+        description: '',
+        seating: '',
+    }
+
     emit('close');
 }
 
