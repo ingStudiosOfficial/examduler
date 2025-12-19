@@ -1,9 +1,9 @@
 import { Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import { ObjectId } from 'mongodb';
-import type { IExam } from '../interfaces/Exam.js';
+import type { IExam, IExamCreate } from '../interfaces/Exam.js';
 import { validateCreateExamSchema } from '../middleware/validate_schema.js';
-import { assignExamToUsers } from '../utils/exam_utils.js';
+import { assignExamToUsers, parseExamSeating } from '../utils/exam_utils.js';
 
 export const examRouter = Router();
 
@@ -45,7 +45,12 @@ examRouter.get('/fetch/:id/', authenticateToken(), async (req: Request, res: Res
 
 examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validateCreateExamSchema, async (req, res) => {
     try {
-        const exam: IExam = req.body;
+        const examBody: IExamCreate = req.body;
+        const { seating, ...tempExam } = examBody;
+        const parsedSeating = parseExamSeating(examBody.seating);
+        const exam = { ...tempExam, seating: parsedSeating };
+
+        console.log('Exam:', exam);
 
         const result = await req.db.collection('exams').insertOne(exam);
 

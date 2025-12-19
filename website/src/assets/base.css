@@ -109,3 +109,49 @@
         --md-sys-color-surface-container-highest: rgb(48 53 56);
     }
 }
+
+.dp__theme_light,
+.dp__theme_dark {
+    --dp-background-color: var(--md-sys-color-surface-container-lowest);
+    --dp-text-color: var(--md-sys-color-on-surface);
+    --dp-hover-color: var(--md-sys-color-surface-container);
+    --dp-hover-text-color: var(--md-sys-color-on-surface);
+    --dp-hover-icon-color: var(--md-sys-color-on-surface-variant);
+    --dp-primary-color: var(--md-sys-color-primary);
+    --dp-primary-disabled-color: var(--md-sys-color-primary-container);
+    --dp-primary-text-color: var(--md-sys-color-on-primary);
+    --dp-secondary-color: var(--md-sys-color-secondary);
+    --dp-border-color: var(--md-sys-color-outline-variant);
+    --dp-menu-border-color: var(--md-sys-color-outline-variant);
+    --dp-border-color-hover: var(--md-sys-color-outline);
+    --dp-border-color-focus: var(--md-sys-color-primary);
+    --dp-disabled-color: var(--md-sys-color-surface-container-low);
+    --dp-scroll-bar-background: var(--md-sys-color-surface-container);
+    --dp-scroll-bar-color: var(--md-sys-color-on-surface-variant);
+    --dp-success-color: var(--md-sys-color-tertiary);
+    --dp-success-color-disabled: var(--md-sys-color-tertiary-container);
+    --dp-icon-color: var(--md-sys-color-on-surface-variant);
+    --dp-danger-color: var(--md-sys-color-error);
+    --dp-marker-color: var(--md-sys-color-error);
+    --dp-tooltip-color: var(--md-sys-color-surface-container-high);
+    --dp-disabled-color-text: var(--md-sys-color-on-surface-variant);
+    --dp-highlight-color: var(--md-sys-color-primary-container);
+    --dp-range-between-dates-background-color: var(--md-sys-color-primary-container);
+    --dp-range-between-dates-text-color: var(--md-sys-color-on-primary-container);
+    --dp-range-between-border-color: var(--md-sys-color-primary-container);
+}
+
+.dp__menu {
+    font-family: var(--md-ref-typeface-plain);
+    box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.1),
+        0 2px 4px -2px rgb(0 0 0 / 0.1);
+    border-radius: 12px;
+}
+
+.dp__button,
+.dp__calendar_item {
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}

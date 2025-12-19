@@ -60,7 +60,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
             <md-icon slot="icon">add</md-icon>
         </md-fab>
     </div>
-    
+
     <LoaderContainer v-else class="loader-container" loading-text="Please wait while we load the neccessary data." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
 </template>
 

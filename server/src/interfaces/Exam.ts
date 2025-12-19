@@ -7,6 +7,9 @@ export interface IExam {
     name: string;
     date: string;
     description: string;
-    meta: object;
     seating: ISeating[][];
+}
+
+export type IExamCreate = Omit<IExam, 'seating'> & {
+    seating: string;
 }

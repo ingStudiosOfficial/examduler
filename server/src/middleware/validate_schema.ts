@@ -5,6 +5,8 @@ import { examCreateSchema } from '../schemas/exam.js';
 import { orgCreateSchema } from '../schemas/org.js';
 
 function validateSchema(schema: ObjectSchema, body: object, options: ValidationOptions, req: Request, res: Response, next: NextFunction) {
+    console.log('Body:', body);
+
     const { error, value } = schema.validate(body, options);
 
     if (error) {
@@ -21,7 +23,9 @@ function validateSchema(schema: ObjectSchema, body: object, options: ValidationO
         });
     }
 
-    body = value;
+    req.body = value;
+
+    console.log('Body data valid, proceeding...');
 
     next();
 }

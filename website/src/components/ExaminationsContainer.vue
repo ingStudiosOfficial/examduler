@@ -57,7 +57,7 @@ watch(examOpened, (isOpen: boolean) => {
         <div class="examinations">
             <ExaminationCard v-for="exam in exams" :key="exam._id" :exam="exam" :user="props.user" @exam-click="displayExamDialog"></ExaminationCard>
         </div>
-        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.meta && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()"></ExaminationDialog>
+        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()"></ExaminationDialog>
     </div>
 </template>
 

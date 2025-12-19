@@ -81,6 +81,8 @@ function getRoleLevel(role: Role): number {
 
 export function verifyRole(role: Role) {
     return async (req: Request, res: Response, next: NextFunction) => {
+        console.log('Attempting to verify role...');
+
         if (!req.user?.role) {
             return res.status(401).json({
                 message: 'Role not provided',
@@ -105,5 +107,9 @@ export function verifyRole(role: Role) {
                 message: `Access denied, insufficient permissions.`,
             });
         }
+
+        console.log('User authorized, proceeding...');
+
+        next();
     };
 }

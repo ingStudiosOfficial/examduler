@@ -82,11 +82,11 @@ function handleFileUpload(e: Event) {
             </div>
             <h1 class="header-title">Create Organization</h1>
             <h2 class="subheader">General</h2>
-            <md-outlined-text-field class="dialog-settings-field" v-model="organizationToCreate.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization."> </md-outlined-text-field>
+            <md-outlined-text-field class="dialog-settings-field" v-model="organizationToCreate.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization."></md-outlined-text-field>
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <div class="domain-group" v-for="(_, index) in organizationToCreate.domains" :key="'domain' + index">
-                    <md-outlined-text-field class="domain-input" v-model="organizationToCreate.domains[index]" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization (without http:// or https:// prefix)."> </md-outlined-text-field>
+                    <md-outlined-text-field class="domain-input" v-model="organizationToCreate.domains[index]" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization (without http:// or https:// prefix)."></md-outlined-text-field>
                     <md-icon-button type="button" @click="deleteDomain(index)">
                         <md-icon>delete</md-icon>
                     </md-icon-button>
@@ -94,21 +94,14 @@ function handleFileUpload(e: Event) {
             </div>
             <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             <h2 class="subheader">Members</h2>
-            <div class="pfp-input">
-                <p>Your bot's profile picture</p>
+            <div class="members-input">
+                <p>Your members</p>
                 <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>upload</md-icon>
                 </label>
-                <input 
-                    type="file"
-                    ref="membersPicker"
-                    name="members-json"
-                    accept=".json"
-                    
-                    style="display: none;"
-                    multiple>
+                <input type="file" ref="membersPicker" name="members-json" accept=".json" style="display: none" multiple />
             </div>
         </form>
     </div>

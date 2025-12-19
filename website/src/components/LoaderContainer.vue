@@ -19,8 +19,9 @@ const props = defineProps({
             :style="{
                 color: props.loaderColor,
             }"
-            >{{ props.loadingText }}</p
         >
+            {{ props.loadingText }}
+        </p>
     </div>
 </template>
 

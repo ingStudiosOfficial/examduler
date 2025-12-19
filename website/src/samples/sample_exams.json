@@ -4,10 +4,6 @@
         "name": "Mid Term Examinations",
         "date": "2027-12-6",
         "description": "Please prepare for your mid-terms.",
-        "meta": {
-            "additional_data1": "description1",
-            "additional_data2": "description2"
-        },
         "seating": [
             [
                 {
@@ -93,10 +89,6 @@
         "name": "Year End Examinations",
         "date": "2026-01-6",
         "description": "Please prepare for your EOY.",
-        "meta": {
-            "additional_data1": "description1",
-            "additional_data2": "description2"
-        },
         "seating": [
             [
                 {

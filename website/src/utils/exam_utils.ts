@@ -1,5 +1,7 @@
-import type { Exam } from '@/interfaces/Exam';
+import type { Exam, ExamCreate } from '@/interfaces/Exam';
 import type { Seating } from '@/interfaces/Seating';
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export function parseExams(exams: string): Exam[] {
     try {
@@ -53,4 +55,41 @@ export function formatExamDate(examDate: string): string {
     const year = parsedDate.getFullYear();
 
     return `${day} ${month} ${year}`;
+}
+
+interface ExamCreationPromise {
+    message: string;
+    success: boolean;
+}
+
+export async function createExam(examDetails: ExamCreate): Promise<ExamCreationPromise> {
+    console.log('Submitting:', examDetails);
+
+    try {
+        const body = JSON.stringify(examDetails);
+        console.log('Sending exam:', body);
+
+        const response = await fetch(`${apiBaseUrl}/api/exam/create/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: body,
+            credentials: 'include',
+        });
+
+        const responseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('Error while creating exam:', responseJson);
+            return { message: responseJson.message, success: false };
+        }
+
+        console.log('Successfully created exam:', responseJson);
+
+        return { message: responseJson.message, success: true };
+    } catch (error) {
+        console.error('Error while creating exam:', error);
+        return { message: 'An unexpected error occurred while creating the examination.', success: false };
+    }
 }

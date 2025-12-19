@@ -5,6 +5,9 @@ export interface Exam {
     name: string;
     date: string;
     description: string;
-    meta: object;
     seating: Seating[][];
+}
+
+export type ExamCreate = Omit<Exam, 'seating'> & {
+    seating: string;
 }

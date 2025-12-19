@@ -2,7 +2,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
-import { Db, MongoClient, ObjectId } from 'mongodb';
+import { Db, MongoClient } from 'mongodb';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import * as dotenv from 'dotenv';

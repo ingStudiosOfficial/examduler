@@ -4,6 +4,6 @@
     "singleQuote": true,
     "printWidth": 999,
     "tabWidth": 4,
-    "htmlWhitespaceSensitivity": "strict",
+    "htmlWhitespaceSensitivity": "ignore",
     "vueIndentScriptAndStyle": false
 }
