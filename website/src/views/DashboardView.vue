@@ -32,6 +32,10 @@ function closeCreateExamDialog() {
     examCreateDialogOpened.value = false;
 }
 
+function alertRefreshExams() {
+    // Function to call the child exam component to refresh exams
+}
+
 watch(examCreateDialogOpened, (isOpen: boolean) => {
     const handleEscape = (e: KeyboardEvent) => {
         if (e.key === 'Escape') closeCreateExamDialog();
@@ -54,7 +58,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
         <OrganizationContainer v-if="userData.role === 'admin'"></OrganizationContainer>
         -->
 
-        <ExaminationCreateDialog v-if="userData.role === 'admin' || userData.role === 'teacher'" v-show="examCreateDialogOpened" @close="closeCreateExamDialog()"></ExaminationCreateDialog>
+        <ExaminationCreateDialog v-if="userData.role === 'admin' || userData.role === 'teacher'" v-show="examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
 
         <md-fab class="add-button" label="Create" @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>

@@ -16,7 +16,7 @@ import type { ExamCreate } from '@/interfaces/Exam';
 import { vibrate } from '@/utils/vibrate';
 import { createExam } from '@/utils/exam_utils';
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'success']);
 
 const dates = ref();
 const examToCreate = ref<ExamCreate>({
@@ -39,7 +39,7 @@ function closeDialog() {
         date: '',
         description: '',
         seating: '',
-    }
+    };
 
     emit('close');
 }
@@ -101,6 +101,7 @@ async function examFormSubmit() {
 
     if (success) {
         closeDialog();
+        emit('success');
     }
 }
 
