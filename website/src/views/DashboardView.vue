@@ -4,7 +4,7 @@ import { onMounted, ref, watch } from 'vue';
 import '@material/web/fab/fab.js';
 
 import ExaminationsContainer from '@/components/ExaminationsContainer.vue';
-//import OrganizationContainer from '@/components/OrganizationContainer.vue';
+import OrganizationContainer from '@/components/OrganizationContainer.vue';
 import ExaminationCreateDialog from '@/components/ExaminationCreateDialog.vue';
 import LoaderContainer from '@/components/LoaderContainer.vue';
 
@@ -14,6 +14,7 @@ import { fetchUserData } from '@/utils/user_utils';
 
 const userData = ref<User | null>(null);
 const examCreateDialogOpened = ref<boolean>(false);
+const refreshExams = ref<boolean>(false);
 
 onMounted(async () => {
     try {
@@ -33,7 +34,7 @@ function closeCreateExamDialog() {
 }
 
 function alertRefreshExams() {
-    // Function to call the child exam component to refresh exams
+    refreshExams.value = true;
 }
 
 watch(examCreateDialogOpened, (isOpen: boolean) => {
@@ -51,12 +52,9 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
 <template>
     <div v-if="userData" class="content-wrapper">
-        <ExaminationsContainer :user="userData"></ExaminationsContainer>
+        <ExaminationsContainer :user="userData" :refresh="refreshExams"></ExaminationsContainer>
 
-        <!--
-        Add on in the future update - pause on this
         <OrganizationContainer v-if="userData.role === 'admin'"></OrganizationContainer>
-        -->
 
         <ExaminationCreateDialog v-if="userData.role === 'admin' || userData.role === 'teacher'" v-show="examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
 

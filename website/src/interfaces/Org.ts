@@ -3,3 +3,7 @@ export interface Organization {
     domains: string[];
     members: string[];
 }
+
+export type OrganizationCreate = Omit<Organization, 'members'> & {
+    members: string;
+};

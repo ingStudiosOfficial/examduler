@@ -16,6 +16,7 @@ import { fetchAllExams, sortExams } from '@/utils/exam_utils';
 
 interface ComponentProps {
     user: User;
+    refresh: boolean;
 }
 
 const props = defineProps<ComponentProps>();
@@ -46,6 +47,19 @@ watch(examOpened, (isOpen: boolean) => {
     }
 
     return () => document.addEventListener('keydown', handleEscape);
+});
+
+watch(() => props.refresh, async (newValue) => {
+    if (newValue === true) {
+        try {
+            const fetchedExams = await fetchAllExams();
+            exams.value = sortExams(fetchedExams);
+            newValue = !newValue;
+        } catch (error) {
+            console.error('Error while refreshing exams:', error);
+            newValue = !newValue;
+        }
+    }
 });
 
 onMounted(async () => {

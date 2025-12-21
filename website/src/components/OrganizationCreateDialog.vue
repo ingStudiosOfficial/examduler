@@ -4,19 +4,25 @@ import { ref } from 'vue';
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/icon/icon.js';
 import '@material/web/textfield/outlined-text-field.js';
+import '@material/web/fab/fab.js';
 
-import type { Organization } from '@/interfaces/Org';
+import type { OrganizationCreate } from '@/interfaces/Org';
 
 import { vibrate } from '@/utils/vibrate';
+import { createOrganization } from '@/utils/org_utils';
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'success']);
 
-const organizationToCreate = ref<Organization>({
+const organizationToCreate = ref<OrganizationCreate>({
     name: '',
     domains: [],
-    members: [],
+    members: '',
 });
 const membersPicker = ref();
+const submitButton = ref();
+const uploadedMembersName = ref<string>();
+const orgCreationMessage = ref<string>();
+const orgCreationSuccess = ref<boolean>(false);
 
 function closeDialog() {
     emit('close');
@@ -36,45 +42,67 @@ function openFilePicker() {
     membersPicker.value.click();
 }
 
-/*
+function pressOrgSubmit() {
+    vibrate([10]);
+
+    submitButton.value.click();
+}
 
 function handleFileUpload(e: Event) {
     const target = e.target as HTMLInputElement;
 
-    if (!target.files) {
-        console.error('No files found.');
+    if (!target.files || target.files?.length === 0) {
+        console.error('No uploaded files found.');
         return;
     }
 
-    const files = Array.from(target.files);
+    const uploadedFile = target.files[0];
 
-    for (const file of files) {
-        const reader = new FileReader();
-
-        reader.onload = function(event) {
-            const result = event.target?.result;
-
-            if (!result) {
-                throw new Error('Failed to load result.');
-            }
-
-            if (typeof result !== 'string') {
-                throw new Error('Result is not a string.');
-            }
-            
-            const members = JSON.parse(result);
-
-
-        }
+    if (!uploadedFile) {
+        console.error('File missing.');
+        return;
     }
+
+    const reader = new FileReader();
+
+    reader.onload = (ef) => {
+        if (!ef.target?.result) {
+            console.error('Failed to read file.');
+            return;
+        }
+
+        if (typeof ef.target.result !== 'string') {
+            console.error('File content is not a string.');
+            return;
+        }
+
+        console.log('Read result:', ef.target.result);
+
+        organizationToCreate.value.members = ef.target.result;
+    };
+
+    reader.readAsText(uploadedFile);
+
+    uploadedMembersName.value = uploadedFile.name;
 }
 
-*/
+async function orgFormSubmit() {
+    const { message, success } = await createOrganization(organizationToCreate.value);
+    console.log(message);
+
+    orgCreationMessage.value = message;
+    orgCreationSuccess.value = success;
+
+    if (success) {
+        closeDialog();
+        emit('success');
+    }
+}
 </script>
 
 <template>
     <div class="backdrop">
-        <form class="dialog">
+        <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
                 <md-icon-button type="button" @click="closeDialog()">
                     <md-icon>close</md-icon>
@@ -101,8 +129,13 @@ function handleFileUpload(e: Event) {
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>upload</md-icon>
                 </label>
-                <input type="file" ref="membersPicker" name="members-json" accept=".json" style="display: none" multiple />
+                <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
             </div>
+            <p :style="{ color: orgCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ orgCreationMessage }}</p>
+            <button class="hidden-submit" type="submit" ref="submitButton"></button>
+            <md-fab class="submit-button" @click="pressOrgSubmit()">
+                <md-icon slot="icon">check</md-icon>
+            </md-fab>
         </form>
     </div>
 </template>
@@ -180,11 +213,6 @@ function handleFileUpload(e: Event) {
     align-items: center;
     gap: 20px;
     width: 100%;
-    margin: 10px 0;
-}
-
-.domain-button {
-    margin: 10px 0;
 }
 
 .domain-group {
@@ -197,6 +225,19 @@ function handleFileUpload(e: Event) {
 
 .domain-input {
     width: 80%;
+}
+
+.members-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border-radius: 25px;
+    padding: 20px;
+    gap: 10px;
+    width: 40%;
+    box-sizing: border-box;
 }
 
 .file-upload-button {
@@ -216,5 +257,18 @@ function handleFileUpload(e: Event) {
 
 .file-chosen {
     word-wrap: break-word;
+}
+
+.submit-button {
+    position: sticky;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1001;
+    display: block;
+    margin-left: auto;
+}
+
+.hidden-submit {
+    display: none;
 }
 </style>

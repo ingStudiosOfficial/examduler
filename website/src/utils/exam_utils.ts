@@ -1,6 +1,7 @@
 import type { Exam, ExamCreate } from '@/interfaces/Exam';
 import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { Seating } from '@/interfaces/Seating';
+import type { ResourceCreate } from '@/interfaces/ResourceCreate';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -58,12 +59,7 @@ export function formatExamDate(examDate: string): string {
     return `${day} ${month} ${year}`;
 }
 
-interface ExamCreationPromise {
-    message: string;
-    success: boolean;
-}
-
-export async function createExam(examDetails: ExamCreate): Promise<ExamCreationPromise> {
+export async function createExam(examDetails: ExamCreate): Promise<ResourceCreate> {
     console.log('Submitting:', examDetails);
 
     try {
