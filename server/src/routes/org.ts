@@ -2,8 +2,8 @@ import { Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import { ObjectId } from 'mongodb';
 import { validateCreateOrgSchema } from '../middleware/validate_schema.js';
-import type { IOrg } from '../interfaces/Org.js';
-import { createVerificationToken, verifyDomain } from '../utils/org_utils.js';
+import type { ICreateOrg, IOrg } from '../interfaces/Org.js';
+import { createVerificationToken, verifyDomain, parseOrgMembers } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
 
 export const orgRouter = Router();
@@ -46,9 +46,13 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
 });
 
 orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCreateOrgSchema, async (req: Request, res: Response) => {
-    const orgToCreate: IOrg = req.body;
+    const orgFromBody: ICreateOrg = req.body;
 
     try {
+        const { members, ...tempOrg } = orgFromBody;
+        const parsedMembers = await parseOrgMembers(members, req.db, []);
+        const orgToCreate: IOrg = { ...tempOrg, members: parsedMembers };
+
         for (const [index, domain] of orgToCreate.domains.entries()) {
             if (!orgToCreate.domains[index]) {
                 console.error('Domain object missing.');
@@ -57,9 +61,22 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
                 });
             }
 
+            orgToCreate.domains[index] = {
+                domain: (orgToCreate.domains[index] as unknown) as string,
+                verificationToken: '',
+                verified: false,
+            } as IDomain;
+
+            console.log('Converted domain string to IDomain:', orgToCreate.domains[index]);
+
             const orgExists = await req.db.collection('organizations').findOne({ 'domains.domain': domain.domain });
 
-            if (orgExists && orgExists.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domain.domain)) {
+            let foundDomain: IDomain | null = null;
+            if (orgExists) {
+                foundDomain = orgExists.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domain.domain)
+            }
+
+            if (foundDomain !== null && foundDomain.verified) {
                 console.error('Organization already exists.');
                 return res.status(409).json({
                     message: `Organization with domain ${domain.domain} already exists.`,
@@ -78,6 +95,11 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
                 message: 'An internal server error occurred while inserting exam',
             });
         }
+
+        console.log('Successfully created organization.');
+        return res.status(200).json({
+            message: 'Successfully created organization.',
+        });
     } catch (error) {
         console.error('An error occurred while creating organization:', error);
         return res.status(500).json({

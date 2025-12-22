@@ -6,3 +6,7 @@ export interface IOrg {
     domains: IDomain[];
     members: ObjectId[];
 }
+
+export type ICreateOrg = Omit<IOrg, 'members'> & {
+    members: string;
+};

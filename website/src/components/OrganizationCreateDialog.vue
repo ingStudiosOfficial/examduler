@@ -130,6 +130,7 @@ async function orgFormSubmit() {
                     <md-icon>upload</md-icon>
                 </label>
                 <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
+                <p class="file-chosen">{{ uploadedMembersName }}</p>
             </div>
             <p :style="{ color: orgCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ orgCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>

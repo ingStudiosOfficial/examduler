@@ -39,65 +39,67 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
 }
 
 export async function parseExamSeating(seatingString: string, req: Request): Promise<ISeating[][]> {
-    /*
-        Expected:
-        A1 - seat
-        A - row
-        1 - column
-    */
-
     console.log('Seating from body:', seatingString);
 
+    // Parses seating
     const seatingArray = seatingString.split(/\r?\n/).filter((line) => line.trim());
-
     const seatingMap = new Map<string, ISeating[]>();
+    
+    const parsedRows: { seat: string, email: string, row: string }[] = [];
+    const emailsToFetch = new Set<string>();
 
-    for (const seat of seatingArray) {
-        const seatArray = seat.replaceAll(' ', '').split(',');
-
-        const seatSeat = seatArray[0];
-        const seatEmail = seatArray[1];
-
+    for (const line of seatingArray) {
+        // Gets seat and email
+        const [seatSeat, seatEmail] = line.split(',').map(s => s.trim());
         if (!seatSeat || !seatEmail) {
-            console.error('Seat seat or email is missing.');
+            console.error('Seat or email not found.');
             continue;
         }
 
-        const row = seatSeat.match(/^[A-Z]+/)?.[0];
-
-        if (!row) {
-            console.error(`Invalid seat format: ${seatSeat}`);
+        const rowMatch = seatSeat.match(/^[A-Z]+/);
+        if (!rowMatch) {
+            console.error('Row match failed.');
             continue;
         }
 
-        const formattedSeat: ISeating = {
-            seat: seatSeat,
-            email: seatEmail,
-        };
+        const row = rowMatch[0];
+        const email = seatEmail.toLowerCase() === 'blank' ? '' : seatEmail;
 
-        if (!seatEmail || seatEmail.toLowerCase() === 'blank' || seatEmail === '') {
-            formattedSeat.isBlank = true;
-            formattedSeat.email = '';
-        }
+        parsedRows.push({ seat: seatSeat, email, row });
 
-        const seatUser = await req.db.collection('users').findOne({ email: seatEmail });
-
-        if (seatUser && seatUser.name) {
-            formattedSeat.name = seatUser.name;
-        } else {
-            console.error('User not found.');
-        }
-
-        if (!seatingMap.has(row)) {
-            seatingMap.set(row, []);
-        }
-        seatingMap.get(row)!.push(formattedSeat);
+        // Add to the emails to fetch array for batch fetch
+        if (email) emailsToFetch.add(email);
     }
 
-    const sortedRows = Array.from(seatingMap.keys()).sort();
-    const seating: ISeating[][] = sortedRows.map((row) => seatingMap.get(row)!);
+    // Batch finds all the users
+    const users = await req.db.collection('users')
+        .find({ email: { $in: Array.from(emailsToFetch) } })
+        .toArray();
 
-    console.log('Parsed seating:', seating);
+    const userMap = new Map(users.map(u => [u.email, u.name]));
 
-    return seating;
+    for (const item of parsedRows) {
+        const formattedSeat: ISeating = {
+            seat: item.seat,
+            email: item.email,
+        };
+
+        if (!item.email) {
+            formattedSeat.isBlank = true;
+        } else if (userMap.has(item.email)) {
+            formattedSeat.name = userMap.get(item.email);
+        }
+
+        if (!seatingMap.has(item.row)) {
+            seatingMap.set(item.row, []);
+        }
+        seatingMap.get(item.row)!.push(formattedSeat);
+    }
+
+    const sortedRowKeys = Array.from(seatingMap.keys()).sort();
+    
+    return sortedRowKeys.map((rowKey) => {
+        const rowSeats = seatingMap.get(rowKey)!;
+        return rowSeats.sort((a, b) => a.seat.localeCompare(b.seat, undefined, { numeric: true }));
+    });
 }

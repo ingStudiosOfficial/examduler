@@ -1,5 +1,3 @@
-1. Change .env path in website
-2. Finish JWT setup
-3. Setup Google Cloud Console
-4. Add dashboard
-5. Add CLI (Go)
+1. org.ts member parsing
+2. org_utils.ts parsing
+3. Add CLI (Go)
