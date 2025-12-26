@@ -29,7 +29,7 @@ export function createVerificationToken(): string {
     return token;
 }
 
-export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedDomains: string[], organization: ObjectId): Promise<ObjectId[]> {
+export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedDomains: string[], organization: ObjectId, adminId: ObjectId): Promise<ObjectId[]> {
     const membersArray = unparsedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
     const operations = [];
     const unverifiedOperations = [];
@@ -78,7 +78,17 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
     }
 
     try {
-        let finalIds: ObjectId[] = [];
+        // Get admin
+        const admin = await db.collection<IUser>('users').updateOne(
+            { _id: adminId },
+            { $push: { organizations: organization } },
+        );
+
+        if (admin.matchedCount === 0) {
+            throw new Error('Admin could not be found.');
+        }
+
+        let finalIds: ObjectId[] = [adminId];
 
         // Verified users
         if (operations.length > 0) {

@@ -49,19 +49,21 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
 orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCreateOrgSchema, async (req: Request, res: Response) => {
     const orgFromBody: ICreateOrg = req.body;
 
-    if (!orgFromBody._id || !ObjectId.isValid(orgFromBody._id)) {
-        console.error('Organization ID missing or invalid.');
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        console.error('User ID missing or invalid.');
         return res.status(400).json({
-            message: 'Organization ID missing or invalid.',
+            message: 'User ID missing or invalid.',
         });
     }
 
     try {
-        const orgId = new ObjectId(orgFromBody._id);
+        const orgId = new ObjectId();
+
+        const adminId = new ObjectId(req.user?.id);
 
         const { members, ...tempOrg } = orgFromBody;
-        const parsedMembers = await parseOrgMembers(members, req.db, [], orgId);
-        const orgToCreate: IOrg = { ...tempOrg, members: parsedMembers };
+        const parsedMembers = await parseOrgMembers(members, req.db, [], orgId, adminId);
+        const orgToCreate: IOrg = { ...tempOrg, members: parsedMembers, _id: orgId };
 
         for (const [index, domain] of orgToCreate.domains.entries()) {
             if (!orgToCreate.domains[index]) {

@@ -15,6 +15,7 @@ import { userRouter } from './routes/user.js';
 import { examRouter } from './routes/exam.js';
 import { examsRouter } from './routes/exams.js';
 import { orgRouter } from './routes/org.js';
+import { orgsRouter } from './routes/orgs.js';
 
 import { setupPassport } from './utils/auth_utils.js';
 
@@ -68,6 +69,7 @@ app.use('/api/user/', userRouter);
 app.use('/api/exam/', examRouter);
 app.use('/api/exams/', examsRouter);
 app.use('/api/organization/', orgRouter);
+app.use('/api/organizations/', orgsRouter);
 
 async function connectToMongo() {
     try {

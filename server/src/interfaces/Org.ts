@@ -3,6 +3,7 @@ import type { IDomain } from './Domain.js';
 
 export interface IOrg {
     _id?: ObjectId;
+    name: string;
     domains: IDomain[];
     members: ObjectId[];
 }

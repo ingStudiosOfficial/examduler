@@ -1,4 +1,4 @@
-import type { OrganizationCreate } from "@/interfaces/Org";
+import type { Organization, OrganizationCreate } from "@/interfaces/Org";
 import type { ResourceCreate } from "@/interfaces/ResourceCreate";
 import type { ResponseJson } from "@/interfaces/ResponseJson";
 
@@ -33,5 +33,35 @@ export async function createOrganization(orgDetails: OrganizationCreate): Promis
     } catch (error) {
         console.error('Error while creating organization:', error);
         return { message: 'An unexpected error occurred while creating the organization,', success: false };
+    }
+}
+
+export async function fetchAllOrganizations(): Promise<Organization[]> {
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/organizations/fetch/user/`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!responseJson?.organizations) {
+            console.error('User has no organizations.');
+            return [];
+        }
+
+        if (!response.ok) {
+            console.error('Failed to fetch organizations:', responseJson);
+            throw new Error(`Failed to fetch organizations: ${responseJson.message}`);
+        }
+
+        const organizations: Organization[] = responseJson.organizations as Organization[];
+
+        console.log('Fetched organizations:', organizations);
+
+        return organizations;
+    } catch (error) {
+        console.error('Failed to fetch organizations:', error);
+        throw new Error('An unexpected error occurred while fetching organizations.');
     }
 }

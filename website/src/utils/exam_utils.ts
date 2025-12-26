@@ -100,7 +100,7 @@ export async function fetchAllExams(): Promise<Exam[]> {
 
         const responseJson: ResponseJson = await response.json();
 
-        if (!responseJson.exams) {
+        if (!responseJson?.exams) {
             console.error('No exams returned.');
             return [];
         }

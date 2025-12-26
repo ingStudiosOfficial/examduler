@@ -1,4 +1,5 @@
 export interface Organization {
+    _id?: string;
     name: string;
     domains: string[];
     members: string[];
