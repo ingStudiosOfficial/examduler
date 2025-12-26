@@ -1,13 +1,15 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { ObjectId } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import type { Role } from '../types/user.js';
+import type { UsersCollection } from '../types/mongodb.js';
+import type { IUser } from '../interfaces/User.js';
 
 export function authenticateToken() {
     return async (req: Request, res: Response, next: NextFunction) => {
         console.log('Attempting to authenticate user...');
 
-        const collection = req.db.collection('users');
+        const collection = req.db.collection<IUser>('users');
 
         const jwtSecretKey = process.env.JWT_SECRET_KEY;
         if (!jwtSecretKey) {
@@ -38,7 +40,7 @@ export function authenticateToken() {
             try {
                 console.log('Decoded user ID:', decoded.id);
 
-                const userFromDatabase = await collection.findOne({
+                const userFromDatabase = await collection.findOne<IUser>({
                     _id: new ObjectId(decoded.id),
                 });
 

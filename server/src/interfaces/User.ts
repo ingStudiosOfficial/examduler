@@ -8,6 +8,7 @@ export interface IUser {
     domain: string;
     name: string;
     exams: ObjectId[];
+    organizations: ObjectId[];
     role: Role;
     tokenVersion: number;
 }

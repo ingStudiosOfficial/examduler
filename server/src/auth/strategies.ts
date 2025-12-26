@@ -61,6 +61,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                             domain: userDomain,
                             name: userName,
                             exams: [],
+                            organizations: [],
                             role: 'admin',
                             tokenVersion: 0,
                         };

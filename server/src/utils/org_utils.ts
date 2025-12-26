@@ -29,7 +29,7 @@ export function createVerificationToken(): string {
     return token;
 }
 
-export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedDomains: string[]): Promise<ObjectId[]> {
+export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedDomains: string[], organization: ObjectId): Promise<ObjectId[]> {
     const membersArray = unparsedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
     const operations = [];
     const unverifiedOperations = [];
@@ -49,6 +49,7 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
             domain: getDomain(email),
             name: name,
             exams: [],
+            organizations: [organization],
             role: role as Role,
             tokenVersion: 0,
         };
@@ -81,15 +82,15 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
 
         // Verified users
         if (operations.length > 0) {
-            await db.collection('users').bulkWrite(operations);
-            const found = await db.collection('users').find({ email: { $in: emails } }).project({ _id: 1 }).toArray();
+            await db.collection<IUser>('users').bulkWrite(operations);
+            const found = await db.collection<IUser>('users').find({ email: { $in: emails } }).project({ _id: 1 }).toArray();
             finalIds = [...finalIds, ...found.map(u => u._id as ObjectId)];
         }
 
         // Unverified users
         if (unverifiedOperations.length > 0) {
-            await db.collection('unverifiedUsers').bulkWrite(unverifiedOperations);
-            const found = await db.collection('unverifiedUsers').find({ email: { $in: unverifiedEmails } }).project({ _id: 1 }).toArray();
+            await db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedOperations);
+            const found = await db.collection<IUser>('unverifiedUsers').find({ email: { $in: unverifiedEmails } }).project({ _id: 1 }).toArray();
             finalIds = [...finalIds, ...found.map(u => u._id as ObjectId)];
         }
 

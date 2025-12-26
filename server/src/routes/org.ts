@@ -1,10 +1,11 @@
 import { Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
-import { ObjectId } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import { validateCreateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg } from '../interfaces/Org.js';
 import { createVerificationToken, verifyDomain, parseOrgMembers } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
+import type { OrgsCollection } from '../types/mongodb.js';
 
 export const orgRouter = Router();
 
@@ -24,7 +25,7 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
     try {
         const orgId = new ObjectId(req.params.id);
 
-        const organization = req.db.collection('organizations').findOne({ _id: orgId });
+        const organization = req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
 
         if (!organization) {
             console.error('Organization with ID not found:', orgId);
@@ -48,9 +49,18 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
 orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCreateOrgSchema, async (req: Request, res: Response) => {
     const orgFromBody: ICreateOrg = req.body;
 
+    if (!orgFromBody._id || !ObjectId.isValid(orgFromBody._id)) {
+        console.error('Organization ID missing or invalid.');
+        return res.status(400).json({
+            message: 'Organization ID missing or invalid.',
+        });
+    }
+
     try {
+        const orgId = new ObjectId(orgFromBody._id);
+
         const { members, ...tempOrg } = orgFromBody;
-        const parsedMembers = await parseOrgMembers(members, req.db, []);
+        const parsedMembers = await parseOrgMembers(members, req.db, [], orgId);
         const orgToCreate: IOrg = { ...tempOrg, members: parsedMembers };
 
         for (const [index, domain] of orgToCreate.domains.entries()) {
@@ -69,11 +79,16 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
 
             console.log('Converted domain string to IDomain:', orgToCreate.domains[index]);
 
-            const orgExists = await req.db.collection('organizations').findOne({ 'domains.domain': domain.domain });
+            const orgExists = await req.db.collection<IOrg>('organizations').findOne({ 'domains.domain': domain.domain });
 
-            let foundDomain: IDomain | null = null;
+            let foundDomain: IDomain | undefined;
             if (orgExists) {
-                foundDomain = orgExists.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domain.domain)
+                foundDomain = orgExists.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domain.domain);
+            }
+
+            if (!foundDomain) {
+                console.error('Failed to find domain.');
+                continue;
             }
 
             if (foundDomain !== null && foundDomain.verified) {
@@ -87,7 +102,7 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
             orgToCreate.domains[index].verificationToken = verificationToken;
         }
 
-        const result = await req.db.collection('organizations').insertOne(orgToCreate);
+        const result = await req.db.collection<IOrg>('organizations').insertOne(orgToCreate);
 
         if (!result.insertedId) {
             console.error('Failed to insert organization.');
@@ -108,7 +123,7 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
     }
 });
 
-orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req, res) => {
+orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req: Request, res: Response) => {
     if (!req.body.id || !req.body.domain) {
         return res.status(400).json({
             message: 'Organization ID or domain is missing.',
@@ -125,7 +140,7 @@ orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req,
         const orgId = new ObjectId(req.body.id);
         const domainToVerify = req.body.domain;
 
-        const organization = await req.db.collection('organizations').findOne({ _id: orgId });
+        const organization = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
 
         if (!organization) {
             return res.status(404).json({
@@ -139,7 +154,7 @@ orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req,
             });
         }
 
-        const fetchedDomain: IDomain = organization.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domainToVerify);
+        const fetchedDomain = organization.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domainToVerify);
 
         if (!fetchedDomain) {
             console.error('Domain to verify not linked to organization.');
@@ -157,7 +172,7 @@ orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req,
             });
         }
 
-        const updatedResult = await req.db.collection('organizations').updateOne({ _id: orgId, 'domains.domain': domainToVerify }, { $set: { 'domains.$.verified': true } });
+        const updatedResult = await req.db.collection<IOrg>('organizations').updateOne({ _id: orgId, 'domains.domain': domainToVerify }, { $set: { 'domains.$.verified': true } });
 
         if (updatedResult.matchedCount === 0) {
             console.error('Could not find organization.');
@@ -169,6 +184,38 @@ orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req,
         console.error('Failed to verify domain:', error);
         return res.status(500).json({
             message: 'An internal server error occurred while verifying domain.',
+        });
+    }
+});
+
+orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (req: Request, res: Response) => {
+    if (!req.params?.id || !ObjectId.isValid(req.params?.id)) {
+        console.error('Organization ID missing or invalid.');
+        return res.status(400).json({
+            message: 'Organization ID missing or invalid.',
+        });
+    }
+
+    try {
+        const orgId = new ObjectId(req.params.id);
+
+        const fetchedOrganization = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
+
+        if (!fetchedOrganization) {
+            console.error('Organization not found.');
+            return res.status(404).json({
+                message: 'Organization not found.',
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Organization fetched successfully.',
+            organization: fetchedOrganization,
+        });
+    } catch (error) {
+        console.error('Error while fetching organization:', error);
+        return res.status(500).json({
+            message: 'An internal server error occurred while fetching the organization.',
         });
     }
 });

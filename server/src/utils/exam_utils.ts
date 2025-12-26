@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import type { IExam } from '../interfaces/Exam.js';
 import type { UsersCollection } from '../types/mongodb.js';
 import type { ISeating } from '../interfaces/Seating.js';
+import type { IUser } from '../interfaces/User.js';
 
 interface UserExamUpdate {
     email: string;
@@ -37,7 +38,7 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
             }
         }
 
-        const result = await req.db.collection<UsersCollection>('users').bulkWrite(
+        const result = await req.db.collection<IUser>('users').bulkWrite(
             usersToUpdate.map(user => ({
                 updateOne: {
                     filter: { email: user.email },
@@ -94,7 +95,7 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
     }
 
     // Batch finds all the users
-    const users = await req.db.collection('users')
+    const users = await req.db.collection<IUser>('users')
         .find({ email: { $in: Array.from(emailsToFetch) } })
         .toArray();
 
@@ -109,7 +110,7 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
         if (!item.email) {
             formattedSeat.isBlank = true;
         } else if (userMap.has(item.email)) {
-            formattedSeat.name = userMap.get(item.email);
+            formattedSeat.name = userMap.get(item.email) || 'Unknown Name';
         }
 
         if (!seatingMap.has(item.row)) {

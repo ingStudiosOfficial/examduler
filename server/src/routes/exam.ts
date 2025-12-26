@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import type { IExam, IExamCreate } from '../interfaces/Exam.js';
 import { validateCreateExamSchema } from '../middleware/validate_schema.js';
 import { assignExamToUsers, parseExamSeating } from '../utils/exam_utils.js';
+import type { ExamsCollection } from '../types/mongodb.js';
 
 export const examRouter = Router();
 
@@ -23,7 +24,7 @@ examRouter.get('/fetch/:id/', authenticateToken(), async (req: Request, res: Res
     try {
         const examId = new ObjectId(req.params.id);
 
-        const exam = await req.db.collection('exams').findOne({ _id: examId });
+        const exam = await req.db.collection<IExam>('exams').findOne({ _id: examId });
 
         if (!exam) {
             return res.status(404).json({
@@ -48,11 +49,11 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
         const examBody: IExamCreate = req.body;
         const { seating, ...tempExam } = examBody;
         const parsedSeating = await parseExamSeating(examBody.seating, req);
-        const exam = { ...tempExam, seating: parsedSeating };
+        const exam = { ...tempExam, seating: parsedSeating } as IExam;
 
         console.log('Exam:', exam);
 
-        const result = await req.db.collection('exams').insertOne(exam);
+        const result = await req.db.collection<IExam>('exams').insertOne(exam);
 
         if (!result.insertedId) {
             console.error('Failed to insert exam.');

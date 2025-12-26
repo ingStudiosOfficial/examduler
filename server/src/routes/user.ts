@@ -1,13 +1,14 @@
 import { Router, type Request, type Response } from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import { ObjectId } from 'mongodb';
+import type { UsersCollection } from '../types/mongodb.js';
 
 export const userRouter = Router();
 
 userRouter.get('/fetch/', authenticateToken(), async (req: Request, res: Response) => {
     console.log('Fetching user data...');
 
-    const usersCollection = req.db.collection('users');
+    const usersCollection = req.db.collection<UsersCollection>('users');
 
     if (!req.user?.id || !ObjectId.isValid(req.user?.id)) {
         return res.status(400).json({
