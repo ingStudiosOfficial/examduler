@@ -39,18 +39,7 @@ examsRouter.get('/fetch/user/', authenticateToken(), async (req: Request, res: R
 
         const userExams: ObjectId[] = user.exams;
 
-        let fetchedUserExams: IExam[] = [];
-
-        for (const exam of userExams) {
-            const fetchedExam = await req.db.collection('exams').findOne({ _id: exam });
-
-            if (!fetchedExam) {
-                console.error(`Exam with ID '${exam}' not found.`);
-                continue;
-            }
-
-            fetchedUserExams.push(fetchedExam as IExam);
-        }
+        const fetchedUserExams = await req.db.collection('exams').find({ _id: { $in: userExams } }).toArray();
 
         return res.status(200).json({
             message: 'Successfully fetched exams.',

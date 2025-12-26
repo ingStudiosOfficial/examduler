@@ -4,8 +4,15 @@ import type { IExam } from '../interfaces/Exam.js';
 import type { UsersCollection } from '../types/mongodb.js';
 import type { ISeating } from '../interfaces/Seating.js';
 
+interface UserExamUpdate {
+    email: string;
+    examToAdd: ObjectId;
+}
+
 export async function assignExamToUsers(exam: IExam, req: Request, res: Response) {
     const seating = exam.seating;
+
+    const usersToUpdate: UserExamUpdate[] = [];
 
     try {
         for (const row of seating) {
@@ -23,12 +30,27 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
                 const studentEmail = seat.email;
                 const examId = new ObjectId(exam._id);
 
-                const result = await req.db.collection<UsersCollection>('users').updateOne({ email: studentEmail }, { $push: { exams: examId } });
-
-                if (result.matchedCount === 0) {
-                    console.error('User not found.');
-                }
+                usersToUpdate.push({
+                    email: studentEmail,
+                    examToAdd: examId,
+                });
             }
+        }
+
+        const result = await req.db.collection<UsersCollection>('users').bulkWrite(
+            usersToUpdate.map(user => ({
+                updateOne: {
+                    filter: { email: user.email },
+                    update: { $push: { exams: user.examToAdd } }
+                }
+            }))
+        );
+
+        if (result.hasWriteErrors()) {
+            console.error('Error while assigning exam to users.');
+                return res.status(500).json({
+                message: 'An internal server error occurred while assigning exam to users.',
+            });
         }
     } catch (error) {
         console.error('An error occurred while assigning exam to users:', error);
