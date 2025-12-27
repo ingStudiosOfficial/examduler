@@ -88,12 +88,7 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
                 foundDomain = orgExists.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domain.domain);
             }
 
-            if (!foundDomain) {
-                console.error('Failed to find domain.');
-                continue;
-            }
-
-            if (foundDomain !== null && foundDomain.verified) {
+            if (foundDomain && foundDomain.verified) {
                 console.error('Organization already exists.');
                 return res.status(409).json({
                     message: `Organization with domain ${domain.domain} already exists.`,
@@ -101,6 +96,7 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
             }
 
             const verificationToken = createVerificationToken();
+            console.log('Verification token:', verificationToken);
             orgToCreate.domains[index].verificationToken = verificationToken;
         }
 
