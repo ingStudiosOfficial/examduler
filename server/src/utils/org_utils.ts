@@ -110,3 +110,22 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
         throw new Error('An internal server error occurred while parsing users.');
     }
 }
+
+export function checkValidDomain(domain: string) {
+    try {
+        new URL(domain);
+        return true;
+    } catch (error) {
+        console.error('Domain is invalid.');
+        return false;
+    }
+}
+
+export function addDomainPrefix(domain: string): string {
+    if (!domain.startsWith('http://') || !domain.startsWith('https://')) {
+        const newDomain = `https://${domain}`;
+        return newDomain;
+    } else {
+        return domain;
+    }
+}

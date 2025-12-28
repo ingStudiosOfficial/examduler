@@ -3,7 +3,7 @@ import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import { Collection, ObjectId } from 'mongodb';
 import { validateCreateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg } from '../interfaces/Org.js';
-import { createVerificationToken, verifyDomain, parseOrgMembers } from '../utils/org_utils.js';
+import { createVerificationToken, verifyDomain, parseOrgMembers, checkValidDomain, addDomainPrefix } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
 import type { OrgsCollection } from '../types/mongodb.js';
 
@@ -72,12 +72,14 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
                     message: 'Domain object missing.',
                 });
             }
+            
+            orgToCreate.domains[index].domain = addDomainPrefix(domain.domain);
 
-            orgToCreate.domains[index] = {
-                domain: (orgToCreate.domains[index] as unknown) as string,
-                verificationToken: '',
-                verified: false,
-            } as IDomain;
+            if (!checkValidDomain(domain.domain)) {
+                return res.status(400).json({
+                    message: `Domain '${domain.domain}' is invalid.`,
+                });
+            }
 
             console.log('Converted domain string to IDomain:', orgToCreate.domains[index]);
 

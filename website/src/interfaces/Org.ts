@@ -1,7 +1,9 @@
+import type { Domain } from "./Domain";
+
 export interface Organization {
     _id?: string;
     name: string;
-    domains: string[];
+    domains: Domain[];
     members: string[];
 }
 

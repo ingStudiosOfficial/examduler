@@ -4,7 +4,7 @@ import { onMounted, ref, watch } from 'vue';
 import '@material/web/fab/fab.js';
 
 import ExaminationsContainer from '@/components/ExaminationsContainer.vue';
-import OrganizationContainer from '@/components/OrganizationContainer.vue';
+import OrganizationsContainer from '@/components/OrganizationsContainer.vue';
 import ExaminationCreateDialog from '@/components/ExaminationCreateDialog.vue';
 import LoaderContainer from '@/components/LoaderContainer.vue';
 
@@ -54,7 +54,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
     <div v-if="userData" class="content-wrapper">
         <ExaminationsContainer :user="userData" :refresh="refreshExams"></ExaminationsContainer>
 
-        <OrganizationContainer v-if="userData.role === 'admin'"></OrganizationContainer>
+        <OrganizationsContainer v-if="userData.role === 'admin'"></OrganizationsContainer>
 
         <ExaminationCreateDialog v-if="userData.role === 'admin' || userData.role === 'teacher'" v-show="examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
 

@@ -29,7 +29,11 @@ function closeDialog() {
 }
 
 function addDomain() {
-    organizationToCreate.value.domains.push('');
+    organizationToCreate.value.domains.push({
+        domain: '',
+        verificationToken: '',
+        verified: false,
+    });
 }
 
 function deleteDomain(index: number) {
@@ -114,7 +118,7 @@ async function orgFormSubmit() {
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <div class="domain-group" v-for="(_, index) in organizationToCreate.domains" :key="'domain' + index">
-                    <md-outlined-text-field class="domain-input" v-model="organizationToCreate.domains[index]" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization (without http:// or https:// prefix)."></md-outlined-text-field>
+                    <md-outlined-text-field class="domain-input" v-if="organizationToCreate.domains[index]" v-model="organizationToCreate.domains[index].domain" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
                     <md-icon-button type="button" @click="deleteDomain(index)">
                         <md-icon>delete</md-icon>
                     </md-icon-button>

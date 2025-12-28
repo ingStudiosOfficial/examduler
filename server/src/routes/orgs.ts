@@ -44,6 +44,20 @@ orgsRouter.get('/fetch/user/', authenticateToken(), verifyRole('admin'), async (
             });
         }
 
+        const memberIds = [ ...new Set(organizations.flatMap(org => org.members)) ];
+
+        const fetchedMembers = await req.db.collection<IUser>('users').find({ _id: { $in: memberIds } }).project({ name: 1, email: 1, role: 1 }).toArray();
+
+        const memberMap = new Map(fetchedMembers.map(m => [m._id.toString(), m]));
+
+        // WORK ON THIS LATER
+
+        for (const organization of organizations) {
+            organization.members = organization.members.map(memberId => {
+                return memberMap.get(memberId.toString());
+            })
+        }
+
         console.log('Successfully fetched organizations.');
 
         return res.status(200).json({

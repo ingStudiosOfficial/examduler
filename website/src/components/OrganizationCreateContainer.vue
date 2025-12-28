@@ -5,6 +5,10 @@ import '@material/web/button/filled-button.js';
 
 import OrganizationCreateDialog from './OrganizationCreateDialog.vue';
 
+const props = defineProps({
+    hasOrganizations: Boolean,
+});
+
 const dialogOpened = ref<boolean>(false);
 
 function openCreateOrgDialog() {
@@ -29,7 +33,7 @@ watch(dialogOpened, (isOpen: boolean) => {
 </script>
 
 <template>
-    <p class="no-org-text">You don't look like you have any organizations yet.</p>
+    <p class="no-org-text" v-if="!props.hasOrganizations">You don't look like you have any organizations yet.</p>
     <md-filled-button class="org-create-btn" @click="openCreateOrgDialog()">Create an organization</md-filled-button>
     <OrganizationCreateDialog v-if="dialogOpened" @close="closeCreateOrgDialog()"></OrganizationCreateDialog>
 </template>

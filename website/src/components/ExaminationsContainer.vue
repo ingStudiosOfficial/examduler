@@ -83,7 +83,7 @@ onMounted(async () => {
 
             <p v-else class="no-exams">Time to relax! No scheduled examinations at the moment.</p>
         </div>
-        <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your exams..."></LoaderContainer>
+        <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your examinations..."></LoaderContainer>
 
         <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()"></ExaminationDialog>
     </div>
