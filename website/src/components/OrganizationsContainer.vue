@@ -24,10 +24,6 @@ function closeOrgDialog() {
     orgDetails.value = null;
 }
 
-function removeDomain(index: number) {
-    orgDetails.value?.domains.splice(index, 1);
-}
-
 watch(orgDialogOpened, (isOpen: boolean) => {
     const handleEscape = (e: KeyboardEvent) => {
         if (e.key === 'Escape') closeOrgDialog();
@@ -59,7 +55,7 @@ onMounted(async () => {
         </div>
         <LoaderContainer v-else-if="!orgsLoaded" loading-text="Hang on while we load your organizations..." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
         <OrganizationCreateContainer v-if="orgsLoaded" :has-organizations="organizations?.length !== 0"></OrganizationCreateContainer>
-        <OrganizationDialog v-if="orgDialogOpened && orgDetails" v-bind="orgDetails" @close="closeOrgDialog()" @remove-domain="removeDomain"></OrganizationDialog>
+        <OrganizationDialog v-if="orgDialogOpened && orgDetails" v-bind="orgDetails" @close="closeOrgDialog()"></OrganizationDialog>
     </div>
 </template>
 

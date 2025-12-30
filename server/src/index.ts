@@ -74,7 +74,7 @@ app.use('/api/organizations/', orgsRouter);
 async function connectToMongo() {
     try {
         await client.connect();
-        database = client.db('examduler');
+        database = client.db(process.env.DB_NAME);
         console.log('Successfully connected to MongoDB.');
     } catch (error) {
         console.error('Error while connecting to MongoDB:', error);

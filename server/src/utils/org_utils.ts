@@ -4,6 +4,7 @@ import type { Db, InsertOneModel, InsertOneOptions, ObjectId, UpdateOneModel } f
 import type { IUser } from '../interfaces/User.js';
 import { getDomain } from './user_utils.js';
 import type { Role } from '../types/user.js';
+import type { IStoredMember } from '../interfaces/Member.js';
 
 export async function verifyDomain(domain: string, verificationToken: string) {
     try {
@@ -29,7 +30,7 @@ export function createVerificationToken(): string {
     return token;
 }
 
-export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedDomains: string[], organization: ObjectId, adminId: ObjectId): Promise<ObjectId[]> {
+export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedDomains: string[], organization: ObjectId, adminId: ObjectId): Promise<IStoredMember[]> {
     const membersArray = unparsedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
     const operations = [];
     const unverifiedOperations = [];
@@ -88,20 +89,29 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
             throw new Error('Admin could not be found.');
         }
 
-        let finalIds: ObjectId[] = [adminId];
+        let finalIds: IStoredMember[] = [ {
+            _id: adminId,
+            verified: true,
+        } ];
 
         // Verified users
         if (operations.length > 0) {
             await db.collection<IUser>('users').bulkWrite(operations);
             const found = await db.collection<IUser>('users').find({ email: { $in: emails } }).project({ _id: 1 }).toArray();
-            finalIds = [...finalIds, ...found.map(u => u._id as ObjectId)];
+            finalIds = [...finalIds, ...found.map(u => ({
+                _id: u._id as ObjectId,
+                verified: true,
+            }))];
         }
 
         // Unverified users
         if (unverifiedOperations.length > 0) {
             await db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedOperations);
             const found = await db.collection<IUser>('unverifiedUsers').find({ email: { $in: unverifiedEmails } }).project({ _id: 1 }).toArray();
-            finalIds = [...finalIds, ...found.map(u => u._id as ObjectId)];
+            finalIds = [...finalIds, ...found.map(u => ({
+                _id: u._id as ObjectId,
+                verified: false,
+            }))];
         }
 
         return finalIds;

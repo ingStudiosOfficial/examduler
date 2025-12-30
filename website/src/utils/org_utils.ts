@@ -1,3 +1,4 @@
+import type { Member } from "@/interfaces/Member";
 import type { Organization, OrganizationCreate } from "@/interfaces/Org";
 import type { ResourceCreate } from "@/interfaces/ResourceCreate";
 import type { ResponseJson } from "@/interfaces/ResponseJson";
@@ -63,5 +64,64 @@ export async function fetchAllOrganizations(): Promise<Organization[]> {
     } catch (error) {
         console.error('Failed to fetch organizations:', error);
         throw new Error('An unexpected error occurred while fetching organizations.');
+    }
+}
+
+export async function downloadMembersJson(members: Member[]) {
+    try {
+        const jsonMembers = new Blob([JSON.stringify(members)], { type: 'application/json' });
+
+        const fileName = `examduler_members_export_on_${Date.now().toString()}`;
+
+        if ('showSaveFilePicker' in window) {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: fileName,
+                startIn: 'downloads',
+                types: [{
+                    description: 'JSON file',
+                    accept: { 'application/json': ['.json'] },
+                }],
+            });
+
+            const writable = await handle.createWritable();
+            await writable.write(jsonMembers);
+            await writable.close();
+        } else {
+            const blobUrl = URL.createObjectURL(jsonMembers);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = fileName;
+            a.style.display = 'none';
+            document.body.append(a);
+            a.click();
+
+            setTimeout(() => {
+                URL.revokeObjectURL(blobUrl);
+                a.remove();
+            }, 1000);
+        }
+    } catch (error) {
+        if ((error as Error).name === 'AbortError') {
+            console.error('User cancelled download.');
+            return;
+        }
+
+        console.error('An unexpected error occurred while downloading members:', error);
+        alert('An unexpected error occurred while downloading members.');
+    }
+}
+
+export async function copyVerificationToken(token: string): Promise<string> {
+    if (!('clipboard' in navigator)) {
+        console.error('Clipboard API not supported.');
+        return 'Clipboard API not supported, failed to copy verification token';
+    }
+
+    try {
+        await navigator.clipboard.writeText(token);
+        return 'Successfully copied verification token';
+    } catch (error) {
+        console.error('Error while writing to clipboard:', error);
+        return 'Failed to copy verification token';
     }
 }
