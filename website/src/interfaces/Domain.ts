@@ -3,3 +3,5 @@ export interface Domain {
     verificationToken: string;
     verified: boolean;
 }
+
+export type DomainVerificationMethod = 'txt' | 'http';

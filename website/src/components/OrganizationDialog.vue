@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 
+import '@material/web/iconbutton/icon-button.js';
+import '@material/web/icon/icon.js';
+import '@material/web/textfield/outlined-text-field.js';
+import '@material/web/fab/fab.js';
+import '@material/web/menu/menu.js';
+
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
-import { copyVerificationToken, downloadMembersJson } from '@/utils/org_utils';
+import { downloadMembersJson } from '@/utils/org_utils';
 import { vibrate } from '@/utils/vibrate';
 
 import SnackBar from './SnackBar.vue';
+import DomainItem from './DomainItem.vue';
+
 import { showSnackBar } from '@/utils/snackbar';
 import type { StateObject } from '@/interfaces/SnackBar';
+import type { Member } from '@/interfaces/Member';
+import type { Domain } from '@/interfaces/Domain';
 
 const props = defineProps<Organization>();
 
@@ -76,11 +86,21 @@ function handleFileUpload(e: Event) {
     uploadedMembersName.value = uploadedFile.name;
 }
 
-async function triggerCopyToken(token: string) {
-    vibrate([10]);
+async function triggerDownloadMembers(members: Member[]) {
+    const { message } = await downloadMembersJson(members);
 
-    snackBarText.value = await copyVerificationToken(token);
+    snackBarText.value = message;
+    showSnackBar(4000, snackBarDisplayed.value);
+}
 
+function updateDomainState(domain: Domain, index: number) {
+    if (!loadedOrganization.value) return;
+
+    loadedOrganization.value.domains[index] = domain;
+}
+
+function triggerShowSnackBar(sbText: string) {
+    snackBarText.value = sbText;
     showSnackBar(4000, snackBarDisplayed.value);
 }
 
@@ -94,7 +114,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="backdrop" v-if="loadedOrganization">
+    <div class="backdrop" v-if="loadedOrganization && loadedOrganization._id">
         <div class="dialog">
             <div class="top-panel">
                 <md-icon-button @click="closeDialog()">
@@ -104,23 +124,12 @@ onMounted(() => {
             <h1 class="org-name">{{ loadedOrganization.name }}</h1>
             <h2 class="subheader">Domains</h2>
             <div class="domains">
-                <div class="domain-group" v-for="(domain, index) in loadedOrganization.domains" :key="'domain' + index">
-                    <md-outlined-text-field v-if="loadedOrganization.domains[index]" class="domain-input" v-model="loadedOrganization.domains[index].domain" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
-                    <md-icon-button type="button" @click="triggerCopyToken(domain.verificationToken)">
-                        <md-icon>content_copy</md-icon>
-                    </md-icon-button>
-                    <md-icon-button type="button" @click="deleteDomain(index)">
-                        <md-icon>domain_verification</md-icon>
-                    </md-icon-button>
-                    <md-icon-button type="button" @click="deleteDomain(index)">
-                        <md-icon>delete</md-icon>
-                    </md-icon-button>
-                </div>
+                <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain${index}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
             </div>
             <h2 class="subheader">Members</h2>
             <div class="members-output">
                 <p>Download members</p>
-                <label class="file-download-button" tabindex="0" @click="downloadMembersJson(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
+                <label class="file-download-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>download</md-icon>
@@ -208,19 +217,12 @@ onMounted(() => {
 }
 
 .domains {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
     width: 100%;
-}
-
-.domain-group {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 40%;
 }
 
 .domain-input {

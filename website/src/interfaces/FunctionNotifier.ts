@@ -1,4 +1,4 @@
-export interface ResourceCreate {
+export interface FunctionNotifier {
     message: string;
     success: boolean;
 }

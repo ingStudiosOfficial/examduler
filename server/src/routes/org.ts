@@ -1,11 +1,11 @@
 import { Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
-import { Collection, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { validateCreateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg } from '../interfaces/Org.js';
-import { createVerificationToken, verifyDomain, parseOrgMembers, checkValidDomain, addDomainPrefix } from '../utils/org_utils.js';
+import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
-import type { OrgsCollection } from '../types/mongodb.js';
+import { verifyUsers } from '../utils/user_utils.js';
 
 export const orgRouter = Router();
 
@@ -123,8 +123,8 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
     }
 });
 
-orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req: Request, res: Response) => {
-    if (!req.body.id || !req.body.domain) {
+orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (req: Request, res: Response) => {
+    if (!req.body.id || !req.body.domain || !checkValidDomain(req.body.domain)) {
         return res.status(400).json({
             message: 'Organization ID or domain is missing.',
         });
@@ -163,12 +163,12 @@ orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req:
             });
         }
 
-        const verified = await verifyDomain(domainToVerify, fetchedDomain.verificationToken);
+        const { success, status, message } = await verifyDomainTxt(domainToVerify, fetchedDomain.verificationToken);
 
-        if (!verified) {
-            console.error('Could not verify domain.');
-            return res.status(422).json({
-                message: 'TXT record not found or does not match verification token.',
+        if (!success) {
+            console.error('Could not verify domain:', message);
+            return res.status(status).json({
+                message: message,
             });
         }
 
@@ -180,6 +180,87 @@ orgRouter.post('/verify/', authenticateToken(), verifyRole('admin'), async (req:
                 message: 'Organization not found.',
             });
         }
+
+        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id));
+        
+        console.log('Successfully verified domain.');
+        
+        return res.status(200).json({
+            message: 'Successfully verified domain.',
+        });
+    } catch (error) {
+        console.error('Failed to verify domain:', error);
+        return res.status(500).json({
+            message: 'An internal server error occurred while verifying domain.',
+        });
+    }
+});
+
+orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async (req: Request, res: Response) => {
+    if (!req.body.id || !req.body.domain || !checkValidDomain(req.body.domain)) {
+        return res.status(400).json({
+            message: 'Organization ID or domain is missing.',
+        });
+    }
+
+    if (!ObjectId.isValid(req.body.id)) {
+        return res.status(400).json({
+            message: 'Organization ID invalid.',
+        });
+    }
+
+    try {
+        const orgId = new ObjectId(req.body.id);
+        const domainToVerify = req.body.domain;
+
+        const organization = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
+
+        if (!organization) {
+            return res.status(404).json({
+                message: 'Organization not found.',
+            });
+        }
+
+        if (!organization.domains || organization.domains.length === 0) {
+            return res.status(404).json({
+                message: 'Organization has no domains registered for verification.',
+            });
+        }
+
+        const fetchedDomain = organization.domains.find((matchedDomain: IDomain) => matchedDomain.domain === domainToVerify);
+
+        if (!fetchedDomain) {
+            console.error('Domain to verify not linked to organization.');
+            return res.status(403).json({
+                message: 'Domain to verify not linked to organization.',
+            });
+        }
+
+        const { success, status, message } = await verifyDomainHttp(domainToVerify, fetchedDomain.verificationToken);
+
+        if (!success) {
+            console.error('Could not verify domain:', message);
+            return res.status(status).json({
+                message: message,
+            });
+        }
+
+        const updatedResult = await req.db.collection<IOrg>('organizations').updateOne({ _id: orgId, 'domains.domain': domainToVerify }, { $set: { 'domains.$.verified': true } });
+
+        if (updatedResult.matchedCount === 0) {
+            console.error('Could not find organization.');
+            return res.status(404).json({
+                message: 'Organization not found.',
+            });
+        }
+
+        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id));
+
+        console.log('Successfully verified domain.');
+        
+        return res.status(200).json({
+            message: 'Successfully verified domain.',
+        });
     } catch (error) {
         console.error('Failed to verify domain:', error);
         return res.status(500).json({

@@ -1,11 +1,12 @@
 import type { Member } from "@/interfaces/Member";
 import type { Organization, OrganizationCreate } from "@/interfaces/Org";
-import type { ResourceCreate } from "@/interfaces/ResourceCreate";
+import type { FunctionNotifier } from "@/interfaces/FunctionNotifier";
 import type { ResponseJson } from "@/interfaces/ResponseJson";
+import type { DomainVerificationMethod } from "@/interfaces/Domain";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-export async function createOrganization(orgDetails: OrganizationCreate): Promise<ResourceCreate> {
+export async function createOrganization(orgDetails: OrganizationCreate): Promise<FunctionNotifier> {
     console.log('Creating organization:', orgDetails);
 
     try {
@@ -67,7 +68,7 @@ export async function fetchAllOrganizations(): Promise<Organization[]> {
     }
 }
 
-export async function downloadMembersJson(members: Member[]) {
+export async function downloadMembersJson(members: Member[]): Promise<FunctionNotifier> {
     try {
         const jsonMembers = new Blob([JSON.stringify(members)], { type: 'application/json' });
 
@@ -86,6 +87,8 @@ export async function downloadMembersJson(members: Member[]) {
             const writable = await handle.createWritable();
             await writable.write(jsonMembers);
             await writable.close();
+
+            return { message: 'Successfully downloaded members', success: true };
         } else {
             const blobUrl = URL.createObjectURL(jsonMembers);
             const a = document.createElement('a');
@@ -99,15 +102,18 @@ export async function downloadMembersJson(members: Member[]) {
                 URL.revokeObjectURL(blobUrl);
                 a.remove();
             }, 1000);
+
+            return { message: 'Successfully downloaded members.', success: true };
         }
     } catch (error) {
         if ((error as Error).name === 'AbortError') {
             console.error('User cancelled download.');
-            return;
+            return { message: 'Download cancelled', success: false };
         }
 
         console.error('An unexpected error occurred while downloading members:', error);
-        alert('An unexpected error occurred while downloading members.');
+
+        return { message: 'An unexpected error occurred while downloading members.', success: false };
     }
 }
 
@@ -123,5 +129,46 @@ export async function copyVerificationToken(token: string): Promise<string> {
     } catch (error) {
         console.error('Error while writing to clipboard:', error);
         return 'Failed to copy verification token';
+    }
+}
+
+export async function verifyDomain(domain: string, orgId: string, method: DomainVerificationMethod): Promise<FunctionNotifier> {
+    try {
+        const body = JSON.stringify({
+            domain: domain,
+            id: orgId,
+        });
+
+        const response = await fetch(`${apiBaseUrl}/api/organization/verify/${method}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: body,
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('An error occurred while verifying domain:', responseJson);
+            return {
+                message: JSON.stringify(responseJson.message),
+                success: false,
+            };
+        }
+
+        console.log('Successfully verified domain:', responseJson);
+
+        return {
+            message: JSON.stringify(responseJson.message),
+            success: true,
+        };
+    } catch (error) {
+        console.error('An unexpected error occurred while verifying domain:', error);
+        return {
+            message: 'An unexpected error occurred while verifying domain.',
+            success: false,
+        };
     }
 }

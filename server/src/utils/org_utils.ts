@@ -5,22 +5,50 @@ import type { IUser } from '../interfaces/User.js';
 import { getDomain } from './user_utils.js';
 import type { Role } from '../types/user.js';
 import type { IStoredMember } from '../interfaces/Member.js';
+import type { IDomainVerification } from '../interfaces/Domain.js';
 
-export async function verifyDomain(domain: string, verificationToken: string) {
+export async function verifyDomainTxt(domain: string, verificationToken: string): Promise<IDomainVerification> {
     try {
         const records = await dns.resolveTxt(domain);
         const isVerified = records.flat().includes(verificationToken);
 
         if (isVerified) {
             console.log('Domain verified successfully.');
-            return true;
+            return { success: true, status: 200, message: 'Successfully verified domain.' };
         } else {
             console.error('Domain is not verified.');
-            return false;
+            return { success: false, status: 400, message: 'Verification token does not match.' };
         }
     } catch (error) {
         console.error('An error occurred while verifying domain:', error);
-        return false;
+        return { success: false, status: 500, message: 'An internal server error occurred while verifying the domain.' };
+    }
+}
+
+export async function verifyDomainHttp(domain: string, verificationToken: string): Promise<IDomainVerification> {
+    try {
+        const response = await fetch(`${domain}/.well-known/examduler`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                return { success: false, status: 404, message: 'Verification file not found.' };
+            } else {
+                return { success: false, status: 424, message: `The server responded with a ${response.status} error.` };
+            }
+        }
+
+        const foundToken = (await response.text()).trim();
+
+        if (foundToken !== verificationToken) {
+            return { success: false, status: 400, message: 'Verification token does not match.' };
+        }
+
+        console.log('Successfully verified domain.');
+
+        return { success: true, status: 200, message: 'Successfully verified domain.' };
+    } catch (error) {
+        console.error('An error occurred while verifying domain:', error);
+        return { success: false, status: 500, message: 'An internal server error occurred while verifying the domain.' };
     }
 }
 

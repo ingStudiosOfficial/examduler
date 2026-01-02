@@ -1,7 +1,7 @@
 import type { Exam, ExamCreate } from '@/interfaces/Exam';
 import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { Seating } from '@/interfaces/Seating';
-import type { ResourceCreate } from '@/interfaces/ResourceCreate';
+import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -59,7 +59,7 @@ export function formatExamDate(examDate: string): string {
     return `${day} ${month} ${year}`;
 }
 
-export async function createExam(examDetails: ExamCreate): Promise<ResourceCreate> {
+export async function createExam(examDetails: ExamCreate): Promise<FunctionNotifier> {
     console.log('Submitting:', examDetails);
 
     try {

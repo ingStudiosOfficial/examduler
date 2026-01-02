@@ -31,7 +31,7 @@ const props = defineProps({
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin: 25px;
+    margin-bottom: 25px;
     z-index: 2000;
 }
 
