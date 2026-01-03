@@ -6,8 +6,9 @@ import SeatingContainer from './SeatingContainer.vue';
 
 import type { Exam } from '@/interfaces/Exam';
 import type { User } from '@/interfaces/User';
+import type { Seating } from '@/interfaces/Seating';
 
-import { formatExamDate } from '@/utils/exam_utils';
+import { formatExamDate, getUserSeat } from '@/utils/exam_utils';
 
 interface ComponentProps {
     exam: Exam;
@@ -17,6 +18,20 @@ interface ComponentProps {
 const props = defineProps<ComponentProps>();
 
 const emit = defineEmits(['close']);
+
+function tryGetUserSeat(): Seating | null {
+    try {
+        if (!props.exam.seating || !props.user.email) {
+            console.error('Seating or email data not found.');
+            return null;
+        }
+
+        return getUserSeat(props.exam.seating, props.user.email);
+    } catch (error) {
+        console.error('Error while fetching user seat:', error);
+        return null;
+    }
+}
 
 function closeDialog() {
     emit('close');
@@ -29,16 +44,20 @@ const userData = props.user;
     <div class="backdrop">
         <div class="dialog">
             <div class="top-panel">
+                <div class="exam-headers">
+                    <h1 class="exam-name">{{ props.exam.name }}</h1>
+                    <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
+                </div>
                 <md-icon-button @click="closeDialog()">
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
-            <h1 class="exam-name">{{ props.exam.name }}</h1>
-            <p class="exam-date">{{ formatExamDate(props.exam.date) }}</p>
+            <h1 class="section-header">Description</h1>
             <p>{{ props.exam.description }}</p>
             <h1 class="section-header">Seating</h1>
+            <p>Your seat: <b>{{ tryGetUserSeat()?.seat }}</b></p>
             <div class="seating-wrapper">
-                <SeatingContainer :seating="props.exam.seating" :email="userData.email" class="seating"></SeatingContainer>
+                <SeatingContainer :seating="props.exam.seating" :email="userData.email" :user-seat="tryGetUserSeat()" class="seating"></SeatingContainer>
             </div>
         </div>
     </div>
@@ -81,6 +100,10 @@ const userData = props.user;
     margin: 0;
 }
 
+.dialog p {
+    white-space: pre-wrap;
+}
+
 .exam-name {
     font-size: 35px;
 }
@@ -119,6 +142,20 @@ const userData = props.user;
     width: 100%;
     border-bottom: 1px solid var(--md-sys-color-outline);
     z-index: 1001;
+    text-align: center;
+}
+
+.exam-headers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
 }
 
 @media (max-width: 768px) {

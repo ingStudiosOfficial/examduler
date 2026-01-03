@@ -1,39 +1,13 @@
 <script setup lang="ts">
 import type { Seating } from '@/interfaces/Seating';
-import { getUserSeat } from '@/utils/exam_utils';
-import { ref, watch } from 'vue';
 
 interface SeatingProp {
     seating: Seating[][];
     email: string;
+    userSeat: Seating | null;
 }
 
 const props = defineProps<SeatingProp>();
-
-const userSeat = ref<Seating | null>(null);
-
-function tryGetUserSeat() {
-    try {
-        if (!props.seating || !props.email) {
-            console.error('Seating or email data not found.');
-            return;
-        }
-
-        userSeat.value = getUserSeat(props.seating, props.email);
-    } catch (error) {
-        console.error('Error while fetching user seat:', error);
-    }
-}
-
-watch(
-    () => props.seating,
-    (newSeating: Seating[][]) => {
-        if (newSeating && newSeating.length > 0) {
-            tryGetUserSeat();
-        }
-    },
-    { immediate: true },
-);
 </script>
 
 <template>
@@ -52,7 +26,6 @@ watch(
                     <div class="seating-container">
                         <p class="seat-id">{{ seat.seat }}</p>
                         <p class="seat-name">{{ seat.name }}</p>
-                        <p class="seat-email">{{ seat.email }}</p>
                     </div>
                 </td>
             </tr>
@@ -69,9 +42,19 @@ watch(
     border-radius: 25px;
 }
 
+.seating-table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+
 .seating-seat {
     border: 2px solid var(--md-sys-color-on-primary-container);
     border-radius: 10px;
+    aspect-ratio: 1 / 1; 
+    min-width: 120px;
+    vertical-align: middle;
 }
 
 .seating-seat.is-blank {
@@ -87,7 +70,7 @@ watch(
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 10px;
     gap: 10px;
 }

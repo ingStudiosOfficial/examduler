@@ -104,6 +104,16 @@ function triggerShowSnackBar(sbText: string) {
     showSnackBar(4000, snackBarDisplayed.value);
 }
 
+function addDomain() {
+    if (!loadedOrganization.value) return;
+
+    loadedOrganization.value.domains.push({
+        domain: '',
+        verificationToken: '',
+        verified: false,
+    });
+}
+
 watch(props, (newOrg) => {
     loadedOrganization.value = newOrg;
 });
@@ -121,10 +131,13 @@ onMounted(() => {
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
-            <h1 class="org-name">{{ loadedOrganization.name }}</h1>
+            <h1 class="org-header">Edit Organization</h1>
+            <h2 class="subheader">Name</h2>
+            <md-outlined-text-field class="dialog-settings-field" v-model="loadedOrganization.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization."></md-outlined-text-field>
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain${index}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
+                <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             </div>
             <h2 class="subheader">Members</h2>
             <div class="members-output">
@@ -187,6 +200,11 @@ onMounted(() => {
     margin: 0;
 }
 
+.dialog-settings-field {
+    width: 40%;
+    color: var(--md-sys-color-on-primary-container);
+}
+
 .section-header {
     font-size: 25px;
 }
@@ -208,7 +226,7 @@ onMounted(() => {
     z-index: 1001;
 }
 
-.org-name {
+.org-header {
     font-size: 35px;
 }
 
