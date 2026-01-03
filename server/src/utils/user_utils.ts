@@ -29,35 +29,43 @@ export function constructName(firstName?: string, middleName?: string, lastName?
     return name;
 }
 
-export async function verifyUsers(db: Db, userIds: ObjectId[]) {
-    console.log('Attempting to veriify users:', userIds);
+export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string) {
+    console.log('Domain:', domain);
 
-    if (!userIds || userIds.length === 0) {
-        console.error('No user IDs to verify.');
+    const usersToVerify = await db.collection<IUser>('unverifiedUsers')
+        .find({ _id: { $in: userIds }, domain: domain })
+        .toArray();
+
+    if (usersToVerify.length === 0) {
+        console.log('No matching unverified users found.');
         return;
     }
 
+    const operations = usersToVerify.map(user => {
+        const { _id, ...userData } = user;
+
+        return {
+            updateOne: {
+                filter: { email: user.email },
+                update: { $set: userData },
+                upsert: true,
+            }
+        };
+    });
+
     try {
-        await db.collection<IUser>('unverifiedUsers').aggregate([
-            { $match: { _id: { $in: userIds } } },
-            { $merge: {
-                into: 'users',
-                on: 'email',
-                whenMatched: 'merge',
-                whenNotMatched: 'insert',
-            } },
-        ]).toArray();
+        const writeResult = await db.collection('users').bulkWrite(operations, { ordered: false });
+        
+        console.log(`Matched: ${writeResult.matchedCount}, Upserted: ${writeResult.upsertedCount}`);
 
-        const deleteResult = await db.collection<IUser>('unverifiedUsers').deleteMany({ _id: { $in: userIds } });
+        const emailsProcessed = usersToVerify.map(u => u.email);
+        await db.collection('unverifiedUsers').deleteMany({
+            email: { $in: emailsProcessed },
+            domain: domain
+        });
 
-        if (deleteResult.deletedCount === 0) {
-            console.error('Failed to remove users from unverified collection.');
-            throw new Error('Failed to remove users from unverified collection.');
-        }
-
-        console.log('Successfully verified users.');
     } catch (error) {
-        console.error('Failed to move users:', error);
-        throw new Error(`Failed to move users: ${error}`);
+        console.error('Bulk write failed:', error);
+        throw error;
     }
 }

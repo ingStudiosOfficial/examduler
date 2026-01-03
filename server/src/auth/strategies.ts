@@ -13,6 +13,7 @@ import type { IJWTPayload } from '../interfaces/JWTPayload.js';
 import type { Role } from '../types/user.js';
 import type { VerifyCallback } from 'passport-oauth2';
 import { Strategy as GoogleOAuthStrategy } from 'passport-google-oauth20';
+import { addDomainPrefix } from '../utils/org_utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -46,7 +47,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                     }
 
                     const userEmail = profile.emails[0].value;
-                    const userDomain = getDomain(userEmail);
+                    const userDomain = addDomainPrefix(getDomain(userEmail));
                     const userName: string = constructName(profile.name?.givenName, profile.name?.middleName, profile.name?.familyName);
 
                     const userExists = await usersCollection.findOne({ email: userEmail });

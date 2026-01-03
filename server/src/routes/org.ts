@@ -5,7 +5,7 @@ import { validateCreateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg } from '../interfaces/Org.js';
 import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
-import { verifyUsers } from '../utils/user_utils.js';
+import { getDomain, verifyUsers } from '../utils/user_utils.js';
 
 export const orgRouter = Router();
 
@@ -181,7 +181,7 @@ orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (
             });
         }
 
-        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id));
+        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify);
         
         console.log('Successfully verified domain.');
         
@@ -254,7 +254,7 @@ orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async 
             });
         }
 
-        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id));
+        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify);
 
         console.log('Successfully verified domain.');
         

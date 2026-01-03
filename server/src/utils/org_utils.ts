@@ -9,7 +9,7 @@ import type { IDomainVerification } from '../interfaces/Domain.js';
 
 export async function verifyDomainTxt(domain: string, verificationToken: string): Promise<IDomainVerification> {
     try {
-        const records = await dns.resolveTxt(domain);
+        const records = await dns.resolveTxt(removeDomainPrefix(domain));
         const isVerified = records.flat().includes(verificationToken);
 
         if (isVerified) {
@@ -54,7 +54,7 @@ export async function verifyDomainHttp(domain: string, verificationToken: string
 
 export function createVerificationToken(): string {
     const randomBytes = crypto.randomBytes(32);
-    const token = randomBytes.toString('base64');
+    const token = `examduler-${randomBytes.toString('base64')}`;
     return token;
 }
 
@@ -75,7 +75,7 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
 
         const userToUpsert: IUser = {
             email: email,
-            domain: getDomain(email),
+            domain: addDomainPrefix(getDomain(email)),
             name: name,
             exams: [],
             organizations: [organization],
@@ -163,6 +163,15 @@ export function addDomainPrefix(domain: string): string {
     if (!domain.startsWith('http://') || !domain.startsWith('https://')) {
         const newDomain = `https://${domain}`;
         return newDomain;
+    } else {
+        return domain;
+    }
+}
+
+export function removeDomainPrefix(domain: string): string {
+    if (!domain.startsWith('http://') || !domain.startsWith('https://')) {
+        const domainUrl = new URL(domain);
+        return domainUrl.hostname;
     } else {
         return domain;
     }
