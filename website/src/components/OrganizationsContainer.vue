@@ -6,12 +6,16 @@ import type { Organization } from '@/interfaces/Org';
 import { fetchAllOrganizations } from '@/utils/org_utils';
 import LoaderContainer from './LoaderContainer.vue';
 import OrganizationDialog from './OrganizationDialog.vue';
+import type { StateObject } from '@/interfaces/SnackBar';
+import { showSnackBar } from '@/utils/snackbar';
+import SnackBar from './SnackBar.vue';
 
 const organizations = ref<Organization[]>();
 const orgsLoaded = ref<boolean>(false);
-
 const orgDialogOpened = ref<boolean>(false);
 const orgDetails = ref<Organization | null>(null);
+const sbMessage = ref<string>();
+const sbOpened = ref<StateObject>({ visible: false });
 
 function displayOrgDialog(orgInfo: Organization) {
     orgDetails.value = orgInfo;
@@ -22,6 +26,24 @@ function closeOrgDialog() {
     console.log('Organization dialog closing...');
     orgDialogOpened.value = false;
     orgDetails.value = null;
+}
+
+async function refreshOrgs(message: string) {
+    showSbMessage(message);
+
+    try {
+        organizations.value = await fetchAllOrganizations();
+        orgsLoaded.value = true;
+    } catch (error) {
+        console.error('Error while fetching all organizations:', error);
+        orgsLoaded.value = false;
+    }
+}
+
+function showSbMessage(message: string) {
+    sbMessage.value = message;
+
+    showSnackBar(4000, sbOpened.value);
 }
 
 watch(orgDialogOpened, (isOpen: boolean) => {
@@ -37,13 +59,7 @@ watch(orgDialogOpened, (isOpen: boolean) => {
 });
 
 onMounted(async () => {
-    try {
-        organizations.value = await fetchAllOrganizations();
-        orgsLoaded.value = true;
-    } catch (error) {
-        console.error('Error while fetching all organizations:', error);
-        orgsLoaded.value = false;
-    }
+    await refreshOrgs();
 });
 </script>
 
@@ -54,8 +70,9 @@ onMounted(async () => {
             <OrganizationCard v-for="(organization, index) in organizations" :key="'org' + index" v-bind="organization" @click="displayOrgDialog(organization)"></OrganizationCard>
         </div>
         <LoaderContainer v-else-if="!orgsLoaded" loading-text="Hang on while we load your organizations..." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
-        <OrganizationCreateContainer v-if="orgsLoaded" :has-organizations="organizations?.length !== 0"></OrganizationCreateContainer>
+        <OrganizationCreateContainer v-if="orgsLoaded" :has-organizations="organizations?.length !== 0" @refresh="refreshOrgs"></OrganizationCreateContainer>
         <OrganizationDialog v-if="orgDialogOpened && orgDetails" v-bind="orgDetails" @close="closeOrgDialog()"></OrganizationDialog>
+        <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
     </div>
 </template>
 

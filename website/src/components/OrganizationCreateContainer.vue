@@ -9,6 +9,8 @@ const props = defineProps({
     hasOrganizations: Boolean,
 });
 
+const emit = defineEmits<{ (e: 'refresh'): string }>();
+
 const dialogOpened = ref<boolean>(false);
 
 function openCreateOrgDialog() {
@@ -17,6 +19,10 @@ function openCreateOrgDialog() {
 
 function closeCreateOrgDialog() {
     dialogOpened.value = false;
+}
+
+function emitRefresh(message: string) {
+    emit('refresh', message);
 }
 
 watch(dialogOpened, (isOpen: boolean) => {
@@ -35,7 +41,7 @@ watch(dialogOpened, (isOpen: boolean) => {
 <template>
     <p class="no-org-text" v-if="!props.hasOrganizations">You don't look like you have any organizations yet.</p>
     <md-filled-button class="org-create-btn" @click="openCreateOrgDialog()">Create an organization</md-filled-button>
-    <OrganizationCreateDialog v-if="dialogOpened" @close="closeCreateOrgDialog()"></OrganizationCreateDialog>
+    <OrganizationCreateDialog v-if="dialogOpened" @close="closeCreateOrgDialog()" @success="emitRefresh"></OrganizationCreateDialog>
 </template>
 
 <style scoped>

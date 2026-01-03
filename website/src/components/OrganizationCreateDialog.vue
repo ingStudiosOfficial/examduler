@@ -99,7 +99,7 @@ async function orgFormSubmit() {
 
     if (success) {
         closeDialog();
-        emit('success');
+        emit('success', orgCreationMessage.value);
     }
 }
 </script>

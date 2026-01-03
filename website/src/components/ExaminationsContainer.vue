@@ -37,6 +37,16 @@ function closeExamDialog() {
     examDetails.value = null;
 }
 
+async function refreshExams() {
+    try {
+        const fetchedExams = await fetchAllExams();
+        exams.value = sortExams(fetchedExams);
+    } catch (error) {
+        console.error('Error while fetching exams:', error);
+        exams.value = [];
+    }
+}
+
 watch(examOpened, (isOpen: boolean) => {
     const handleEscape = (e: KeyboardEvent) => {
         if (e.key === 'Escape') closeExamDialog();
@@ -63,13 +73,7 @@ watch(() => props.refresh, async (newValue) => {
 });
 
 onMounted(async () => {
-    try {
-        const fetchedExams = await fetchAllExams();
-        exams.value = sortExams(fetchedExams);
-    } catch (error) {
-        console.error('Error while fetching exams:', error);
-        exams.value = [];
-    }
+    await refreshExams();
 });
 </script>
 

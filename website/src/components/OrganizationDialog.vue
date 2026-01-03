@@ -8,7 +8,7 @@ import '@material/web/fab/fab.js';
 import '@material/web/menu/menu.js';
 
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
-import { downloadMembersJson } from '@/utils/org_utils';
+import { downloadMembersJson, editOrganization } from '@/utils/org_utils';
 import { vibrate } from '@/utils/vibrate';
 
 import SnackBar from './SnackBar.vue';
@@ -21,13 +21,16 @@ import type { Domain } from '@/interfaces/Domain';
 
 const props = defineProps<Organization>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'success']);
 
 const loadedOrganization = ref<OrganizationEdit>();
 const membersPicker = ref();
 const uploadedMembersName = ref<string>();
 const snackBarText = ref<string>();
 const snackBarDisplayed = ref<StateObject>({ visible: false });
+const submitButton = ref();
+const orgEditMessage = ref<string>();
+const orgEditSuccess = ref<boolean>(false);
 
 function closeDialog() {
     emit('close');
@@ -114,6 +117,27 @@ function addDomain() {
     });
 }
 
+function pressOrgSubmit() {
+    vibrate([10]);
+
+    submitButton.value.click();
+}
+
+async function orgFormSubmit() {
+    if (!loadedOrganization.value) return;
+
+    const { message, success } = await editOrganization(loadedOrganization.value);
+    console.log(message);
+
+    orgEditMessage.value = message;
+    orgEditSuccess.value = success;
+
+    if (success) {
+        closeDialog();
+        emit('success', orgEditMessage.value);
+    }
+}
+
 watch(props, (newOrg) => {
     loadedOrganization.value = newOrg;
 });
@@ -125,7 +149,7 @@ onMounted(() => {
 
 <template>
     <div class="backdrop" v-if="loadedOrganization && loadedOrganization._id">
-        <div class="dialog">
+        <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
                 <md-icon-button @click="closeDialog()">
                     <md-icon>close</md-icon>
@@ -158,7 +182,11 @@ onMounted(() => {
                 <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
                 <p class="file-chosen">{{ uploadedMembersName }}</p>
             </div>
-        </div>
+            <button class="hidden-submit" type="submit" ref="submitButton"></button>
+            <md-fab class="submit-button" @click="pressOrgSubmit()">
+                <md-icon slot="icon">check</md-icon>
+            </md-fab>
+        </form>
     </div>
     <SnackBar :message="snackBarText" :displayed="snackBarDisplayed.visible"></SnackBar>
 </template>
@@ -273,5 +301,18 @@ onMounted(() => {
     text-align: center;
     height: 50px;
     outline: none;
+}
+
+.submit-button {
+    position: sticky;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1001;
+    display: block;
+    margin-left: auto;
+}
+
+.hidden-submit {
+    display: none;
 }
 </style>

@@ -1,5 +1,5 @@
 import type { Member } from "@/interfaces/Member";
-import type { Organization, OrganizationCreate } from "@/interfaces/Org";
+import type { Organization, OrganizationCreate, OrganizationEdit } from "@/interfaces/Org";
 import type { FunctionNotifier } from "@/interfaces/FunctionNotifier";
 import type { ResponseJson } from "@/interfaces/ResponseJson";
 import type { DomainVerificationMethod } from "@/interfaces/Domain";
@@ -35,6 +35,38 @@ export async function createOrganization(orgDetails: OrganizationCreate): Promis
     } catch (error) {
         console.error('Error while creating organization:', error);
         return { message: 'An unexpected error occurred while creating the organization,', success: false };
+    }
+}
+
+export async function editOrganization(orgDetails: OrganizationEdit): Promise<FunctionNotifier> {
+    console.log('Editing organization:', orgDetails);
+
+    try {
+        const body = JSON.stringify(orgDetails);
+        console.log('Sending organization:', body);
+
+        const response = await fetch(`${apiBaseUrl}/api/organization/update/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: body,
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('Error while editing organization:', responseJson);
+            return { message: responseJson.message, success: false };
+        }
+
+        console.log('Successfully edited organization:', responseJson);
+
+        return { message: responseJson.message, success: true };
+    } catch (error) {
+        console.error('Error while editing organization:', error);
+        return { message: 'An unexpected error occurred while editing the organization,', success: false };
     }
 }
 

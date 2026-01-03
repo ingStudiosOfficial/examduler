@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import type { Err, ObjectSchema, ValidationError, ValidationOptions } from 'joi';
 
 import { examCreateSchema } from '../schemas/exam.js';
-import { orgCreateSchema } from '../schemas/org.js';
+import { orgCreateSchema, orgUpdateSchema } from '../schemas/org.js';
 
 function validateSchema(schema: ObjectSchema, body: object, options: ValidationOptions, req: Request, res: Response, next: NextFunction) {
     console.log('Body:', body);
@@ -48,4 +48,14 @@ export function validateCreateOrgSchema(req: Request, res: Response, next: NextF
     };
 
     validateSchema(orgCreateSchema, req.body, validationsOptions, req, res, next);
+}
+
+export function validateUpdateOrgSchema(req: Request, res: Response, next: NextFunction) {
+    const validationsOptions: ValidationOptions = {
+        abortEarly: false,
+        allowUnknown: false,
+        stripUnknown: true,
+    };
+
+    validateSchema(orgUpdateSchema, req.body, validationsOptions, req, res, next);
 }

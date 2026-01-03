@@ -16,3 +16,7 @@ export type ICreateOrg = Omit<IOrg, 'members'> & {
 export type IReturnOrg = Omit<IOrg, 'members'> & {
     members: IReturnMember[];
 };
+
+export interface IUpdateOrg extends IOrg {
+    uploadedMembers?: string;
+}
