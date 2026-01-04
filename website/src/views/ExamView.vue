@@ -1,20 +1,24 @@
 <script setup lang="ts">
+import LoaderContainer from '@/components/LoaderContainer.vue';
 import type { Exam } from '@/interfaces/Exam';
 import { fetchPublicExam, getExamId, formatExamDate } from '@/utils/exam_utils';
 import { onMounted, ref } from 'vue';
 
 const examDetails = ref<Exam>();
+const examId = ref<string | null>();
+const isLoading = ref<boolean>(true);
 
 async function tryFetchExam() {
-    const examId = getExamId();
+    examId.value = getExamId();
 
-    if (!examId) {
+    if (!examId.value) {
         console.error('Failed to get exam ID.');
+        isLoading.value = false;
         return;
     }
 
     try {
-        const exam = await fetchPublicExam(examId);
+        const exam = await fetchPublicExam(examId.value);
         
         console.log('Fetched exam:', exam);
 
@@ -22,6 +26,8 @@ async function tryFetchExam() {
     } catch (error) {
         console.error('Error while fetching exams:', error);
     }
+
+    isLoading.value = false;
 }
 
 onMounted(async () => {
@@ -30,10 +36,19 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-if="examDetails" class="exam-card">
+    <div class="loader" v-if="isLoading">
+        <LoaderContainer loading-text="Hang on while we fetch your examination." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
+    </div>
+    <div v-if="examDetails && !isLoading" class="exam-card">
         <h1 class="exam-name">{{ examDetails.name }}</h1>
         <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
         <p>{{ examDetails.description }}</p>
+    </div>
+    <div v-else-if="examId && !isLoading" class="exam-card not-found">
+        <p>Exam with ID '{{ examId }}' not found.</p>
+    </div>
+    <div v-else-if="!isLoading" class="exam-card not-found">
+        <p>No exam ID provided.</p>
     </div>
 </template>
 
@@ -72,5 +87,26 @@ onMounted(async () => {
 
 .exam-date {
     font-weight: bold;
+}
+
+.not-found {
+    justify-content: center;
+}
+
+.loader {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .exam-card {
+        width: 90vw;
+    }
 }
 </style>
