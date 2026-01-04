@@ -31,7 +31,7 @@ export async function createOrganization(orgDetails: OrganizationCreate): Promis
 
         console.log('Successfully created organization:', responseJson);
 
-        return { message: responseJson.message, success: true };
+        return { message: 'Successfully created organization', success: true };
     } catch (error) {
         console.error('Error while creating organization:', error);
         return { message: 'An unexpected error occurred while creating the organization,', success: false };
@@ -45,7 +45,7 @@ export async function editOrganization(orgDetails: OrganizationEdit): Promise<Fu
         const body = JSON.stringify(orgDetails);
         console.log('Sending organization:', body);
 
-        const response = await fetch(`${apiBaseUrl}/api/organization/update/`, {
+        const response = await fetch(`${apiBaseUrl}/api/organization/update/${orgDetails._id}/`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,10 +63,10 @@ export async function editOrganization(orgDetails: OrganizationEdit): Promise<Fu
 
         console.log('Successfully edited organization:', responseJson);
 
-        return { message: responseJson.message, success: true };
+        return { message: 'Successfully updated organization', success: true };
     } catch (error) {
         console.error('Error while editing organization:', error);
-        return { message: 'An unexpected error occurred while editing the organization,', success: false };
+        return { message: 'An unexpected error occurred while editing the organization', success: false };
     }
 }
 

@@ -9,7 +9,7 @@ const props = defineProps({
     hasOrganizations: Boolean,
 });
 
-const emit = defineEmits<{ (e: 'refresh'): string }>();
+const emit = defineEmits<{ (e: 'refresh', message: string): void }>();
 
 const dialogOpened = ref<boolean>(false);
 

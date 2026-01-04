@@ -11,7 +11,7 @@ import type { OrganizationCreate } from '@/interfaces/Org';
 import { vibrate } from '@/utils/vibrate';
 import { createOrganization } from '@/utils/org_utils';
 
-const emit = defineEmits(['close', 'success']);
+const emit = defineEmits<{ (e: 'close'): void, (e: 'success', message: string): void }>();
 
 const organizationToCreate = ref<OrganizationCreate>({
     name: '',
@@ -114,7 +114,7 @@ async function orgFormSubmit() {
             </div>
             <h1 class="header-title">Create Organization</h1>
             <h2 class="subheader">General</h2>
-            <md-outlined-text-field class="dialog-settings-field" v-model="organizationToCreate.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization."></md-outlined-text-field>
+            <md-outlined-text-field class="dialog-settings-field" v-model="organizationToCreate.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization." maxlength="50"></md-outlined-text-field>
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <div class="domain-group" v-for="(_, index) in organizationToCreate.domains" :key="'domain' + index">

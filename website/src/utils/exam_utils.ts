@@ -120,3 +120,31 @@ export async function fetchAllExams(): Promise<Exam[]> {
         throw new Error('An unexpected error occurred while fetching exams.');
     }
 }
+
+export async function fetchPublicExam(id: string): Promise<Exam> {
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/public/exam/fetch/${id}/`);
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('Error while fetching exam:', responseJson);
+            throw new Error(`Failed to fetch exam: ${responseJson.message}`);
+        }
+
+        console.log('Successfully fetched exam:', responseJson);
+
+        return responseJson.exam as Exam;
+    } catch (error) {
+        console.error('Error while fetching exam:', error);
+        throw new Error('An unexpected error occurred while fetching exam.');
+    }
+}
+
+export function getExamId(): string | null {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const examId = urlParams.get('examId');
+
+    return examId;
+}

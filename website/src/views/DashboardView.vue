@@ -56,7 +56,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
         <OrganizationsContainer v-if="userData.role === 'admin'"></OrganizationsContainer>
 
-        <ExaminationCreateDialog v-if="userData.role === 'admin' || userData.role === 'teacher'" v-show="examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
+        <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
 
         <md-fab class="add-button" label="Create" @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>

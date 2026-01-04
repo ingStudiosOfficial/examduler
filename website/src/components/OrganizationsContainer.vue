@@ -28,8 +28,10 @@ function closeOrgDialog() {
     orgDetails.value = null;
 }
 
-async function refreshOrgs(message: string) {
-    showSbMessage(message);
+async function refreshOrgs(message: string | null) {
+    if (message) {
+        showSbMessage(message);
+    }
 
     try {
         organizations.value = await fetchAllOrganizations();
@@ -59,7 +61,7 @@ watch(orgDialogOpened, (isOpen: boolean) => {
 });
 
 onMounted(async () => {
-    await refreshOrgs();
+    await refreshOrgs(null);
 });
 </script>
 
@@ -71,7 +73,7 @@ onMounted(async () => {
         </div>
         <LoaderContainer v-else-if="!orgsLoaded" loading-text="Hang on while we load your organizations..." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
         <OrganizationCreateContainer v-if="orgsLoaded" :has-organizations="organizations?.length !== 0" @refresh="refreshOrgs"></OrganizationCreateContainer>
-        <OrganizationDialog v-if="orgDialogOpened && orgDetails" v-bind="orgDetails" @close="closeOrgDialog()"></OrganizationDialog>
+        <OrganizationDialog v-if="orgDialogOpened && orgDetails" v-bind="orgDetails" @close="closeOrgDialog()" @success="refreshOrgs"></OrganizationDialog>
         <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
     </div>
 </template>
@@ -92,7 +94,7 @@ onMounted(async () => {
 
 .organizations {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(30vw, 1fr));
     grid-template-rows: auto;
     gap: 10px;
     box-sizing: border-box;

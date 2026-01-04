@@ -53,10 +53,9 @@ watch(
     <button class="card" @click="showExamDialog(props.exam)">
         <md-ripple></md-ripple>
         <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-        <h1>{{ props.exam.name }}</h1>
+        <h1 class="exam-name">{{ props.exam.name }}</h1>
         <p class="exam-date">{{ formatExamDate(props.exam.date) }}</p>
         <p v-show="userSeat" class="exam-seat">Seat {{ userSeat?.seat }}</p>
-        <p>{{ props.exam.description }}</p>
     </button>
 </template>
 
@@ -73,6 +72,13 @@ watch(
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.exam-name {
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 
 .exam-date,

@@ -109,7 +109,7 @@ onMounted(async () => {
 
 .examinations {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(30vw, 1fr));
     grid-template-rows: auto;
     gap: 10px;
     box-sizing: border-box;

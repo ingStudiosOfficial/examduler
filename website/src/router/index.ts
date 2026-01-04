@@ -2,11 +2,13 @@ import { createRouter, createWebHistory, type NavigationGuardNext, type RouteLoc
 
 import LoginView from '@/views/LoginView.vue';
 import DashboardView from '@/views/DashboardView.vue';
+import ExamView from '@/views/ExamView.vue';
 import type { ResponseJson } from '@/interfaces/ResponseJson';
 
 const routes = [
     { path: '/login', name: 'login', component: LoginView, meta: { title: 'Login', requiresAuth: false } },
     { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { title: 'Dashboard', requiresAuth: true } },
+    { path: '/exam', name: 'exam', component: ExamView, meta: { title: 'Exam', requiresAuth: false } },
 ];
 
 const router = createRouter({

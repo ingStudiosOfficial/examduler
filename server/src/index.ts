@@ -16,6 +16,7 @@ import { examRouter } from './routes/exam.js';
 import { examsRouter } from './routes/exams.js';
 import { orgRouter } from './routes/org.js';
 import { orgsRouter } from './routes/orgs.js';
+import { publicRouter } from './routes/public.js';
 
 import { setupPassport } from './utils/auth_utils.js';
 
@@ -40,7 +41,7 @@ app.use(
     cors({
         origin: process.env.CLIENT_URL,
         credentials: true,
-        methods: ['GET'],
+        methods: ['GET', 'POST', 'PATCH'],
     }),
 );
 app.use(cookieParser());
@@ -70,6 +71,7 @@ app.use('/api/exam/', examRouter);
 app.use('/api/exams/', examsRouter);
 app.use('/api/organization/', orgRouter);
 app.use('/api/organizations/', orgsRouter);
+app.use('/api/public/', publicRouter);
 
 async function connectToMongo() {
     try {

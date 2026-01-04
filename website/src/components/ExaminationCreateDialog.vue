@@ -126,10 +126,10 @@ watch(dates, (newValue) => {
             </div>
             <h1 class="header-title">Create Examination</h1>
             <h2 class="subheader">Details</h2>
-            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination."></md-outlined-text-field>
+            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
             <p>Examination date</p>
             <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
-            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea"></md-outlined-text-field>
+            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
             <h2 class="subheader">Seating</h2>
             <div class="seating-input">
                 <p>Your seating</p>

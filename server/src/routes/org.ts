@@ -6,6 +6,7 @@ import type { ICreateOrg, IOrg, IUpdateOrg } from '../interfaces/Org.js';
 import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
 import { getDomain, verifyUsers } from '../utils/user_utils.js';
+import type { IStoredMember } from '../interfaces/Member.js';
 
 export const orgRouter = Router();
 
@@ -25,7 +26,18 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
         const adminId = new ObjectId(req.user?.id);
 
         const { members, ...tempOrg } = orgFromBody;
-        const parsedMembers = await parseOrgMembers(members, req.db, [], orgId, adminId);
+
+        let parsedMembers: IStoredMember[];
+
+        try {
+            parsedMembers = await parseOrgMembers(members, req.db, [], orgId, adminId);
+        } catch (error) {
+            return res.status(400).json({
+                message: 'Failed to parse members. Members are in an invalid format.',
+            });
+        }
+
+
         const orgToCreate: IOrg = { ...tempOrg, members: parsedMembers, _id: orgId };
 
         const domainsToCheck: string[] = [];
@@ -308,8 +320,10 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const verifiedDomains = initialOrg.domains.filter(d => d.verified).map(d => d.domain);
 
         const adminId = new ObjectId(req.user?.id);
+        console.log('Admin ID:', adminId);
 
-        if (!initialOrg.members.map(m => m._id).includes(adminId)) {
+        if (!adminId || !initialOrg.members.map(m => m._id.toString().includes(adminId.toString()))) {
+            console.log(initialOrg.members.map(m => m._id));
             return res.status(403).json({
                 message: 'User is forbidden from updating the organization.',
             });
@@ -320,11 +334,24 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         let orgToUpdate: IOrg;
 
         if (uploadedMembers) {
-            const parsedMembers = await parseOrgMembers(uploadedMembers, req.db, verifiedDomains, orgId, adminId);
+            console.log('Uploaded members:', uploadedMembers);
+
+            let parsedMembers: IStoredMember[];
+
+            try {
+                parsedMembers = await parseOrgMembers(uploadedMembers, req.db, [], orgId, adminId);
+            } catch (error) {
+                return res.status(400).json({
+                    message: (error instanceof Error) ? error.message : 'An error occurred while parsing members.',
+                });
+            }
+
             orgToUpdate = { ...tempOrg, members: parsedMembers, _id: orgId };
+        } else {
+            orgToUpdate = { ...tempOrg, members: members };
         }
 
-        orgToUpdate = { ...tempOrg, members: members };
+        console.log('Organization to update:', orgToUpdate);
 
         const domainsToCheck: string[] = [];
 
@@ -370,7 +397,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         const result = await req.db.collection('organizations').updateOne(
             { _id: orgId },
-            { $set: req.body },
+            { $set: orgToUpdate },
         );
 
         if (result.matchedCount === 0) {

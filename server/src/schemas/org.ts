@@ -1,8 +1,8 @@
 import Joi from 'joi';
 
 export const orgCreateSchema = Joi.object({
-    name: Joi.string().required(),
-    domains: Joi.array().items(Joi.string()).required(),
+    name: Joi.string().max(50).required(),
+    domains: Joi.array().required(),
     members: Joi.string().required(),
 });
 
@@ -10,13 +10,13 @@ const domainSchema = Joi.object({
     domain: Joi.string(),
 });
 
-const memberSchema = Joi.object({
+const editMemberSchema = Joi.object({
     _id: Joi.string().required(),
 });
 
 export const orgUpdateSchema = Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string().max(50).required(),
     domains: Joi.array().items(domainSchema).required(),
-    members: Joi.array().items(memberSchema).required(),
-    updloadedMembers: Joi.array().items(Joi.string()).optional(),
+    members: Joi.array().items(editMemberSchema).required(),
+    uploadedMembers: Joi.string().optional(),
 });

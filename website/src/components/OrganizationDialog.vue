@@ -21,7 +21,7 @@ import type { Domain } from '@/interfaces/Domain';
 
 const props = defineProps<Organization>();
 
-const emit = defineEmits(['close', 'success']);
+const emit = defineEmits<{ (e: 'close'): void, (e: 'success', message: string): void }>();
 
 const loadedOrganization = ref<OrganizationEdit>();
 const membersPicker = ref();
@@ -139,11 +139,11 @@ async function orgFormSubmit() {
 }
 
 watch(props, (newOrg) => {
-    loadedOrganization.value = newOrg;
+    loadedOrganization.value = { ...newOrg };
 });
 
 onMounted(() => {
-    loadedOrganization.value = props;
+    loadedOrganization.value = { ...props };
 });
 </script>
 
@@ -157,7 +157,7 @@ onMounted(() => {
             </div>
             <h1 class="org-header">Edit Organization</h1>
             <h2 class="subheader">Name</h2>
-            <md-outlined-text-field class="dialog-settings-field" v-model="loadedOrganization.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization."></md-outlined-text-field>
+            <md-outlined-text-field class="dialog-settings-field" v-model="loadedOrganization.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization." maxlength="50"></md-outlined-text-field>
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain${index}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
@@ -182,13 +182,15 @@ onMounted(() => {
                 <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
                 <p class="file-chosen">{{ uploadedMembersName }}</p>
             </div>
+            <p :style="{ color: orgEditSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ orgEditMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressOrgSubmit()">
                 <md-icon slot="icon">check</md-icon>
             </md-fab>
         </form>
+
+        <SnackBar :message="snackBarText" :displayed="snackBarDisplayed.visible"></SnackBar>
     </div>
-    <SnackBar :message="snackBarText" :displayed="snackBarDisplayed.visible"></SnackBar>
 </template>
 
 <style scoped>

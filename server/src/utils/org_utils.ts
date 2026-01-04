@@ -70,7 +70,18 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
 
         if (!name || !email || !role) {
             console.error('Invalid row skipping:', member);
-            continue;
+            throw new Error('Invalid members format.');
+        }
+
+        switch (role) {
+            case 'student':
+            case 'teacher':
+            case 'admin':
+                console.log('Role valid.');
+                break;
+            default:
+                console.error('Role invalid.');
+                throw new Error(`Role '${role}' is invalid.`);
         }
 
         const userToUpsert: IUser = {
@@ -160,7 +171,7 @@ export function checkValidDomain(domain: string) {
 }
 
 export function addDomainPrefix(domain: string): string {
-    if (!domain.startsWith('http://') || !domain.startsWith('https://')) {
+    if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
         const newDomain = `https://${domain}`;
         return newDomain;
     } else {
