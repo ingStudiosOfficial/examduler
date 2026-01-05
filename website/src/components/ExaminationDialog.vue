@@ -136,6 +136,13 @@ const userData = props.user;
     font-weight: bold;
 }
 
+.exam-description {
+    width: 80%;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
 .section-header {
     font-size: 25px;
 }

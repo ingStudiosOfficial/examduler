@@ -75,7 +75,7 @@ onMounted(async () => {
         <div v-if="examDetails && !isLoading" class="exam-card">
             <h1 class="exam-name">{{ examDetails.name }}</h1>
             <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
-            <p>{{ examDetails.description }}</p>
+            <p class="exam-description">{{ examDetails.description }}</p>
             <md-outlined-button class="download-button" @click="triggerDownloadExam()">Download event</md-outlined-button>
             <p class="examduler-footer">Powered by Examduler</p>
         </div>
@@ -161,6 +161,13 @@ onMounted(async () => {
     position: absolute;
     bottom: 25px;
     right: 25px;
+}
+
+.exam-description {
+    width: 80%;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
 }
 
 @media (max-width: 768px) {
