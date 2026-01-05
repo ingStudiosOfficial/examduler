@@ -8,7 +8,8 @@ import type { Exam } from '@/interfaces/Exam';
 import type { User } from '@/interfaces/User';
 import type { Seating } from '@/interfaces/Seating';
 
-import { formatExamDate, getUserSeat } from '@/utils/exam_utils';
+import { formatExamDate, getUserSeat, shareExam } from '@/utils/exam_utils';
+import { vibrate } from '@/utils/vibrate';
 
 interface ComponentProps {
     exam: Exam;
@@ -17,7 +18,7 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'showSb']);
 
 function tryGetUserSeat(): Seating | null {
     try {
@@ -31,6 +32,22 @@ function tryGetUserSeat(): Seating | null {
         console.error('Error while fetching user seat:', error);
         return null;
     }
+}
+
+async function triggerShareExam() {
+    vibrate([10]);
+
+    const { message, success } = await shareExam(props.exam);
+
+    if (!success) {
+        console.error('Failed to share exam:', message);
+        emit('showSb', message);
+        return;
+    }
+
+    console.log('Successfully shared exam.');
+
+    emit('showSb', message);
 }
 
 function closeDialog() {
@@ -48,6 +65,9 @@ const userData = props.user;
                     <h1 class="exam-name">{{ props.exam.name }}</h1>
                     <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
                 </div>
+                <md-icon-button @click="triggerShareExam()">
+                    <md-icon>share</md-icon>
+                </md-icon-button>
                 <md-icon-button @click="closeDialog()">
                     <md-icon>close</md-icon>
                 </md-icon-button>
@@ -106,6 +126,10 @@ const userData = props.user;
 
 .exam-name {
     font-size: 35px;
+    max-width: 60%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .exam-date {

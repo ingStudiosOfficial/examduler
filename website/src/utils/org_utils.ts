@@ -102,7 +102,7 @@ export async function fetchAllOrganizations(): Promise<Organization[]> {
 
 export async function downloadMembersJson(members: Member[]): Promise<FunctionNotifier> {
     try {
-        const jsonMembers = new Blob([JSON.stringify(members)], { type: 'application/json' });
+        const jsonMembers = new Blob([ JSON.stringify(members) ], { type: 'application/json' });
 
         const fileName = `examduler_members_export_on_${Date.now().toString()}`;
 
@@ -135,7 +135,7 @@ export async function downloadMembersJson(members: Member[]): Promise<FunctionNo
                 a.remove();
             }, 1000);
 
-            return { message: 'Successfully downloaded members.', success: true };
+            return { message: 'Successfully downloaded members', success: true };
         }
     } catch (error) {
         if ((error as Error).name === 'AbortError') {
@@ -145,7 +145,7 @@ export async function downloadMembersJson(members: Member[]): Promise<FunctionNo
 
         console.error('An unexpected error occurred while downloading members:', error);
 
-        return { message: 'An unexpected error occurred while downloading members.', success: false };
+        return { message: 'An unexpected error occurred while downloading members', success: false };
     }
 }
 

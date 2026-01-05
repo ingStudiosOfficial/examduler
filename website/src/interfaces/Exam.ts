@@ -11,3 +11,5 @@ export interface Exam {
 export type ExamCreate = Omit<Exam, 'seating'> & {
     seating: string;
 };
+
+export type PublicExam = Omit<Exam, 'seating'>;
