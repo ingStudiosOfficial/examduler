@@ -40,8 +40,6 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
 
         const orgToCreate: IOrg = { ...tempOrg, members: parsedMembers, _id: orgId };
 
-        const domainsToCheck: string[] = [];
-
         for (const [index, domain] of orgToCreate.domains.entries()) {
             if (!orgToCreate.domains[index]) {
                 console.error('Domain object missing.');
@@ -65,21 +63,23 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
             orgToCreate.domains[index].verificationToken = verificationToken;
         }
 
-        const orgExists = await req.db.collection<IOrg>('organizations').find(
-            { 'domains.domain': { $in: domainsToCheck } },
-        ).toArray();
-
-        if (orgExists.length !== 0) {
-            for (const org of orgExists) {
-                for (const inputtedDomain of domainsToCheck) {
-                    if (org.domains.filter(d => d.verified).map(d => d.domain).includes(inputtedDomain)) {
-                        console.error(`Organization with domain '${inputtedDomain}' already exists.`);
-                        return res.status(409).json({
-                            message: `Organization with domain '${inputtedDomain}' already exists.`,
-                        });
-                    }
+        const conflict = await req.db.collection<IOrg>('organizations').findOne({
+            domains: {
+                $elemMatch: {
+                    domain: { $in: orgToCreate.domains.map(d => d.domain) },
+                    verified: true
                 }
             }
+        });
+
+        if (conflict) {
+            const matchedDomain = conflict.domains.find(d => 
+                orgToCreate.domains.map(d => d.domain).includes(d.domain) && d.verified
+            )?.domain;
+
+            return res.status(409).json({
+                message: `Organization with domain '${matchedDomain}' already exists.`,
+            });
         }
 
         const result = await req.db.collection<IOrg>('organizations').insertOne(orgToCreate);
@@ -140,6 +140,21 @@ orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (
             console.error('Domain to verify not linked to organization.');
             return res.status(403).json({
                 message: 'Domain to verify not linked to organization.',
+            });
+        }
+
+        const existingVerifiedOrg = await req.db.collection<IOrg>('organizations').findOne({
+            domains: {
+                $elemMatch: {
+                    domain: fetchedDomain.domain,
+                    verified: true
+                }
+            }
+        });
+
+        if (existingVerifiedOrg) {
+            return res.status(409).json({
+                message: `Organization with domain ${fetchedDomain.domain} already exists and is verified.`,
             });
         }
 
@@ -213,6 +228,21 @@ orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async 
             console.error('Domain to verify not linked to organization.');
             return res.status(403).json({
                 message: 'Domain to verify not linked to organization.',
+            });
+        }
+
+        const existingVerifiedOrg = await req.db.collection<IOrg>('organizations').findOne({
+            domains: {
+                $elemMatch: {
+                    domain: fetchedDomain.domain,
+                    verified: true
+                }
+            }
+        });
+
+        if (existingVerifiedOrg) {
+            return res.status(409).json({
+                message: `Organization with domain ${fetchedDomain.domain} already exists and is verified.`,
             });
         }
 
@@ -353,8 +383,6 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         console.log('Organization to update:', orgToUpdate);
 
-        const domainsToCheck: string[] = [];
-
         for (const [index, domain] of orgToUpdate.domains.entries()) {
             if (!orgToUpdate.domains[index]) {
                 console.error('Domain object missing.');
@@ -378,21 +406,23 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             orgToUpdate.domains[index].verificationToken = verificationToken;
         }
 
-        const orgExists = await req.db.collection<IOrg>('organizations').find(
-            { 'domains.domain': { $in: domainsToCheck } },
-        ).toArray();
-
-        if (orgExists.length !== 0) {
-            for (const org of orgExists) {
-                for (const inputtedDomain of domainsToCheck) {
-                    if (org.domains.filter(d => d.verified).map(d => d.domain).includes(inputtedDomain)) {
-                        console.error(`Organization with domain '${inputtedDomain}' already exists.`);
-                        return res.status(409).json({
-                            message: `Organization with domain '${inputtedDomain}' already exists.`,
-                        });
-                    }
+        const conflict = await req.db.collection<IOrg>('organizations').findOne({
+            domains: {
+                $elemMatch: {
+                    domain: { $in: orgToUpdate.domains.map(d => d.domain) },
+                    verified: true
                 }
             }
+        });
+
+        if (conflict) {
+            const matchedDomain = conflict.domains.find(d => 
+                orgToUpdate.domains.map(d => d.domain).includes(d.domain) && d.verified
+            )?.domain;
+
+            return res.status(409).json({
+                message: `Organization with domain '${matchedDomain}' already exists.`,
+            });
         }
 
         const result = await req.db.collection('organizations').updateOne(
