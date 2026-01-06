@@ -8,7 +8,7 @@ import type { Exam } from '@/interfaces/Exam';
 import type { User } from '@/interfaces/User';
 import type { Seating } from '@/interfaces/Seating';
 
-import { formatExamDate, getUserSeat, shareExam } from '@/utils/exam_utils';
+import { deleteExam, formatExamDate, getUserSeat, shareExam } from '@/utils/exam_utils';
 import { vibrate } from '@/utils/vibrate';
 
 interface ComponentProps {
@@ -50,6 +50,24 @@ async function triggerShareExam() {
     emit('showSb', message);
 }
 
+async function triggerDeleteExam() {
+    vibrate([10]);
+
+    if (!confirm(`Are you sure you want to delete the examination '${props.exam.name}'?`)) return;
+
+    const { message, success } = await deleteExam(props.exam);
+
+    if (!success) {
+        console.error('Failed to delete exam:', message);
+        emit('showSb', message);
+        return;
+    }
+
+    console.log('Successfully deleted exam.');
+
+    emit('showSb', message);
+}
+
 function closeDialog() {
     emit('close');
 }
@@ -61,16 +79,23 @@ const userData = props.user;
     <div class="backdrop">
         <div class="dialog">
             <div class="top-panel">
+                <div class="left-buttons">
+                    <md-icon-button @click="triggerDeleteExam()">
+                        <md-icon>delete</md-icon>
+                    </md-icon-button>
+                </div>
                 <div class="exam-headers">
                     <h1 class="exam-name">{{ props.exam.name }}</h1>
                     <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
                 </div>
-                <md-icon-button @click="triggerShareExam()">
-                    <md-icon>share</md-icon>
-                </md-icon-button>
-                <md-icon-button @click="closeDialog()">
-                    <md-icon>close</md-icon>
-                </md-icon-button>
+                <div class="right-buttons">
+                    <md-icon-button @click="triggerShareExam()">
+                        <md-icon>share</md-icon>
+                    </md-icon-button>
+                    <md-icon-button @click="closeDialog()">
+                        <md-icon>close</md-icon>
+                    </md-icon-button>
+                </div>
             </div>
             <h1 class="section-header">Description</h1>
             <p>{{ props.exam.description }}</p>
@@ -167,7 +192,7 @@ const userData = props.user;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 10px;
     box-sizing: border-box;
     width: 100%;
@@ -187,6 +212,21 @@ const userData = props.user;
     align-items: center;
     justify-content: center;
     gap: 20px;
+    pointer-events: none;
+}
+
+.right-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.left-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 @media (max-width: 768px) {

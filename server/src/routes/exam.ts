@@ -5,6 +5,7 @@ import type { IExam, IExamCreate } from '../interfaces/Exam.js';
 import { validateCreateExamSchema } from '../middleware/validate_schema.js';
 import { assignExamToUsers, parseExamSeating } from '../utils/exam_utils.js';
 import type { ExamsCollection } from '../types/mongodb.js';
+import type { IUser } from '../interfaces/User.js';
 
 export const examRouter = Router();
 
@@ -44,8 +45,24 @@ examRouter.get('/fetch/:id/', authenticateToken(), async (req: Request, res: Res
     }
 });
 
-examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validateCreateExamSchema, async (req, res) => {
+examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validateCreateExamSchema, async (req: Request, res: Response) => {
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        return res.status(400).json({
+            message: 'User ID missing or invalid.',
+        });
+    }
+
     try {
+        const userId = new ObjectId(req.user.id);
+
+        const user = await req.db.collection<IUser>('users').findOne({ _id: userId });
+
+        if (!user) {
+            return res.status(400).json({
+                message: 'User ID missing.',
+            });
+        }
+
         const examBody: IExamCreate = req.body;
         const { seating, ...tempExam } = examBody;
         const parsedSeating = await parseExamSeating(examBody.seating, req);
@@ -62,7 +79,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
             });
         }
 
-        assignExamToUsers(exam, req, res);
+        assignExamToUsers(exam, req, res, user.email);
 
         return res.status(200).json({
             message: 'Successfully inserted exam.',
@@ -71,6 +88,55 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
         console.error('Error while inserting exam:', error);
         return res.status(500).json({
             message: 'An internal server error occurred.',
+        });
+    }
+});
+
+examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), async (req: Request, res: Response) => {
+    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+            message: 'Exam ID missing or invalid.',
+        });
+    }
+
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        return res.status(400).json({
+            message: 'User ID missing or invalid.',
+        });
+    }
+
+    try {
+        const userId = new ObjectId(req.user.id);
+        const examId = new ObjectId(req.params.id);
+
+        const user = await req.db.collection<IUser>('users').findOne({ _id: userId });
+
+        if (!user?.exams.includes(examId)) {
+            return res.status(403).json({
+                message: 'User is forbidden from deleting the exam.',
+            });
+        }
+
+        const deleteResult = await req.db.collection<IExam>('exams').deleteOne({ _id: examId });
+
+        if (deleteResult.deletedCount === 0) {
+            return res.status(404).json({
+                message: 'Exam to delete not found.',
+            });
+        }
+
+        await req.db.collection<IUser>('users').updateMany(
+            { exams: examId },
+            { $pull: { exams: examId } },
+        );
+
+        return res.status(200).json({
+            message: 'Exam deleted successfully.',
+        });
+    } catch (error) {
+        console.error('An error occurred while deleting exam:', error);
+        return res.status(500).json({
+            message: 'An internal server error occurred while deleteing the exam.',
         });
     }
 });

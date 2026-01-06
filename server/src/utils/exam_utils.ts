@@ -10,21 +10,25 @@ interface UserExamUpdate {
     examToAdd: ObjectId;
 }
 
-export async function assignExamToUsers(exam: IExam, req: Request, res: Response) {
+export async function assignExamToUsers(exam: IExam, req: Request, res: Response, creatorEmail: string) {
+    if (!exam._id || !ObjectId.isValid(exam._id)) {
+        console.error('Exam ID is missing or invalid.');
+        return res.status(400).json({
+            message: 'Exam ID missing or invalid.',
+        });
+    }
+
     const seating = exam.seating;
 
     const usersToUpdate: UserExamUpdate[] = [];
+
+    usersToUpdate.push({ email: creatorEmail, examToAdd: exam._id })
 
     try {
         for (const row of seating) {
             for (const seat of row) {
                 if (!seat.email) {
                     console.error('Email missing.');
-                    continue;
-                }
-
-                if (!exam._id || !ObjectId.isValid(exam._id)) {
-                    console.error('Exam ID is missing or invalid.');
                     continue;
                 }
 

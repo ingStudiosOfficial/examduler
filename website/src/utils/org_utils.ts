@@ -185,7 +185,7 @@ export async function verifyDomain(domain: string, orgId: string, method: Domain
         if (!response.ok) {
             console.error('An error occurred while verifying domain:', responseJson);
             return {
-                message: JSON.stringify(responseJson.message),
+                message: responseJson.message,
                 success: false,
             };
         }

@@ -93,6 +93,33 @@ export async function createExam(examDetails: ExamCreate): Promise<FunctionNotif
     }
 }
 
+export async function deleteExam(examDetails: Exam): Promise<FunctionNotifier> {
+    console.log('Deleteing exam:', examDetails);
+
+    const examId = examDetails._id;
+
+    try {
+        const response = await fetch(`${apiBaseUrl}/exam/delete/${examId}/`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('Failed to delete exam:', responseJson);
+            return { message: responseJson.message, success: false };
+        }
+
+        console.log('Successfully deleted exam.');
+
+        return { message: 'Successfully deleted examination', success: true }
+    } catch (error) {
+        console.error('Failed to delete exam:', error);
+        return { message: 'An unexpected error occurred while deleteing examination', success: false };
+    }
+}
+
 export async function fetchAllExams(): Promise<Exam[]> {
     try {
         const response = await fetch(`${apiBaseUrl}/api/exams/fetch/user/`, {
@@ -125,7 +152,9 @@ export async function fetchAllExams(): Promise<Exam[]> {
 
 export async function fetchPublicExam(id: string): Promise<PublicExam> {
     try {
-        const response = await fetch(`${apiBaseUrl}/api/public/exam/fetch/${id}/`);
+        const response = await fetch(`${apiBaseUrl}/api/public/exam/fetch/${id}/`, {
+            method: 'GET',
+        });
 
         const responseJson: ResponseJson = await response.json();
 
