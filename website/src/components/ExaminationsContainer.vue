@@ -13,6 +13,9 @@ import type { User } from '@/interfaces/User';
 
 // Utils
 import { fetchAllExams, sortExams } from '@/utils/exam_utils';
+import SnackBar from './SnackBar.vue';
+import type { StateObject } from '@/interfaces/SnackBar';
+import { showSnackBar } from '@/utils/snackbar';
 
 interface ComponentProps {
     user: User;
@@ -22,9 +25,10 @@ interface ComponentProps {
 const props = defineProps<ComponentProps>();
 
 const exams = ref<Exam[]>();
-
 const examOpened = ref<boolean>(false);
 const examDetails = ref<Exam | null>(null);
+const sbMessage = ref<string>();
+const sbOpened = ref<StateObject>({ visible: false })
 
 function displayExamDialog(examInfo: Exam) {
     examDetails.value = examInfo;
@@ -45,6 +49,11 @@ async function refreshExams() {
         console.error('Error while fetching exams:', error);
         exams.value = [];
     }
+}
+
+function displaySb(message: string) {
+    sbMessage.value = message;
+    showSnackBar(4000, sbOpened.value);
 }
 
 watch(examOpened, (isOpen: boolean) => {
@@ -89,7 +98,9 @@ onMounted(async () => {
         </div>
         <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your examinations..."></LoaderContainer>
 
-        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()"></ExaminationDialog>
+        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()"></ExaminationDialog>
+
+        <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
     </div>
 </template>
 
