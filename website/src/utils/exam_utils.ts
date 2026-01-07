@@ -99,8 +99,8 @@ export async function deleteExam(examDetails: Exam): Promise<FunctionNotifier> {
     const examId = examDetails._id;
 
     try {
-        const response = await fetch(`${apiBaseUrl}/exam/delete/${examId}/`, {
-            method: 'GET',
+        const response = await fetch(`${apiBaseUrl}/api/exam/delete/${examId}/`, {
+            method: 'DELETE',
             credentials: 'include',
         });
 
