@@ -111,7 +111,10 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
 
         const user = await req.db.collection<IUser>('users').findOne({ _id: userId });
 
-        if (!user?.exams.includes(examId)) {
+        console.log('User exams:', user?.exams);
+        console.log('Exam ID:', examId);
+
+        if (!user?.exams.map(e => e.toString()).includes(examId.toString())) {
             return res.status(403).json({
                 message: 'User is forbidden from deleting the exam.',
             });

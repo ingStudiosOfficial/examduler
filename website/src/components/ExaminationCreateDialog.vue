@@ -168,8 +168,8 @@ watch(dates, (newValue) => {
 .dialog {
     width: 75vw;
     height: 75vh;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -189,8 +189,8 @@ watch(dates, (newValue) => {
 
 .top-panel {
     position: sticky;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-secondary-container);
+    background-color: var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface-variant);
     top: 0;
     left: 0;
     display: flex;
@@ -202,6 +202,7 @@ watch(dates, (newValue) => {
     width: 100%;
     border-bottom: 1px solid var(--md-sys-color-outline);
     z-index: 1001;
+    text-align: center;
 }
 
 .header-title {
