@@ -129,7 +129,7 @@ onMounted(async () => {
 }
 
 .exam-name {
-    font-size: 35px;
+    font-size: 2em;
 }
 
 .exam-date {

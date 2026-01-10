@@ -152,15 +152,17 @@ const userData = props.user;
 }
 
 .exam-name {
-    font-size: 35px;
-    max-width: 60%;
+    font-size: 1.7em;
+    max-width: 50%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    color: var(--md-sys-color-primary)
 }
 
 .exam-date {
     font-weight: bold;
+    color: var(--md-sys-color-primary);
 }
 
 .exam-description {
@@ -171,7 +173,8 @@ const userData = props.user;
 }
 
 .section-header {
-    font-size: 25px;
+    font-size: 1.7em;
+    color: var(--md-sys-color-primary);
 }
 
 .seating-wrapper {
@@ -187,14 +190,14 @@ const userData = props.user;
 
 .top-panel {
     position: sticky;
-    background-color: var(--md-sys-color-surface-variant);
-    color: var(--md-sys-color-on-surface-variant);
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
     top: 0;
     left: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 10px;
     box-sizing: border-box;
     width: 100%;

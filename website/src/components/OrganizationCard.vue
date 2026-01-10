@@ -34,6 +34,8 @@ const props = defineProps<Organization>();
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .organization-domains {

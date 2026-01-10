@@ -62,8 +62,8 @@ const props = defineProps<SeatingProp>();
 }
 
 .seating-seat.user-seat {
-    background-color: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
 }
 
 .seating-container {
@@ -76,18 +76,13 @@ const props = defineProps<SeatingProp>();
 }
 
 .seat-id {
-    font-size: 20px;
+    font-size: 1.5em;
     margin: 0;
     font-weight: bold;
 }
 
 .seat-name {
-    font-size: 10px;
+    font-size: 0.7em;
     font-weight: bold;
-}
-
-.seat-email {
-    font-size: 10px;
-    font-weight: normal;
 }
 </style>

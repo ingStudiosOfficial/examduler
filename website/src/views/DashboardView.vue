@@ -15,6 +15,7 @@ import { fetchUserData } from '@/utils/user_utils';
 const userData = ref<User | null>(null);
 const examCreateDialogOpened = ref<boolean>(false);
 const refreshExams = ref<boolean>(false);
+const windowWidth = ref<number>(window.innerWidth);
 
 onMounted(async () => {
     try {
@@ -58,7 +59,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
         <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
 
-        <md-fab class="add-button" label="Create" @click="openCreateExamDialog()">
+        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" :label="windowWidth > 768 ? 'Create' : ''" :size="windowWidth > 768 ? 'medium' : 'large'" @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>
         </md-fab>
     </div>

@@ -189,8 +189,8 @@ watch(dates, (newValue) => {
 
 .top-panel {
     position: sticky;
-    background-color: var(--md-sys-color-surface-variant);
-    color: var(--md-sys-color-on-surface-variant);
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
     top: 0;
     left: 0;
     display: flex;
@@ -206,11 +206,13 @@ watch(dates, (newValue) => {
 }
 
 .header-title {
-    font-size: 35px;
+    font-size: 2em;
+    color: var(--md-sys-color-primary)
 }
 
 .subheader {
-    font-size: 25px;
+    font-size: 1.7em;
+    color: var(--md-sys-color-primary)
 }
 
 .dialog-settings-field {
@@ -226,8 +228,8 @@ watch(dates, (newValue) => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: var(--md-sys-color-surface);
-    color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface-container);
     border-radius: 25px;
     padding: 20px;
     gap: 10px;
