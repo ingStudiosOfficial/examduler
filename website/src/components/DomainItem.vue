@@ -6,7 +6,6 @@ import '@material/web/iconbutton/outlined-icon-button.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/menu/menu-item.js';
 import { onMounted, ref, watch } from 'vue';
-import { vibrate } from '@/utils/vibrate';
 import { copyVerificationToken, verifyDomain } from '@/utils/org_utils';
 
 interface ComponentProps {
@@ -26,8 +25,6 @@ const emit = defineEmits(['domainChange', 'displaySnackBar', 'deleteDomain'])
 const domainToDisplay = ref<Domain>();
 
 async function triggerCopyToken(token: string) {
-    vibrate([10]);
-
     const snackBarText = await copyVerificationToken(token);
 
     emit('displaySnackBar', snackBarText);
@@ -78,13 +75,13 @@ onMounted(() => {
 <template>
     <div v-if="domainToDisplay" class="domain-group">
         <md-outlined-text-field class="domain-input" v-model="domainToDisplay.domain" :label="`Domain ${props.index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
-        <md-icon-button type="button" @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
+        <md-icon-button @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
             <md-icon>content_copy</md-icon>
         </md-icon-button>
-        <md-icon-button type="button" @click="toggleMenu()" id="domain-verification-btn" :disabled="!domain.verificationToken || domain.verified">
+        <md-icon-button @click="toggleMenu()" id="domain-verification-btn" :disabled="!domain.verificationToken || domain.verified">
             <md-icon>domain_verification</md-icon>
         </md-icon-button>
-        <md-icon-button type="button" @click="deleteDomain()">
+        <md-icon-button @click="deleteDomain()">
             <md-icon>delete</md-icon>
         </md-icon-button>
         <md-menu anchor="domain-verification-btn" id="domain-verification-menu" positioning="popover">

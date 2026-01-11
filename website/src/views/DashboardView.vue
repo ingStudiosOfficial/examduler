@@ -59,7 +59,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
         <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
 
-        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" :label="windowWidth > 768 ? 'Create' : ''" :size="windowWidth > 768 ? 'medium' : 'large'" @click="openCreateExamDialog()">
+        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" :label="windowWidth > 768 ? 'Create' : ''" :size="windowWidth > 768 ? 'medium' : 'large'" v-vibrate @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>
         </md-fab>
     </div>
@@ -76,7 +76,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
 .loader-container {
     position: fixed;
-    top: 50vh;
+    top: 50dvh;
     left: 50vw;
     transform: translate(-50%, -50%);
 }

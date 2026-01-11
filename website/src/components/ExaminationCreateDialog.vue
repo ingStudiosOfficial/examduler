@@ -13,7 +13,6 @@ import '@vuepic/vue-datepicker/dist/main.css';
 
 import type { ExamCreate } from '@/interfaces/Exam';
 
-import { vibrate } from '@/utils/vibrate';
 import { createExam } from '@/utils/exam_utils';
 
 const emit = defineEmits(['close', 'success']);
@@ -32,8 +31,6 @@ const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
 
 function closeDialog() {
-    vibrate([10]);
-
     examToCreate.value = {
         name: '',
         date: '',
@@ -45,8 +42,6 @@ function closeDialog() {
 }
 
 function openFilePicker() {
-    vibrate([10]);
-
     seatingPicker.value.click();
 }
 
@@ -106,8 +101,6 @@ async function examFormSubmit() {
 }
 
 function pressExamSubmit() {
-    vibrate([10]);
-
     submitButton.value.click();
 }
 
@@ -118,9 +111,9 @@ watch(dates, (newValue) => {
 
 <template>
     <div class="backdrop">
-        <form class="dialog" @submit.prevent="examFormSubmit()">
+        <div class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
-                <md-icon-button type="button" @click="closeDialog()">
+                <md-icon-button v-vibrate @click="closeDialog()">
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
@@ -146,7 +139,7 @@ watch(dates, (newValue) => {
             <md-fab class="submit-button" @click="pressExamSubmit()">
                 <md-icon slot="icon">check</md-icon>
             </md-fab>
-        </form>
+        </div>
     </div>
 </template>
 
@@ -156,7 +149,7 @@ watch(dates, (newValue) => {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -167,7 +160,7 @@ watch(dates, (newValue) => {
 
 .dialog {
     width: 75vw;
-    height: 75vh;
+    height: 75dvh;
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
     display: flex;

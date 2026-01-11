@@ -9,7 +9,7 @@ import '@material/web/menu/menu.js';
 
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
 import { downloadMembersJson, editOrganization } from '@/utils/org_utils';
-import { vibrate } from '@/utils/vibrate';
+
 
 import SnackBar from './SnackBar.vue';
 import DomainItem from './DomainItem.vue';
@@ -41,8 +41,6 @@ function deleteDomain(index: number) {
 }
 
 function openFilePicker() {
-    vibrate([10]);
-
     membersPicker.value.click();
 }
 
@@ -118,8 +116,6 @@ function addDomain() {
 }
 
 function pressOrgSubmit() {
-    vibrate([10]);
-
     submitButton.value.click();
 }
 
@@ -149,9 +145,9 @@ onMounted(() => {
 
 <template>
     <div class="backdrop" v-if="loadedOrganization && loadedOrganization._id">
-        <form class="dialog" @submit.prevent="orgFormSubmit()">
+        <div class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
-                <md-icon-button @click="closeDialog()">
+                <md-icon-button v-vibrate @click="closeDialog()">
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
@@ -161,7 +157,7 @@ onMounted(() => {
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain${index}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
-                <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
+                <md-filled-button @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             </div>
             <h2 class="subheader">Members</h2>
             <div class="members-output">
@@ -187,7 +183,7 @@ onMounted(() => {
             <md-fab class="submit-button" @click="pressOrgSubmit()">
                 <md-icon slot="icon">check</md-icon>
             </md-fab>
-        </form>
+        </div>
 
         <SnackBar :message="snackBarText" :displayed="snackBarDisplayed.visible"></SnackBar>
     </div>
@@ -199,7 +195,7 @@ onMounted(() => {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -210,7 +206,7 @@ onMounted(() => {
 
 .dialog {
     width: 75vw;
-    height: 75vh;
+    height: 75dvh;
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
     display: flex;

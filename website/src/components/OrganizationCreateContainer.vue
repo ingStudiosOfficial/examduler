@@ -40,7 +40,7 @@ watch(dialogOpened, (isOpen: boolean) => {
 
 <template>
     <p class="no-org-text" v-if="!props.hasOrganizations">You don't look like you have any organizations yet.</p>
-    <md-filled-button class="org-create-btn" @click="openCreateOrgDialog()">Create an organization</md-filled-button>
+    <md-filled-button class="org-create-btn" v-vibrate @click="openCreateOrgDialog()">Create an organization</md-filled-button>
     <OrganizationCreateDialog v-if="dialogOpened" @close="closeCreateOrgDialog()" @success="emitRefresh"></OrganizationCreateDialog>
 </template>
 

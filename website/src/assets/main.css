@@ -3,7 +3,7 @@
 body {
     width: 100vw;
     height: auto;
-    min-height: 100vh;
+    min-height: 100dvh;
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
     font-family: var(--md-ref-typeface-plain), system-ui;

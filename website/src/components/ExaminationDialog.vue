@@ -9,7 +9,6 @@ import type { User } from '@/interfaces/User';
 import type { Seating } from '@/interfaces/Seating';
 
 import { deleteExam, formatExamDate, getUserSeat, shareExam } from '@/utils/exam_utils';
-import { vibrate } from '@/utils/vibrate';
 
 interface ComponentProps {
     exam: Exam;
@@ -35,8 +34,6 @@ function tryGetUserSeat(): Seating | null {
 }
 
 async function triggerShareExam() {
-    vibrate([10]);
-
     const { message, success } = await shareExam(props.exam);
 
     if (!success) {
@@ -51,8 +48,6 @@ async function triggerShareExam() {
 }
 
 async function triggerDeleteExam() {
-    vibrate([10]);
-
     if (!confirm(`Are you sure you want to delete the examination '${props.exam.name}'?`)) return;
 
     const { message, success } = await deleteExam(props.exam);
@@ -82,7 +77,7 @@ const userData = props.user;
         <div class="dialog">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button @click="triggerDeleteExam()">
+                    <md-icon-button v-vibrate @click="triggerDeleteExam()">
                         <md-icon>delete</md-icon>
                     </md-icon-button>
                 </div>
@@ -100,7 +95,7 @@ const userData = props.user;
                 </div>
             </div>
             <h1 class="section-header">Description</h1>
-            <p>{{ props.exam.description }}</p>
+            <p class="exam-description">{{ props.exam.description }}</p>
             <h1 class="section-header">Seating</h1>
             <p>Your seat: <b>{{ tryGetUserSeat()?.seat }}</b></p>
             <div class="seating-wrapper">
@@ -116,7 +111,7 @@ const userData = props.user;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -127,7 +122,7 @@ const userData = props.user;
 
 .dialog {
     width: 75vw;
-    height: 75vh;
+    height: 75dvh;
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
     display: flex;
@@ -166,7 +161,7 @@ const userData = props.user;
 }
 
 .exam-description {
-    width: 80%;
+    width: 90%;
     overflow-wrap: break-word;
     white-space: pre-wrap;
     word-break: break-all;

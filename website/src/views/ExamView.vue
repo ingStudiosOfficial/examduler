@@ -6,7 +6,6 @@ import { onMounted, ref } from 'vue';
 import '@material/web/button/outlined-button.js';
 import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
-import { vibrate } from '@/utils/vibrate';
 import SnackBar from '@/components/SnackBar.vue';
 
 const examDetails = ref<PublicExam>();
@@ -38,8 +37,6 @@ async function tryFetchExam() {
 }
 
 async function triggerDownloadExam() {
-    vibrate([10]);
-
     if (!examDetails.value) {
         console.error('Exam details is missing.');
         examDownloadMessage.value = 'No examination details found';
@@ -97,14 +94,14 @@ onMounted(async () => {
 
 .exam-card {
     position: fixed;
-    top: 50vh;
+    top: 50dvh;
     left: 50vw;
     transform: translate(-50%, -50%);
     text-align: center;
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
     width: 40vw;
-    height: 80vh;
+    height: 80dvh;
     border-radius: 25px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -142,7 +139,7 @@ onMounted(async () => {
 
 .loader {
     position: fixed;
-    top: 50vh;
+    top: 50dvh;
     left: 50vw;
     transform: translate(-50%, -50%);
     z-index: 500;

@@ -8,7 +8,6 @@ import '@material/web/fab/fab.js';
 
 import type { OrganizationCreate } from '@/interfaces/Org';
 
-import { vibrate } from '@/utils/vibrate';
 import { createOrganization } from '@/utils/org_utils';
 
 const emit = defineEmits<{ (e: 'close'): void, (e: 'success', message: string): void }>();
@@ -41,14 +40,10 @@ function deleteDomain(index: number) {
 }
 
 function openFilePicker() {
-    vibrate([10]);
-
     membersPicker.value.click();
 }
 
 function pressOrgSubmit() {
-    vibrate([10]);
-
     submitButton.value.click();
 }
 
@@ -106,9 +101,9 @@ async function orgFormSubmit() {
 
 <template>
     <div class="backdrop">
-        <form class="dialog" @submit.prevent="orgFormSubmit()">
+        <div class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
-                <md-icon-button type="button" @click="closeDialog()">
+                <md-icon-button v-vibrate @click="closeDialog()">
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
@@ -119,12 +114,12 @@ async function orgFormSubmit() {
             <div class="domains">
                 <div class="domain-group" v-for="(_, index) in organizationToCreate.domains" :key="'domain' + index">
                     <md-outlined-text-field class="domain-input" v-if="organizationToCreate.domains[index]" v-model="organizationToCreate.domains[index].domain" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
-                    <md-icon-button type="button" @click="deleteDomain(index)">
+                    <md-icon-button @click="deleteDomain(index)">
                         <md-icon>delete</md-icon>
                     </md-icon-button>
                 </div>
             </div>
-            <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
+            <md-filled-button @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             <h2 class="subheader">Members</h2>
             <div class="members-input">
                 <p>Your members</p>
@@ -141,7 +136,7 @@ async function orgFormSubmit() {
             <md-fab class="submit-button" @click="pressOrgSubmit()">
                 <md-icon slot="icon">check</md-icon>
             </md-fab>
-        </form>
+        </div>
     </div>
 </template>
 
@@ -151,7 +146,7 @@ async function orgFormSubmit() {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -162,7 +157,7 @@ async function orgFormSubmit() {
 
 .dialog {
     width: 75vw;
-    height: 75vh;
+    height: 75dvh;
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
     display: flex;
