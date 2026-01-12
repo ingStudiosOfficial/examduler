@@ -65,6 +65,10 @@ async function triggerDeleteExam() {
     emit('showSb', message);
 }
 
+async function triggerEditExam() {
+    console.log('Attempting to edit exam...');
+}
+
 function closeDialog() {
     emit('close');
 }
@@ -77,8 +81,11 @@ const userData = props.user;
         <div class="dialog">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button v-vibrate @click="triggerDeleteExam()">
+                    <md-icon-button v-if="userData.role === 'teacher' || userData.role === 'admin'" v-vibrate @click="triggerDeleteExam()">
                         <md-icon>delete</md-icon>
+                    </md-icon-button>
+                    <md-icon-button v-if="userData.role === 'teacher' || userData.role === 'admin'" v-vibrate @click="triggerEditExam()">
+                        <md-icon>edit</md-icon>
                     </md-icon-button>
                 </div>
                 <div class="exam-headers">
@@ -94,6 +101,8 @@ const userData = props.user;
                     </md-icon-button>
                 </div>
             </div>
+            <h1 class="exam-name">{{ props.exam.name }}</h1>
+            <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
             <h1 class="section-header">Description</h1>
             <p class="exam-description">{{ props.exam.description }}</p>
             <h1 class="section-header">Seating</h1>
@@ -192,7 +201,7 @@ const userData = props.user;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 10px;
     box-sizing: border-box;
     width: 100%;
