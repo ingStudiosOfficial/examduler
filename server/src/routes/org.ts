@@ -347,8 +347,6 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             });
         }
 
-        const verifiedDomains = initialOrg.domains.filter(d => d.verified).map(d => d.domain);
-
         const adminId = new ObjectId(req.user?.id);
         console.log('Admin ID:', adminId);
 
@@ -408,17 +406,16 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         const conflict = await req.db.collection<IOrg>('organizations').findOne({
             domains: {
+                _id: { $ne: orgId },
                 $elemMatch: {
                     domain: { $in: orgToUpdate.domains.map(d => d.domain) },
-                    verified: true
-                }
+                    verified: true,
+                },
             }
         });
 
         if (conflict) {
-            const matchedDomain = conflict.domains.find(d => 
-                orgToUpdate.domains.map(d => d.domain).includes(d.domain) && d.verified
-            )?.domain;
+            const matchedDomain = conflict.domains.find(d => orgToUpdate.domains.map(d => d.domain).includes(d.domain) && d.verified)?.domain;
 
             return res.status(409).json({
                 message: `Organization with domain '${matchedDomain}' already exists.`,

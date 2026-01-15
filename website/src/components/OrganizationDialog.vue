@@ -145,7 +145,7 @@ onMounted(() => {
 
 <template>
     <div class="backdrop" v-if="loadedOrganization && loadedOrganization._id">
-        <div class="dialog" @submit.prevent="orgFormSubmit()">
+        <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
                 <md-icon-button v-vibrate @click="closeDialog()">
                     <md-icon>close</md-icon>
@@ -157,7 +157,7 @@ onMounted(() => {
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain${index}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
-                <md-filled-button @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
+                <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             </div>
             <h2 class="subheader">Members</h2>
             <div class="members-output">
@@ -183,7 +183,7 @@ onMounted(() => {
             <md-fab class="submit-button" @click="pressOrgSubmit()">
                 <md-icon slot="icon">check</md-icon>
             </md-fab>
-        </div>
+        </form>
 
         <SnackBar :message="snackBarText" :displayed="snackBarDisplayed.visible"></SnackBar>
     </div>

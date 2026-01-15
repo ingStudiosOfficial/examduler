@@ -101,7 +101,7 @@ async function orgFormSubmit() {
 
 <template>
     <div class="backdrop">
-        <div class="dialog" @submit.prevent="orgFormSubmit()">
+        <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
                 <md-icon-button v-vibrate @click="closeDialog()">
                     <md-icon>close</md-icon>
@@ -136,7 +136,7 @@ async function orgFormSubmit() {
             <md-fab class="submit-button" @click="pressOrgSubmit()">
                 <md-icon slot="icon">check</md-icon>
             </md-fab>
-        </div>
+        </form>
     </div>
 </template>
 
