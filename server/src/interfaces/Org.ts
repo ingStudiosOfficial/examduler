@@ -1,6 +1,6 @@
 import type { ObjectId } from 'mongodb';
 import type { IDomain } from './Domain.js';
-import type { IReturnMember, IStoredMember } from './Member.js';
+import type { IMemberWithEmail, IReturnMember, IStoredMember } from './Member.js';
 
 export interface IOrg {
     _id?: ObjectId;
@@ -17,6 +17,7 @@ export type IReturnOrg = Omit<IOrg, 'members'> & {
     members: IReturnMember[];
 };
 
-export interface IUpdateOrg extends IOrg {
+export type IUpdateOrg = Omit<IOrg, 'members'> & {
     uploadedMembers?: string;
+    members: IMemberWithEmail[];
 }

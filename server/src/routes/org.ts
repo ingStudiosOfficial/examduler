@@ -3,10 +3,10 @@ import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import { ObjectId } from 'mongodb';
 import { validateCreateOrgSchema, validateUpdateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg, IUpdateOrg } from '../interfaces/Org.js';
-import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix } from '../utils/org_utils.js';
+import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix, getMembersToDelete } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
 import { getDomain, verifyUsers } from '../utils/user_utils.js';
-import type { IStoredMember } from '../interfaces/Member.js';
+import type { IMemberWithEmail, IStoredMember } from '../interfaces/Member.js';
 import type { IUser } from '../interfaces/User.js';
 
 export const orgRouter = Router();
@@ -370,12 +370,33 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         const { uploadedMembers, members, ...tempOrg } = (req.body as IUpdateOrg);
 
-        let orgToUpdate: IOrg;
+        const membersWithEmail = await req.db.collection<IUser>('users').find({ _id: { $in: initialOrg.members.map(m => m._id) } }).toArray();
+
+        const membersToUpdate: IMemberWithEmail[] = [];
+
+        for (let i = 0; i++; i < membersWithEmail.length) {
+            const member = membersWithEmail[i];
+            const oldMember = members[i];
+
+            if (!member) {
+                console.error('Member not found:', i);
+                continue;
+            }
+
+            if (!oldMember) {
+                console.error('Original member not found:', i);
+                continue;
+            }
+
+            membersToUpdate[i] = { _id: member._id, verified: oldMember.verified, email: member.email };
+        }
+
+        let orgToUpdate: IUpdateOrg;
 
         if (uploadedMembers) {
             console.log('Uploaded members:', uploadedMembers);
 
-            let parsedMembers: IStoredMember[];
+            let parsedMembers: IMemberWithEmail[];
 
             try {
                 parsedMembers = await parseOrgMembers(uploadedMembers, req.db, [], orgId, adminId, admin.email);
@@ -387,7 +408,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
             orgToUpdate = { ...tempOrg, members: parsedMembers, _id: orgId };
         } else {
-            orgToUpdate = { ...tempOrg, members: members };
+            orgToUpdate = { ...tempOrg, members: membersToUpdate };
         }
 
         console.log('Organization to update:', orgToUpdate);
@@ -444,6 +465,10 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
                 message: 'Organization not found.',
             });
         }
+
+        const membersToDelete = getMembersToDelete(orgToUpdate.members, membersToUpdate);
+
+        // TODO: Check whether the member should be deleted in unverified or verified
 
         console.log('Successfully updated organization.');
 

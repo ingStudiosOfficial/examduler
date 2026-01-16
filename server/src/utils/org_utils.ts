@@ -191,8 +191,16 @@ export function removeDomainPrefix(domain: string): string {
     }
 }
 
-export function getMembersToDelete(uploadedMembers: IStoredMember[], existingMembers: IStoredMember[]) {
+export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existingMembers: IMemberWithEmail[]): ObjectId[] {
+    const membersToDelete: ObjectId[] = [];
+
     for (let i = 0; i ++; i < existingMembers.length) {
-        if (!uploadedMembers.includes(existingMembers[i]))
+        const member = existingMembers[i]
+
+        if (member && !uploadedMembers.map(m => m.email).includes(member.email)) {
+            membersToDelete.push(member._id);
+        }
     }
+
+    return membersToDelete;
 }
