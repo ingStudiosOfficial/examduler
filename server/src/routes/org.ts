@@ -7,6 +7,7 @@ import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMem
 import type { IDomain } from '../interfaces/Domain.js';
 import { getDomain, verifyUsers } from '../utils/user_utils.js';
 import type { IStoredMember } from '../interfaces/Member.js';
+import type { IUser } from '../interfaces/User.js';
 
 export const orgRouter = Router();
 
@@ -23,14 +24,22 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
     try {
         const orgId = new ObjectId();
 
-        const adminId = new ObjectId(req.user?.id);
+        const adminId = new ObjectId(req.user.id);
+
+        const admin = await req.db.collection<IUser>('users').findOne({ _id: adminId });
+
+        if (!admin) {
+            return res.status(403).json({
+                message: 'User is forbidden from creating the organization.',
+            });
+        }
 
         const { members, ...tempOrg } = orgFromBody;
 
         let parsedMembers: IStoredMember[];
 
         try {
-            parsedMembers = await parseOrgMembers(members, req.db, [], orgId, adminId);
+            parsedMembers = await parseOrgMembers(members, req.db, [], orgId, adminId, admin.email);
         } catch (error) {
             return res.status(400).json({
                 message: 'Failed to parse members. Members are in an invalid format.',
@@ -350,7 +359,9 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const adminId = new ObjectId(req.user?.id);
         console.log('Admin ID:', adminId);
 
-        if (!adminId || !initialOrg.members.map(m => m._id.toString().includes(adminId.toString()))) {
+        const admin = await req.db.collection<IUser>('users').findOne({ _id: adminId });
+
+        if (!adminId || !admin || !initialOrg.members.map(m => m._id.toString().includes(adminId.toString()))) {
             console.log(initialOrg.members.map(m => m._id));
             return res.status(403).json({
                 message: 'User is forbidden from updating the organization.',
@@ -367,7 +378,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             let parsedMembers: IStoredMember[];
 
             try {
-                parsedMembers = await parseOrgMembers(uploadedMembers, req.db, [], orgId, adminId);
+                parsedMembers = await parseOrgMembers(uploadedMembers, req.db, [], orgId, adminId, admin.email);
             } catch (error) {
                 return res.status(400).json({
                     message: (error instanceof Error) ? error.message : 'An error occurred while parsing members.',

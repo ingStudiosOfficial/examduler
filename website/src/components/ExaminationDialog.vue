@@ -101,8 +101,10 @@ const userData = props.user;
                     </md-icon-button>
                 </div>
             </div>
-            <h1 class="exam-name">{{ props.exam.name }}</h1>
-            <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
+            <div class="mobile-headers">
+                <h1 class="exam-name">{{ props.exam.name }}</h1>
+                <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
+            </div>
             <h1 class="section-header">Description</h1>
             <p class="exam-description">{{ props.exam.description }}</p>
             <h1 class="section-header">Seating</h1>
@@ -161,7 +163,7 @@ const userData = props.user;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    color: var(--md-sys-color-primary)
+    color: var(--md-sys-color-primary);
 }
 
 .exam-date {
@@ -238,9 +240,25 @@ const userData = props.user;
     justify-content: flex-start;
 }
 
+.mobile-headers {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
 @media (max-width: 768px) {
     .seating {
         display: none;
+    }
+
+    .exam-headers {
+        display: none;
+    }
+
+    .mobile-headers {
+        display: flex;
     }
 }
 </style>

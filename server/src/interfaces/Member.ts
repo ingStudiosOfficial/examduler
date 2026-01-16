@@ -7,3 +7,7 @@ export interface IStoredMember {
 }
 
 export type IReturnMember = Pick<IUser, 'name' | 'email' | 'role'>;
+
+export interface IMemberWithEmail extends IStoredMember {
+    email: string;
+}
