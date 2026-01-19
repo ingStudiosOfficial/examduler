@@ -3,7 +3,7 @@ import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import { ObjectId } from 'mongodb';
 import { validateCreateOrgSchema, validateUpdateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg, IUpdateOrg } from '../interfaces/Org.js';
-import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix, getMembersToDelete } from '../utils/org_utils.js';
+import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix, getNewMembers } from '../utils/org_utils.js';
 import type { IDomain } from '../interfaces/Domain.js';
 import { getDomain, verifyUsers } from '../utils/user_utils.js';
 import type { IMemberWithEmail, IStoredMember } from '../interfaces/Member.js';
@@ -334,7 +334,7 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
 
 /*
 FOR THIS ROUTE:
-1. Verify whether user can edit organization
+~ 1. Verify whether user can edit organization
 2. Compare members to keep vs original org
 3. Delete members that are NOT part of the organization
 4. Parse members again
@@ -343,6 +343,130 @@ FOR THIS ROUTE:
 7. Compare diff and update
 */
 
+orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), validateUpdateOrgSchema, async (req: Request, res: Response) => {
+    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
+        console.error('Organization ID missing or invalid.');
+        return res.status(400).json({
+            message: 'Organization ID missing or invalid.',
+        });
+    }
+
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        console.error('User ID missing or invalid.');
+        return res.status(400).json({
+            message: 'User ID missing or invalid.',
+        });
+    }
+
+    try {
+        const adminId = new ObjectId(req.user.id);
+        const orgId = new ObjectId(req.params.id);
+        const orgBody: IUpdateOrg = req.body;
+
+        const adminUser = await req.db.collection<IUser>('users').findOne({ _id: adminId });
+
+        if (!adminUser) {
+            console.error('Admin not found.');
+            return res.status(404).json({
+                message: 'Admin not found.',
+            });
+        }
+
+        const organization = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
+
+        if (!organization) {
+            console.error('Organization to update not found.');
+            return res.status(404).json({
+                message: 'Organization to update not found.',
+            });
+        }
+
+        // Verify whether user can edit organization
+        const adminAuthorized = organization.members.filter(m => m.verified).map(m => m._id).includes(adminId);
+        if (!adminAuthorized) {
+            console.error('User forbidden from updating organization.');
+            return res.status(403).json({
+                message: 'User forbidden from updating organization.',
+            });
+        }
+
+        // Fetch all member details from organization
+        const verifiedMembersBeforeFetch = organization.members.filter(m => m.verified);
+        const unverifiedMembersBeforeFetch = organization.members.filter(m => !m.verified);
+
+        const verifiedMembersToFetch = verifiedMembersBeforeFetch.map(m => m._id);
+        const unverifiedMembersToFetch = unverifiedMembersBeforeFetch.map(m => m._id);
+
+        const verifiedMembersEmails = await req.db.collection<IUser>('users').find({ _id: { $in: verifiedMembersToFetch } }).project({ email: 1 }).toArray();
+        const unverifiedMembersEmails = await req.db.collection<IUser>('unverifiedUsers').find({ _id: { $in: unverifiedMembersToFetch } }).project({ email: 1 }).toArray();
+
+        const verifiedMembers = verifiedMembersBeforeFetch.reduce<IMemberWithEmail[]>(
+            (acc, m, i) => {
+                const emailEntry = verifiedMembersEmails[i];
+                if (!emailEntry) {
+                    console.error(`Verified member with index ${i} not found.`);
+                    return acc;
+                }
+
+                acc.push({
+                    _id: m._id,
+                    verified: m.verified,
+                    email: emailEntry.email,
+                });
+
+                return acc;
+            },
+            [],
+        );
+
+        const unverifiedMembers = unverifiedMembersBeforeFetch.reduce<IMemberWithEmail[]>(
+            (acc, m, i) => {
+                const emailEntry = unverifiedMembersEmails[i];
+                if (!emailEntry) {
+                    console.error(`Unverified member with index ${i} not found.`);
+                    return acc;
+                }
+
+                acc.push({
+                    _id: m._id,
+                    verified: m.verified,
+                    email: emailEntry.email,
+                });
+
+                return acc;
+            },
+            [],
+        );
+
+
+        // Update members
+        const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers);
+        const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers);
+
+        const existingByEmail = new Map<string, IUser>();
+
+        for (const member of [ ...newVerifiedMembers, ...newUnverifiedMembers ]) {
+            existingByEmail.set(member.email, member);
+        }
+
+        const newMembers = [ ...existingByEmail.values() ];
+
+        if (newMembers.length !== 0) {
+            const insertMembersResult = await req.db.collection<IUser>('users').insertMany(newMembers);
+
+            if (insertMembersResult.insertedCount === 0) {
+                console.info('No new users inserted.');
+            }
+        }
+
+        const deleteVerifiedResult = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: verifiedMembersToDelete } });
+        const deleteUnverifiedResult = await req.db.collection<IUser>('unverifiedUsers').deleteMany({ _id: { $in: unverifiedMembersToDelete } });
+
+        // TODO: VERIFY DELETE
+    }
+});
+
+/*
 orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), validateUpdateOrgSchema, async (req: Request, res: Response) => {
     if (!req.params.id || !ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
@@ -523,3 +647,4 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         });
     }
 });
+*/

@@ -12,7 +12,7 @@ export interface IMemberWithEmail extends IStoredMember {
     email: string;
 }
 
-export interface IMemberToDelete {
-    verifiedMembers: ObjectId[];
-    unverifiedMembers: ObjectId[];
+export interface IMemberDiff {
+    membersToDelete: ObjectId[];
+    newMembers: IUser[];
 }

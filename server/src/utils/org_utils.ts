@@ -1,10 +1,10 @@
 import dns from 'dns/promises';
 import crypto from 'crypto';
-import type { Db, InsertOneModel, InsertOneOptions, ObjectId, UpdateOneModel } from 'mongodb';
+import { ObjectId, type Db, type InsertOneModel, type InsertOneOptions, type UpdateOneModel } from 'mongodb';
 import type { IUser } from '../interfaces/User.js';
 import { getDomain } from './user_utils.js';
 import type { Role } from '../types/user.js';
-import type { IMemberToDelete, IMemberWithEmail, IStoredMember } from '../interfaces/Member.js';
+import type { IMemberDiff, IMemberWithEmail, IStoredMember } from '../interfaces/Member.js';
 import type { IDomainVerification } from '../interfaces/Domain.js';
 
 export async function verifyDomainTxt(domain: string, verificationToken: string): Promise<IDomainVerification> {
@@ -191,7 +191,8 @@ export function removeDomainPrefix(domain: string): string {
     }
 }
 
-export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existingMembers: IMemberWithEmail[]): IMemberToDelete {
+/*
+export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existingMembers: IMemberWithEmail[]): IMemberDiff {
     const verifiedMembersToDelete: ObjectId[] = [];
     const unverifiedMembersToDelete: ObjectId[] = [];
 
@@ -208,4 +209,43 @@ export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existing
     }
 
     return { verifiedMembers: verifiedMembersToDelete, unverifiedMembers: unverifiedMembersToDelete };
+}
+*/
+
+export function getNewMembers(uploadedMembers: string, existingMembers: IMemberWithEmail[]): IMemberDiff {
+    const membersArray = uploadedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
+    const parsedUploadedMembers: IUser[] = [];
+
+    for (const member of membersArray) {
+        const [name, email, role] = member.split(',').map(p => p.trim());
+
+        if (!name || !email || !role) {
+            console.error('Invalid row skipping:', member);
+            throw new Error('Invalid members format.');
+        }
+
+        switch (role) {
+            case 'student':
+            case 'teacher':
+            case 'admin':
+                console.log('Role valid.');
+                break;
+            default:
+                console.error('Role invalid.');
+                throw new Error(`Role '${role}' is invalid.`);
+        }
+
+        parsedUploadedMembers.push({ name, email, role, domain: getDomain(email), exams: [], organizations: [], tokenVersion: 0 });
+    }
+
+    const uploadedIds = new Set(parsedUploadedMembers.map(m => m.email));
+    const existingIds = new Set(existingMembers.map(m => m.email));
+
+    // New members
+    const newMembers = parsedUploadedMembers.filter(m => !existingIds.has(m.email));
+
+    // Members to delete
+    const membersToDelete = existingMembers.filter(m => !uploadedIds.has(m._id.toString())).map(m => m._id);
+
+    return { membersToDelete, newMembers };
 }

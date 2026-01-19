@@ -33,7 +33,7 @@ examsRouter.get('/fetch/user/', authenticateToken(), async (req: Request, res: R
         }
 
         if (!user.exams || user.exams.length === 0) {
-            console.error('User has no exams.');
+            console.info('User has no exams.');
             return res.status(404).json({
                 message: 'User has no exams.',
             });
