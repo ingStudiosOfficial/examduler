@@ -406,7 +406,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             let parsedMembers: IMemberWithEmail[];
 
             try {
-                parsedMembers = await parseOrgMembers(uploadedMembers, req.db, [], orgId, adminId, admin.email);
+                parsedMembers = await parseOrgMembers(uploadedMembers, req.db, initialOrg.domains.filter(d => d.verified).map(d => d.domain), orgId, adminId, admin.email);
             } catch (error) {
                 return res.status(400).json({
                     message: (error instanceof Error) ? error.message : 'An error occurred while parsing members.',
@@ -420,17 +420,19 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         console.log('Organization to update:', orgToUpdate);
 
-        for (const [index, domain] of orgToUpdate.domains.entries()) {
-            if (initialOrg.domains.map(d => d.domain).includes(domain.domain)) return;
+        const mappedOrgToDomain = initialOrg.domains.map(d => d.domain);
 
+        for (const [index, domain] of orgToUpdate.domains.entries()) {
             if (!orgToUpdate.domains[index]) {
                 console.error('Domain object missing.');
                 return res.status(400).json({
                     message: 'Domain object missing.',
                 });
             }
-            
+
             orgToUpdate.domains[index].domain = addDomainPrefix(domain.domain);
+
+            if (mappedOrgToDomain.includes(domain.domain)) continue;
 
             if (!checkValidDomain(domain.domain)) {
                 return res.status(400).json({
@@ -477,14 +479,14 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         const { verifiedMembers, unverifiedMembers } = getMembersToDelete(orgToUpdate.members, membersToUpdate);
 
+        let deleteFailures: string[] = [];
+
         if (verifiedMembers.length !== 0) {
             const deleteVerified = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: verifiedMembers } });
 
             if (deleteVerified.deletedCount === 0) {
                 console.error('Failed to delete verified members.');
-                return res.status(404).json({
-                    message: 'Verified members to delete not found.',
-                });
+                deleteFailures.push('Failed to delete verified members.');
             }
         }
 
@@ -493,9 +495,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
             if (deleteUnverified.deletedCount === 0) {
                 console.error('Failed to delete unverified members.');
-                return res.status(404).json({
-                    message: 'Unverified members to delete not found.',
-                });
+                deleteFailures.push('Failed to delete unverified members.')
             }
         }
 
@@ -503,6 +503,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         return res.status(200).json({
             message: 'Successfully updated organization.',
+            deleteFailures: deleteFailures,
         });
     } catch (error) {
         console.error('An error occurred while updating organization:', error);
