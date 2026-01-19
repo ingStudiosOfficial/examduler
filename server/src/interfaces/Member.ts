@@ -11,3 +11,8 @@ export type IReturnMember = Pick<IUser, 'name' | 'email' | 'role'>;
 export interface IMemberWithEmail extends IStoredMember {
     email: string;
 }
+
+export interface IMemberToDelete {
+    verifiedMembers: ObjectId[];
+    unverifiedMembers: ObjectId[];
+}

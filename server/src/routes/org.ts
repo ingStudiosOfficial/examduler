@@ -466,7 +466,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             });
         }
 
-        const membersToDelete = getMembersToDelete(orgToUpdate.members, membersToUpdate);
+        const { ...verifiedMembers, ...unverifiedMembers } = getMembersToDelete(orgToUpdate.members, membersToUpdate);
 
         // TODO: Check whether the member should be deleted in unverified or verified
 

@@ -4,7 +4,7 @@ import type { Db, InsertOneModel, InsertOneOptions, ObjectId, UpdateOneModel } f
 import type { IUser } from '../interfaces/User.js';
 import { getDomain } from './user_utils.js';
 import type { Role } from '../types/user.js';
-import type { IMemberWithEmail, IStoredMember } from '../interfaces/Member.js';
+import type { IMemberToDelete, IMemberWithEmail, IStoredMember } from '../interfaces/Member.js';
 import type { IDomainVerification } from '../interfaces/Domain.js';
 
 export async function verifyDomainTxt(domain: string, verificationToken: string): Promise<IDomainVerification> {
@@ -191,16 +191,21 @@ export function removeDomainPrefix(domain: string): string {
     }
 }
 
-export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existingMembers: IMemberWithEmail[]): ObjectId[] {
-    const membersToDelete: ObjectId[] = [];
+export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existingMembers: IMemberWithEmail[]): IMemberToDelete {
+    const verifiedMembersToDelete: ObjectId[] = [];
+    const unverifiedMembersToDelete: ObjectId[] = [];
 
     for (let i = 0; i ++; i < existingMembers.length) {
         const member = existingMembers[i]
 
         if (member && !uploadedMembers.map(m => m.email).includes(member.email)) {
-            membersToDelete.push(member._id);
+            if (member.verified) {
+                verifiedMembersToDelete.push(member._id);
+            } else {
+                unverifiedMembersToDelete.push(member._id);
+            }
         }
     }
 
-    return membersToDelete;
+    return { verifiedMembers: verifiedMembersToDelete, unverifiedMembers: unverifiedMembersToDelete };
 }
