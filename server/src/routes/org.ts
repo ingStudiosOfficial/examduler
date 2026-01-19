@@ -296,9 +296,9 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
         });
     }
 
-    if (!req.user?.id) {
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
         return res.status(400).json({
-            message: 'User ID not missing.',
+            message: 'User ID missing or invalid.',
         });
     }
 
@@ -345,6 +345,13 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         });
     }
 
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        console.error('User ID not found or invalid.');
+        return res.status(400).json({
+            message: 'User ID missing or invalid.',
+        });
+    }
+
     try {
         const orgId = new ObjectId(req.params.id);
 
@@ -356,12 +363,12 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             });
         }
 
-        const adminId = new ObjectId(req.user?.id);
+        const adminId = new ObjectId(req.user.id);
         console.log('Admin ID:', adminId);
 
         const admin = await req.db.collection<IUser>('users').findOne({ _id: adminId });
 
-        if (!adminId || !admin || !initialOrg.members.map(m => m._id.toString().includes(adminId.toString()))) {
+        if (!adminId || !admin || !initialOrg.members.some(m => m._id.equals(adminId))) {
             console.log(initialOrg.members.map(m => m._id));
             return res.status(403).json({
                 message: 'User is forbidden from updating the organization.',
@@ -374,7 +381,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         const membersToUpdate: IMemberWithEmail[] = [];
 
-        for (let i = 0; i++; i < membersWithEmail.length) {
+        for (let i = 0; i < membersWithEmail.length; i++) {
             const member = membersWithEmail[i];
             const oldMember = members[i];
 
@@ -414,6 +421,8 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         console.log('Organization to update:', orgToUpdate);
 
         for (const [index, domain] of orgToUpdate.domains.entries()) {
+            if (initialOrg.domains.map(d => d.domain).includes(domain.domain)) return;
+
             if (!orgToUpdate.domains[index]) {
                 console.error('Domain object missing.');
                 return res.status(400).json({
@@ -466,9 +475,29 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             });
         }
 
-        const { ...verifiedMembers, ...unverifiedMembers } = getMembersToDelete(orgToUpdate.members, membersToUpdate);
+        const { verifiedMembers, unverifiedMembers } = getMembersToDelete(orgToUpdate.members, membersToUpdate);
 
-        // TODO: Check whether the member should be deleted in unverified or verified
+        if (verifiedMembers.length !== 0) {
+            const deleteVerified = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: verifiedMembers } });
+
+            if (deleteVerified.deletedCount === 0) {
+                console.error('Failed to delete verified members.');
+                return res.status(404).json({
+                    message: 'Verified members to delete not found.',
+                });
+            }
+        }
+
+        if (unverifiedMembers.length !== 0) {
+            const deleteUnverified = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: unverifiedMembers } });
+
+            if (deleteUnverified.deletedCount === 0) {
+                console.error('Failed to delete unverified members.');
+                return res.status(404).json({
+                    message: 'Unverified members to delete not found.',
+                });
+            }
+        }
 
         console.log('Successfully updated organization.');
 

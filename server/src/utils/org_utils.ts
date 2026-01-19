@@ -195,7 +195,7 @@ export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existing
     const verifiedMembersToDelete: ObjectId[] = [];
     const unverifiedMembersToDelete: ObjectId[] = [];
 
-    for (let i = 0; i ++; i < existingMembers.length) {
+    for (let i = 0; i < existingMembers.length; i++) {
         const member = existingMembers[i]
 
         if (member && !uploadedMembers.map(m => m.email).includes(member.email)) {
