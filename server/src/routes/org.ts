@@ -335,8 +335,8 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
 /*
 FOR THIS ROUTE:
 ~ 1. Verify whether user can edit organization
-2. Compare members to keep vs original org
-3. Delete members that are NOT part of the organization
+~2. Compare members to keep vs original org
+~3. Delete members that are NOT part of the organization
 4. Parse members again
 5. DO NOT recreate verification token and keep verification status for existing domains the same
 6. Add NEW domains (unverified) to the organization
@@ -443,13 +443,13 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers);
         const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers);
 
-        const existingByEmail = new Map<string, IUser>();
+        const newByEmail = new Map<string, IUser>();
 
         for (const member of [ ...newVerifiedMembers, ...newUnverifiedMembers ]) {
-            existingByEmail.set(member.email, member);
+            newByEmail.set(member.email, member);
         }
 
-        const newMembers = [ ...existingByEmail.values() ];
+        const newMembers = [ ...newByEmail.values() ];
 
         if (newMembers.length !== 0) {
             const insertMembersResult = await req.db.collection<IUser>('users').insertMany(newMembers);
@@ -459,10 +459,30 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             }
         }
 
+        // Delete members
         const deleteVerifiedResult = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: verifiedMembersToDelete } });
         const deleteUnverifiedResult = await req.db.collection<IUser>('unverifiedUsers').deleteMany({ _id: { $in: unverifiedMembersToDelete } });
 
-        // TODO: VERIFY DELETE
+        if (deleteVerifiedResult.deletedCount === 0) {
+            console.info('No verified users deleted.');
+        }
+
+        if (deleteUnverifiedResult.deletedCount === 0) {
+            console.info('No unverified users deleted.');
+        }
+
+        const deleteByEmail = new Map<string, ObjectId>();
+
+        for (const member of [ ...verifiedMembersToDelete, ...unverifiedMembersToDelete ]) {
+            deleteByEmail.set(member.toString(), member);
+        }
+
+        const membersToDelete = [ ...deleteByEmail.values() ]
+
+        const removeMembersFromOrgResult = await req.db.collection<IOrg>('organizations').updateOne(
+            { _id: orgId },
+            { $pull: { members: { _id: { $in: membersToDelete } } } }
+        );
     }
 });
 
