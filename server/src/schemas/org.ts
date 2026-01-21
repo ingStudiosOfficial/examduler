@@ -1,13 +1,13 @@
 import Joi from 'joi';
 
-export const orgCreateSchema = Joi.object({
-    name: Joi.string().max(50).required(),
-    domains: Joi.array().required(),
-    members: Joi.string().required(),
-});
-
 const domainSchema = Joi.object({
     domain: Joi.string(),
+});
+
+export const orgCreateSchema = Joi.object({
+    name: Joi.string().max(50).required(),
+    domains: Joi.array().items(domainSchema).required(),
+    members: Joi.string().required(),
 });
 
 const editMemberSchema = Joi.object({

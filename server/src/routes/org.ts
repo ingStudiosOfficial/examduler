@@ -337,7 +337,7 @@ FOR THIS ROUTE:
 ~ 1. Verify whether user can edit organization
 ~2. Compare members to keep vs original org
 ~3. Delete members that are NOT part of the organization
-4. Parse members again
+~4. Parse members again
 5. DO NOT recreate verification token and keep verification status for existing domains the same
 6. Add NEW domains (unverified) to the organization
 7. Compare diff and update
@@ -443,19 +443,57 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers);
         const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers);
 
-        const newByEmail = new Map<string, IUser>();
+        const verifiedDomains = organization.domains.filter(d => d.verified).map(d => d.domain);
+
+        const newByEmail = new Map<string, IStoredMember>();
+        const newVerified = new Map<string, IUser>();
+        const newUnverified = new Map<string, IUser>();
 
         for (const member of [ ...newVerifiedMembers, ...newUnverifiedMembers ]) {
-            newByEmail.set(member.email, member);
+            if (!member._id) {
+                console.error('Member ID not found.');
+                continue;
+            }
+
+            let memberToAdd: IStoredMember;
+
+            if (verifiedDomains.includes(getDomain(member.email))) {
+                memberToAdd = { _id: member._id, verified: true };
+                newVerified.set(member.email, member);
+            } else {
+                memberToAdd = { _id: member._id, verified: false };
+                newUnverified.set(member.email, member);
+            }
+
+            newByEmail.set(member.email, memberToAdd);
         }
 
         const newMembers = [ ...newByEmail.values() ];
+        const newMemberToInsertVerified = [ ...newVerified.values() ];
+        const newMemberToInsertUnverified = [ ...newUnverified.values() ];
 
         if (newMembers.length !== 0) {
-            const insertMembersResult = await req.db.collection<IUser>('users').insertMany(newMembers);
+            const insertVerifiedMembersResult = await req.db.collection<IUser>('users').insertMany(newMemberToInsertVerified);
+            const insertUnverifiedMembersResult = await req.db.collection<IUser>('unverifiedUsers').insertMany(newMemberToInsertUnverified);
 
-            if (insertMembersResult.insertedCount === 0) {
-                console.info('No new users inserted.');
+            if (insertVerifiedMembersResult.insertedCount === 0) {
+                console.info('No new verified users inserted.');
+            }
+
+            if (insertVerifiedMembersResult.insertedCount === 0) {
+                console.info('No new unverified users inserted.');
+            }
+
+            const addMembersToOrgResult = await req.db.collection<IOrg>('organizations').updateOne(
+                { _id: orgId },
+                { $push: { members: { $each: newMembers } } },
+            );
+
+            if (addMembersToOrgResult.matchedCount === 0) {
+                console.error('Organization not found.');
+                return res.status(404).json({
+                    message: 'Organization not found.',
+                });
             }
         }
 
@@ -481,8 +519,17 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         const removeMembersFromOrgResult = await req.db.collection<IOrg>('organizations').updateOne(
             { _id: orgId },
-            { $pull: { members: { _id: { $in: membersToDelete } } } }
+            { $pull: { members: { _id: { $in: membersToDelete } } } },
         );
+
+        if (removeMembersFromOrgResult.matchedCount === 0) {
+            console.info('No members found to remove from org array.');
+        }
+
+        // Domain verification
+        const currentDomains = organization.domains;
+
+        
     }
 });
 
