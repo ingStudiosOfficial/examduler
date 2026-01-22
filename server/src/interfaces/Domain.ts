@@ -9,3 +9,8 @@ export interface IDomainVerification {
     status: number;
     message: string;
 }
+
+export type IEditDomain = Omit<IDomain, 'verified' | 'verificationToken'> & {
+    verified?: boolean;
+    verificationToken?: string;
+}

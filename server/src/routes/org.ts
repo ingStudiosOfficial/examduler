@@ -1,10 +1,10 @@
 import { Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
-import { ObjectId } from 'mongodb';
+import { ObjectId, type AnyBulkWriteOperation, type UpdateFilter, type UpdateOneModel } from 'mongodb';
 import { validateCreateOrgSchema, validateUpdateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg, IUpdateOrg } from '../interfaces/Org.js';
 import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix, getNewMembers } from '../utils/org_utils.js';
-import type { IDomain } from '../interfaces/Domain.js';
+import type { IDomain, IEditDomain } from '../interfaces/Domain.js';
 import { getDomain, verifyUsers } from '../utils/user_utils.js';
 import type { IMemberWithEmail, IStoredMember } from '../interfaces/Member.js';
 import type { IUser } from '../interfaces/User.js';
@@ -334,12 +334,13 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
 
 /*
 FOR THIS ROUTE:
+TODO: BATCH EVERYTHING INTO 1 NETWORK REQUEST
 ~ 1. Verify whether user can edit organization
 ~2. Compare members to keep vs original org
 ~3. Delete members that are NOT part of the organization
 ~4. Parse members again
-5. DO NOT recreate verification token and keep verification status for existing domains the same
-6. Add NEW domains (unverified) to the organization
+~5. DO NOT recreate verification token and keep verification status for existing domains the same
+~6. Add NEW domains (unverified) to the organization
 7. Compare diff and update
 */
 
@@ -359,6 +360,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
     }
 
     try {
+        const orgOps: AnyBulkWriteOperation<IOrg>[] = [];
         const adminId = new ObjectId(req.user.id);
         const orgId = new ObjectId(req.params.id);
         const orgBody: IUpdateOrg = req.body;
@@ -480,21 +482,14 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
                 console.info('No new verified users inserted.');
             }
 
-            if (insertVerifiedMembersResult.insertedCount === 0) {
+            if (insertUnverifiedMembersResult.insertedCount === 0) {
                 console.info('No new unverified users inserted.');
             }
 
-            const addMembersToOrgResult = await req.db.collection<IOrg>('organizations').updateOne(
+            orgOps.push(
                 { _id: orgId },
-                { $push: { members: { $each: newMembers } } },
+                { $push: { members: { $each: newMembers } }, }
             );
-
-            if (addMembersToOrgResult.matchedCount === 0) {
-                console.error('Organization not found.');
-                return res.status(404).json({
-                    message: 'Organization not found.',
-                });
-            }
         }
 
         // Delete members
@@ -532,7 +527,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         orgBody.domains.map(d => addDomainPrefix(d.domain));
 
         const newDomains = new Map<string, IDomain>();
-        const domainsToDelete = new Map<string, IDomain>();
+        const domainsToDelete = new Map<string, IEditDomain>();
 
         for (const domain of [ ...currentDomains, ...orgBody.domains ]) {
             // Check if domain exists
@@ -541,31 +536,52 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             // Check for domain to delete
             if (!orgBody.domains.map(d => d.domain).includes(domain.domain)) {
                 domainsToDelete.set(domain.domain, domain);
+                continue;
             }
 
+            // Note: client side sends ONLY the domains, not the verification tokens and verified status
+            // However, ONLY the NEW domains are here at this point, as filtered earlier
+            domain.verified = false;
+
+            // For unique domains - first if statement already checks if domain ALREADY exists
             if (!domain.verificationToken || domain.verificationToken === '') {
                 domain.verificationToken = createVerificationToken();
             }
 
-            newDomains.set(domain.domain, domain);
+            newDomains.set(domain.domain, domain as IDomain);
         }
 
         const newDomainsArray = [ ...newDomains.values() ];
         const domainsToDeleteArray = [ ...domainsToDelete.values() ];
 
-        const addDomainsResult = await req.db.collection<IOrg>('organizations').updateOne(
+        const domainOperationsTemplate: UpdateFilter<IOrg> = {
+            $push: { domains: { $each: newDomainsArray } }, // Add new domains
+            $pull: { domains: { domain: { $in: domainsToDeleteArray.map(d => d.domain) } } }, // Remove old domains
+        };
+
+        // In the future, maybe add the user deletion for that domain???
+
+        // Compare diff and update
+        /*
+        Organization contains:
+            _id - no need - unique
+            name - THIS ONE TO EDIT
+            domains - already added; will be omitted
+            members - already added; will be omitted
+        */
+
+        const nameTemplate: UpdateFilter<IOrg> = {
+            name: orgBody.name,
+        };
+
+        const finalOrgUpdateResult = await req.db.collection<IOrg>('organizations').updateOne(
             { _id: orgId },
-            { $push: { domains: { $each: newDomainsArray } } },
+            {
+                ...addMembersToOrgTemplate,
+                ...domainOperationsTemplate,
+                ...nameTemplate,
+            }
         );
-
-        if (addDomainsResult.matchedCount === 0) {
-            console.error('Organization not found.');
-            return res.status(404).json({
-                message: 'Organization not found.',
-            });
-        }
-
-        if 
     }
 });
 
