@@ -61,6 +61,7 @@ app.use(
 app.use(passport.initialize());
 app.use((req: Request, res: Response, next: NextFunction) => {
     req.db = database;
+    req.client = client;
     next();
 });
 

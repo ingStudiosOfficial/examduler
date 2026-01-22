@@ -191,27 +191,6 @@ export function removeDomainPrefix(domain: string): string {
     }
 }
 
-/*
-export function getMembersToDelete(uploadedMembers: IMemberWithEmail[], existingMembers: IMemberWithEmail[]): IMemberDiff {
-    const verifiedMembersToDelete: ObjectId[] = [];
-    const unverifiedMembersToDelete: ObjectId[] = [];
-
-    for (let i = 0; i < existingMembers.length; i++) {
-        const member = existingMembers[i]
-
-        if (member && !uploadedMembers.map(m => m.email).includes(member.email)) {
-            if (member.verified) {
-                verifiedMembersToDelete.push(member._id);
-            } else {
-                unverifiedMembersToDelete.push(member._id);
-            }
-        }
-    }
-
-    return { verifiedMembers: verifiedMembersToDelete, unverifiedMembers: unverifiedMembersToDelete };
-}
-*/
-
 export function getNewMembers(uploadedMembers: string, existingMembers: IMemberWithEmail[]): IMemberDiff {
     const membersArray = uploadedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
     const parsedUploadedMembers: IUser[] = [];
@@ -245,7 +224,7 @@ export function getNewMembers(uploadedMembers: string, existingMembers: IMemberW
     const newMembers = parsedUploadedMembers.filter(m => !existingIds.has(m.email));
 
     // Members to delete
-    const membersToDelete = existingMembers.filter(m => !uploadedIds.has(m._id.toString())).map(m => m._id);
+    const membersToDelete = existingMembers.filter(m => !uploadedIds.has(m.email.toString())).map(m => m._id);
 
     return { membersToDelete, newMembers };
 }

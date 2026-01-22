@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
-import { ObjectId, type AnyBulkWriteOperation, type UpdateFilter, type UpdateOneModel } from 'mongodb';
+import { ObjectId, type AnyBulkWriteOperation, type InsertOneModel, type UpdateFilter, type UpdateOneModel } from 'mongodb';
 import { validateCreateOrgSchema, validateUpdateOrgSchema } from '../middleware/validate_schema.js';
 import type { ICreateOrg, IOrg, IUpdateOrg } from '../interfaces/Org.js';
 import { createVerificationToken, verifyDomainTxt, verifyDomainHttp, parseOrgMembers, checkValidDomain, addDomainPrefix, getNewMembers } from '../utils/org_utils.js';
@@ -341,7 +341,7 @@ TODO: BATCH EVERYTHING INTO 1 NETWORK REQUEST
 ~4. Parse members again
 ~5. DO NOT recreate verification token and keep verification status for existing domains the same
 ~6. Add NEW domains (unverified) to the organization
-7. Compare diff and update
+~7. Compare diff and update
 */
 
 orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), validateUpdateOrgSchema, async (req: Request, res: Response) => {
@@ -359,8 +359,12 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         });
     }
 
+    const session = req.client.startSession();
+
     try {
         const orgOps: AnyBulkWriteOperation<IOrg>[] = [];
+        const verifiedUserOps: AnyBulkWriteOperation<IUser>[] = [];
+        const unverifiedUserOps: AnyBulkWriteOperation<IUser>[] = [];
         const adminId = new ObjectId(req.user.id);
         const orgId = new ObjectId(req.params.id);
         const orgBody: IUpdateOrg = req.body;
@@ -475,34 +479,41 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const newMemberToInsertUnverified = [ ...newUnverified.values() ];
 
         if (newMembers.length !== 0) {
-            const insertVerifiedMembersResult = await req.db.collection<IUser>('users').insertMany(newMemberToInsertVerified);
-            const insertUnverifiedMembersResult = await req.db.collection<IUser>('unverifiedUsers').insertMany(newMemberToInsertUnverified);
+            const newMembersToInsertVerifiedTemplate = newMemberToInsertVerified.map(m => ({
+                insertOne: {
+                    document: m,
+                },
+            } as AnyBulkWriteOperation<IUser>));
 
-            if (insertVerifiedMembersResult.insertedCount === 0) {
-                console.info('No new verified users inserted.');
-            }
+            const newMembersToInsertUnverifiedTemplate = newMemberToInsertUnverified.map(m => ({
+                insertOne: {
+                    document: m,
+                },
+            } as AnyBulkWriteOperation<IUser>));
 
-            if (insertUnverifiedMembersResult.insertedCount === 0) {
-                console.info('No new unverified users inserted.');
-            }
+            verifiedUserOps.push(...newMembersToInsertVerifiedTemplate);
+            unverifiedUserOps.push(...newMembersToInsertUnverifiedTemplate);
 
-            orgOps.push(
-                { _id: orgId },
-                { $push: { members: { $each: newMembers } }, }
-            );
+            orgOps.push({ 
+                updateOne: {
+                    filter: { _id: orgId },
+                    update: { $push: { members: { $each: newMembers } } },
+                },
+            });
         }
 
         // Delete members
-        const deleteVerifiedResult = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: verifiedMembersToDelete } });
-        const deleteUnverifiedResult = await req.db.collection<IUser>('unverifiedUsers').deleteMany({ _id: { $in: unverifiedMembersToDelete } });
+        verifiedUserOps.push({
+            deleteMany: {
+                filter: { _id: { $in: verifiedMembersToDelete } },
+            },
+        });
 
-        if (deleteVerifiedResult.deletedCount === 0) {
-            console.info('No verified users deleted.');
-        }
-
-        if (deleteUnverifiedResult.deletedCount === 0) {
-            console.info('No unverified users deleted.');
-        }
+        unverifiedUserOps.push({
+            deleteMany: {
+                filter: { _id: { $in: unverifiedMembersToDelete } },
+            },
+        });
 
         const deleteByEmail = new Map<string, ObjectId>();
 
@@ -510,16 +521,14 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             deleteByEmail.set(member.toString(), member);
         }
 
-        const membersToDelete = [ ...deleteByEmail.values() ]
+        const membersToDelete = [ ...deleteByEmail.values() ];
 
-        const removeMembersFromOrgResult = await req.db.collection<IOrg>('organizations').updateOne(
-            { _id: orgId },
-            { $pull: { members: { _id: { $in: membersToDelete } } } },
-        );
-
-        if (removeMembersFromOrgResult.matchedCount === 0) {
-            console.info('No members found to remove from org array.');
-        }
+        orgOps.push({
+            updateOne: {
+                filter: { _id: orgId },
+                update: { $pull: { members: { _id: { $in: membersToDelete } } } },
+            },
+        });
 
         // Domain verification
         const currentDomains = organization.domains;
@@ -554,10 +563,15 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const newDomainsArray = [ ...newDomains.values() ];
         const domainsToDeleteArray = [ ...domainsToDelete.values() ];
 
-        const domainOperationsTemplate: UpdateFilter<IOrg> = {
-            $push: { domains: { $each: newDomainsArray } }, // Add new domains
-            $pull: { domains: { domain: { $in: domainsToDeleteArray.map(d => d.domain) } } }, // Remove old domains
-        };
+        orgOps.push({
+            updateOne: {
+                filter: { _id: orgId },
+                update: {
+                    $push: { domains: { $each: newDomainsArray } }, // Add new domains
+                    $pull: { domains: { domain: { $in: domainsToDeleteArray.map(d => d.domain) } } }, // Remove old domains
+                },
+            },
+        });
 
         // In the future, maybe add the user deletion for that domain???
 
@@ -570,200 +584,30 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             members - already added; will be omitted
         */
 
-        const nameTemplate: UpdateFilter<IOrg> = {
-            name: orgBody.name,
-        };
-
-        const finalOrgUpdateResult = await req.db.collection<IOrg>('organizations').updateOne(
-            { _id: orgId },
-            {
-                ...addMembersToOrgTemplate,
-                ...domainOperationsTemplate,
-                ...nameTemplate,
-            }
-        );
-    }
-});
-
-/*
-orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), validateUpdateOrgSchema, async (req: Request, res: Response) => {
-    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
-        return res.status(400).json({
-            message: 'Organization ID missing or invalid.',
-        });
-    }
-
-    if (!req.body) {
-        return res.status(400).json({
-            message: 'Organization body missing.',
-        });
-    }
-
-    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
-        console.error('User ID not found or invalid.');
-        return res.status(400).json({
-            message: 'User ID missing or invalid.',
-        });
-    }
-
-    try {
-        const orgId = new ObjectId(req.params.id);
-
-        const initialOrg = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
-
-        if (!initialOrg) {
-            return res.status(404).json({
-                message: 'Organization not found.',
-            });
-        }
-
-        const adminId = new ObjectId(req.user.id);
-        console.log('Admin ID:', adminId);
-
-        const admin = await req.db.collection<IUser>('users').findOne({ _id: adminId });
-
-        if (!adminId || !admin || !initialOrg.members.some(m => m._id.equals(adminId))) {
-            console.log(initialOrg.members.map(m => m._id));
-            return res.status(403).json({
-                message: 'User is forbidden from updating the organization.',
-            });
-        }
-
-        const { uploadedMembers, members, ...tempOrg } = (req.body as IUpdateOrg);
-
-        const membersWithEmail = await req.db.collection<IUser>('users').find({ _id: { $in: initialOrg.members.map(m => m._id) } }).toArray();
-
-        const membersToUpdate: IMemberWithEmail[] = [];
-
-        for (let i = 0; i < membersWithEmail.length; i++) {
-            const member = membersWithEmail[i];
-            const oldMember = members[i];
-
-            if (!member) {
-                console.error('Member not found:', i);
-                continue;
-            }
-
-            if (!oldMember) {
-                console.error('Original member not found:', i);
-                continue;
-            }
-
-            membersToUpdate[i] = { _id: member._id, verified: oldMember.verified, email: member.email };
-        }
-
-        let orgToUpdate: IUpdateOrg;
-
-        if (uploadedMembers) {
-            console.log('Uploaded members:', uploadedMembers);
-
-            let parsedMembers: IMemberWithEmail[];
-
-            try {
-                parsedMembers = await parseOrgMembers(uploadedMembers, req.db, initialOrg.domains.filter(d => d.verified).map(d => d.domain), orgId, adminId, admin.email);
-            } catch (error) {
-                return res.status(400).json({
-                    message: (error instanceof Error) ? error.message : 'An error occurred while parsing members.',
-                });
-            }
-
-            orgToUpdate = { ...tempOrg, members: parsedMembers, _id: orgId };
-        } else {
-            orgToUpdate = { ...tempOrg, members: membersToUpdate };
-        }
-
-        console.log('Organization to update:', orgToUpdate);
-
-        const mappedOrgToDomain = initialOrg.domains.map(d => d.domain);
-
-        for (const [index, domain] of orgToUpdate.domains.entries()) {
-            if (!orgToUpdate.domains[index]) {
-                console.error('Domain object missing.');
-                return res.status(400).json({
-                    message: 'Domain object missing.',
-                });
-            }
-
-            orgToUpdate.domains[index].domain = addDomainPrefix(domain.domain);
-
-            if (mappedOrgToDomain.includes(domain.domain)) continue;
-
-            if (!checkValidDomain(domain.domain)) {
-                return res.status(400).json({
-                    message: `Domain '${domain.domain}' is invalid.`,
-                });
-            }
-
-            console.log('Converted domain string to IDomain:', orgToUpdate.domains[index]);
-
-            const verificationToken = createVerificationToken();
-            console.log('Verification token:', verificationToken);
-            orgToUpdate.domains[index].verificationToken = verificationToken;
-        }
-
-        const conflict = await req.db.collection<IOrg>('organizations').findOne({
-            domains: {
-                _id: { $ne: orgId },
-                $elemMatch: {
-                    domain: { $in: orgToUpdate.domains.map(d => d.domain) },
-                    verified: true,
-                },
+        orgOps.push({
+            updateOne: {
+                filter: { _id: orgId },
+                update: { name: orgBody.name },
             }
         });
 
-        if (conflict) {
-            const matchedDomain = conflict.domains.find(d => orgToUpdate.domains.map(d => d.domain).includes(d.domain) && d.verified)?.domain;
-
-            return res.status(409).json({
-                message: `Organization with domain '${matchedDomain}' already exists.`,
-            });
-        }
-
-        const result = await req.db.collection('organizations').updateOne(
-            { _id: orgId },
-            { $set: orgToUpdate },
-        );
-
-        if (result.matchedCount === 0) {
-            console.error('Organization not found.');
-            return res.status(404).json({
-                message: 'Organization not found.',
-            });
-        }
-
-        const { verifiedMembers, unverifiedMembers } = getMembersToDelete(orgToUpdate.members, membersToUpdate);
-
-        let deleteFailures: string[] = [];
-
-        if (verifiedMembers.length !== 0) {
-            const deleteVerified = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: verifiedMembers } });
-
-            if (deleteVerified.deletedCount === 0) {
-                console.error('Failed to delete verified members.');
-                deleteFailures.push('Failed to delete verified members.');
-            }
-        }
-
-        if (unverifiedMembers.length !== 0) {
-            const deleteUnverified = await req.db.collection<IUser>('users').deleteMany({ _id: { $in: unverifiedMembers } });
-
-            if (deleteUnverified.deletedCount === 0) {
-                console.error('Failed to delete unverified members.');
-                deleteFailures.push('Failed to delete unverified members.')
-            }
-        }
+        await session.withTransaction(async () => {
+            await req.db.collection<IOrg>('organizations').bulkWrite(orgOps, { session });
+            await req.db.collection<IUser>('users').bulkWrite(verifiedUserOps, { session });
+            await req.db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedUserOps, { session });
+        });
 
         console.log('Successfully updated organization.');
-
+        
         return res.status(200).json({
             message: 'Successfully updated organization.',
-            deleteFailures: deleteFailures,
         });
     } catch (error) {
-        console.error('An error occurred while updating organization:', error);
+        console.error('An internal server error occurred while updating organization:', error);
         return res.status(500).json({
-            message: 'An internal server error occurred while updating the organization.',
+            message: 'An internal server error occurred while updating organization.',
         });
+    } finally {
+        await session.endSession();
     }
 });
-*/
