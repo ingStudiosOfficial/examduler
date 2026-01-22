@@ -191,7 +191,12 @@ export function removeDomainPrefix(domain: string): string {
     }
 }
 
-export function getNewMembers(uploadedMembers: string, existingMembers: IMemberWithEmail[]): IMemberDiff {
+export function getNewMembers(uploadedMembers: string, existingMembers: IMemberWithEmail[], adminId: ObjectId): IMemberDiff {
+    if (!uploadedMembers || uploadedMembers.length === 0) {
+        const membersToDelete = existingMembers.filter(m => m._id.toString() !== adminId.toString()).map(m => m._id);
+        return { membersToDelete: membersToDelete, newMembers: [] };
+    }
+
     const membersArray = uploadedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
     const parsedUploadedMembers: IUser[] = [];
 
@@ -224,7 +229,7 @@ export function getNewMembers(uploadedMembers: string, existingMembers: IMemberW
     const newMembers = parsedUploadedMembers.filter(m => !existingIds.has(m.email));
 
     // Members to delete
-    const membersToDelete = existingMembers.filter(m => !uploadedIds.has(m.email.toString())).map(m => m._id);
+    const membersToDelete = existingMembers.filter(m => (!uploadedIds.has(m.email.toString()) && m._id.toString() !== adminId.toString())).map(m => m._id);
 
     return { membersToDelete, newMembers };
 }

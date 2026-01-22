@@ -70,6 +70,7 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
             const verificationToken = createVerificationToken();
             console.log('Verification token:', verificationToken);
             orgToCreate.domains[index].verificationToken = verificationToken;
+            orgToCreate.domains[index].verified = false;
         }
 
         const conflict = await req.db.collection<IOrg>('organizations').findOne({
@@ -388,7 +389,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         }
 
         // Verify whether user can edit organization
-        const adminAuthorized = organization.members.filter(m => m.verified).map(m => m._id).includes(adminId);
+        const adminAuthorized = organization.members.filter(m => m.verified).map(m => m._id.toString()).includes(adminId.toString());
         if (!adminAuthorized) {
             console.error('User forbidden from updating organization.');
             return res.status(403).json({
@@ -446,8 +447,8 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
 
         // Update members
-        const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers);
-        const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers);
+        const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers, adminId);
+        const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers, adminId);
 
         const verifiedDomains = organization.domains.filter(d => d.verified).map(d => d.domain);
 
@@ -493,13 +494,6 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
             verifiedUserOps.push(...newMembersToInsertVerifiedTemplate);
             unverifiedUserOps.push(...newMembersToInsertUnverifiedTemplate);
-
-            orgOps.push({ 
-                updateOne: {
-                    filter: { _id: orgId },
-                    update: { $push: { members: { $each: newMembers } } },
-                },
-            });
         }
 
         // Delete members
@@ -523,17 +517,25 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         const membersToDelete = [ ...deleteByEmail.values() ];
 
+        // Add new and delete old
+        orgOps.push({
+            updateOne: {
+                filter: { _id: orgId },
+                update: { $push: { members: { $each: newMembers } } },
+            },
+        });
+
         orgOps.push({
             updateOne: {
                 filter: { _id: orgId },
                 update: { $pull: { members: { _id: { $in: membersToDelete } } } },
             },
-        });
+        })
 
         // Domain verification
         const currentDomains = organization.domains;
 
-        orgBody.domains.map(d => addDomainPrefix(d.domain));
+        orgBody.domains = orgBody.domains.map(d => ({ domain: addDomainPrefix(d.domain), verificationToken: d.verificationToken, verified: d.verified } as IEditDomain));
 
         const newDomains = new Map<string, IDomain>();
         const domainsToDelete = new Map<string, IEditDomain>();
@@ -568,8 +570,16 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
                 filter: { _id: orgId },
                 update: {
                     $push: { domains: { $each: newDomainsArray } }, // Add new domains
-                    $pull: { domains: { domain: { $in: domainsToDeleteArray.map(d => d.domain) } } }, // Remove old domains
                 },
+            },
+        });
+
+        orgOps.push({
+            updateOne: {
+                filter: { _id: orgId },
+                update: {
+                    $pull: { domains: { domain: { $in: domainsToDeleteArray.map(d => d.domain) } } }, // Remove old domains
+                }
             },
         });
 
@@ -587,7 +597,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         orgOps.push({
             updateOne: {
                 filter: { _id: orgId },
-                update: { name: orgBody.name },
+                update: { $set: { name: orgBody.name } },
             }
         });
 
