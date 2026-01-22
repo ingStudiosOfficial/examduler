@@ -529,7 +529,43 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         // Domain verification
         const currentDomains = organization.domains;
 
-        
+        orgBody.domains.map(d => addDomainPrefix(d.domain));
+
+        const newDomains = new Map<string, IDomain>();
+        const domainsToDelete = new Map<string, IDomain>();
+
+        for (const domain of [ ...currentDomains, ...orgBody.domains ]) {
+            // Check if domain exists
+            if (currentDomains.map(d => d.domain).includes(domain.domain)) continue;
+
+            // Check for domain to delete
+            if (!orgBody.domains.map(d => d.domain).includes(domain.domain)) {
+                domainsToDelete.set(domain.domain, domain);
+            }
+
+            if (!domain.verificationToken || domain.verificationToken === '') {
+                domain.verificationToken = createVerificationToken();
+            }
+
+            newDomains.set(domain.domain, domain);
+        }
+
+        const newDomainsArray = [ ...newDomains.values() ];
+        const domainsToDeleteArray = [ ...domainsToDelete.values() ];
+
+        const addDomainsResult = await req.db.collection<IOrg>('organizations').updateOne(
+            { _id: orgId },
+            { $push: { domains: { $each: newDomainsArray } } },
+        );
+
+        if (addDomainsResult.matchedCount === 0) {
+            console.error('Organization not found.');
+            return res.status(404).json({
+                message: 'Organization not found.',
+            });
+        }
+
+        if 
     }
 });
 
