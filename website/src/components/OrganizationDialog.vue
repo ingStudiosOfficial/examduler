@@ -160,6 +160,7 @@ onMounted(() => {
                 <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             </div>
             <h2 class="subheader">Members</h2>
+            <p>{{ loadedOrganization.members.length }} members</p>
             <div class="members-output">
                 <p>Download members</p>
                 <label class="file-download-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
