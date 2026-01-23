@@ -116,14 +116,11 @@ export async function downloadMembersJson(members: Member[]): Promise<FunctionNo
                 }],
             });
 
-            const file = await handle.getFile();
-            const url = URL.createObjectURL(file);
-
             const writable = await handle.createWritable();
             await writable.write(jsonMembers);
             await writable.close();
 
-            return { message: 'Successfully downloaded members', success: true, params: [ url ] };
+            return { message: 'Successfully downloaded members', success: true };
         } else {
             const blobUrl = URL.createObjectURL(jsonMembers);
             const a = document.createElement('a');
@@ -150,11 +147,6 @@ export async function downloadMembersJson(members: Member[]): Promise<FunctionNo
 
         return { message: 'An unexpected error occurred while downloading members', success: false };
     }
-}
-
-export async function openDownloadedFolder(url: unknown[]) {
-    if (typeof url !== 'string') return;
-    window.open(url[0], '_blank');
 }
 
 export async function copyVerificationToken(token: string): Promise<string> {

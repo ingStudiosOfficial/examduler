@@ -197,6 +197,8 @@ export function getNewMembers(uploadedMembers: string, existingMembers: IMemberW
         return { membersToDelete: membersToDelete, newMembers: [] };
     }
 
+    console.log('Uploaded members:', uploadedMembers);
+
     const membersArray = uploadedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
     const parsedUploadedMembers: IUser[] = [];
 
@@ -219,7 +221,7 @@ export function getNewMembers(uploadedMembers: string, existingMembers: IMemberW
                 throw new Error(`Role '${role}' is invalid.`);
         }
 
-        parsedUploadedMembers.push({ name, email, role, domain: getDomain(email), exams: [], organizations: [], tokenVersion: 0 });
+        parsedUploadedMembers.push({ name, email, role, domain: getDomain(email), exams: [], organizations: [], tokenVersion: 0, _id: new ObjectId() });
     }
 
     const uploadedIds = new Set(parsedUploadedMembers.map(m => m.email));
@@ -230,6 +232,9 @@ export function getNewMembers(uploadedMembers: string, existingMembers: IMemberW
 
     // Members to delete
     const membersToDelete = existingMembers.filter(m => (!uploadedIds.has(m.email.toString()) && m._id.toString() !== adminId.toString())).map(m => m._id);
+
+    console.log('New members:', newMembers);
+    console.log('Members to delete:', membersToDelete);
 
     return { membersToDelete, newMembers };
 }
