@@ -2,13 +2,22 @@
 const props = defineProps({
     message: String,
     displayed: Boolean,
+    Button: String,
+    action: Function,
+    params: Array,
 });
+
+function executeAction() {
+    if (!props.action || !props.params || props.params.length === 0) return;
+    props.action(props.params);
+}
 </script>
 
 <template>
     <Transition name="sb-fade">
         <div v-show="props.displayed" class="sb">
             <p>{{ props.message }}</p>
+            <md-outlined-button @click="executeAction()">{{ button }}</md-outlined-button>
         </div>
     </Transition>
 </template>

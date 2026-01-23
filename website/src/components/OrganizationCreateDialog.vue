@@ -114,12 +114,12 @@ async function orgFormSubmit() {
             <div class="domains">
                 <div class="domain-group" v-for="(_, index) in organizationToCreate.domains" :key="'domain' + index">
                     <md-outlined-text-field class="domain-input" v-if="organizationToCreate.domains[index]" v-model="organizationToCreate.domains[index].domain" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
-                    <md-icon-button @click="deleteDomain(index)">
+                    <md-icon-button type="button" @click="deleteDomain(index)">
                         <md-icon>delete</md-icon>
                     </md-icon-button>
                 </div>
             </div>
-            <md-filled-button @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
+            <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             <h2 class="subheader">Members</h2>
             <div class="members-input">
                 <p>Your members</p>

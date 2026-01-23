@@ -8,7 +8,7 @@ import '@material/web/fab/fab.js';
 import '@material/web/menu/menu.js';
 
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
-import { downloadMembersJson, editOrganization } from '@/utils/org_utils';
+import { downloadMembersJson, editOrganization, openDownloadedFolder } from '@/utils/org_utils';
 
 
 import SnackBar from './SnackBar.vue';
@@ -28,6 +28,9 @@ const membersPicker = ref();
 const uploadedMembersName = ref<string>();
 const snackBarText = ref<string>();
 const snackBarDisplayed = ref<StateObject>({ visible: false });
+const snackBarButton = ref<string>();
+const snackBarFunction = ref<(params: unknown[]) => void>();
+const snackBarParams = ref<unknown[]>();
 const submitButton = ref();
 const orgEditMessage = ref<string>();
 const orgEditSuccess = ref<boolean>(false);
@@ -88,9 +91,12 @@ function handleFileUpload(e: Event) {
 }
 
 async function triggerDownloadMembers(members: Member[]) {
-    const { message } = await downloadMembersJson(members);
+    const { message, params } = await downloadMembersJson(members);
 
     snackBarText.value = message;
+    snackBarButton.value = 'Open'
+    snackBarFunction.value = openDownloadedFolder;
+    snackBarParams.value = params;
     showSnackBar(4000, snackBarDisplayed.value);
 }
 
@@ -185,7 +191,7 @@ onMounted(() => {
             </md-fab>
         </form>
 
-        <SnackBar :message="snackBarText" :displayed="snackBarDisplayed.visible"></SnackBar>
+        <SnackBar :message="snackBarText || 'Unknown message'" :displayed="snackBarDisplayed.visible" :button="snackBarButton" :action="snackBarFunction" :params="snackBarParams"></SnackBar>
     </div>
 </template>
 
