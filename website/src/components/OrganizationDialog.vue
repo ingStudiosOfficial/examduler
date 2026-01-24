@@ -80,6 +80,7 @@ function handleFileUpload(e: Event) {
         }
 
         loadedOrganization.value.uploadedMembers = ef.target.result;
+        loadedOrganization.value.memberUploaded = true;
     };
 
     reader.readAsText(uploadedFile);
@@ -140,6 +141,7 @@ watch(props, (newOrg) => {
 
 onMounted(() => {
     loadedOrganization.value = { ...props };
+    loadedOrganization.value.memberUploaded = false;
 });
 </script>
 
@@ -147,9 +149,16 @@ onMounted(() => {
     <div class="backdrop" v-if="loadedOrganization && loadedOrganization._id">
         <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
-                <md-icon-button v-vibrate @click="closeDialog()">
-                    <md-icon>close</md-icon>
-                </md-icon-button>
+                <div class="left-buttons">
+                    <md-icon-button type="button" v-vibrate>
+                        <md-icon>delete</md-icon>
+                    </md-icon-button>
+                </div>
+                <div class="right-buttons">
+                    <md-icon-button type="button" @click="closeDialog()">
+                        <md-icon>close</md-icon>
+                    </md-icon-button>
+                </div>
             </div>
             <h1 class="org-header">Edit Organization</h1>
             <h2 class="subheader">Name</h2>
@@ -241,13 +250,27 @@ onMounted(() => {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 10px;
     box-sizing: border-box;
     width: 100%;
     border-bottom: 1px solid var(--md-sys-color-outline);
     z-index: 1001;
     text-align: center;
+}
+
+.right-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.left-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .org-header {

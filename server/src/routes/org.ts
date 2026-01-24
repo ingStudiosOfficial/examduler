@@ -162,7 +162,7 @@ orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (
             }
         });
 
-        if (existingVerifiedOrg) {
+        if (existingVerifiedOrg && existingVerifiedOrg._id.toString() !== orgId.toString()) {
             return res.status(409).json({
                 message: `Organization with domain ${fetchedDomain.domain} already exists and is verified.`,
             });
@@ -250,7 +250,7 @@ orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async 
             }
         });
 
-        if (existingVerifiedOrg) {
+        if (existingVerifiedOrg && existingVerifiedOrg._id.toString() !== orgId.toString()) {
             return res.status(409).json({
                 message: `Organization with domain ${fetchedDomain.domain} already exists and is verified.`,
             });
@@ -369,6 +369,11 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const adminId = new ObjectId(req.user.id);
         const orgId = new ObjectId(req.params.id);
         const orgBody: IUpdateOrg = req.body;
+        const memberUploaded: boolean = req.body.memberUploaded;
+
+        if (memberUploaded) {
+            delete (orgBody as IUpdateOrg & { memberUploaded?: boolean }).memberUploaded;
+        }
 
         const adminUser = await req.db.collection<IUser>('users').findOne({ _id: adminId });
 
@@ -445,92 +450,95 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             [],
         );
 
-
         // Update members
-        const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers, adminId);
-        const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers, adminId);
+        console.log('Member uploaded:', memberUploaded);
 
-        const verifiedDomains = organization.domains.filter(d => d.verified).map(d => d.domain);
+        if (memberUploaded) {
+            const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers, adminId);
+            const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers, adminId);
 
-        const newByEmail = new Map<string, IStoredMember>();
-        const newVerified = new Map<string, IUser>();
-        const newUnverified = new Map<string, IUser>();
+            const verifiedDomains = organization.domains.filter(d => d.verified).map(d => d.domain);
 
-        for (const member of [ ...newVerifiedMembers, ...newUnverifiedMembers ]) {
-            if (!member._id) {
-                console.error('Member ID not found.');
-                continue;
+            const newByEmail = new Map<string, IStoredMember>();
+            const newVerified = new Map<string, IUser>();
+            const newUnverified = new Map<string, IUser>();
+
+            for (const member of [ ...newVerifiedMembers, ...newUnverifiedMembers ]) {
+                if (!member._id) {
+                    console.error('Member ID not found.');
+                    continue;
+                }
+
+                let memberToAdd: IStoredMember;
+
+                if (verifiedDomains.includes(getDomain(member.email))) {
+                    memberToAdd = { _id: member._id, verified: true };
+                    newVerified.set(member.email, member);
+                } else {
+                    memberToAdd = { _id: member._id, verified: false };
+                    newUnverified.set(member.email, member);
+                }
+
+                newByEmail.set(member.email, memberToAdd);
             }
 
-            let memberToAdd: IStoredMember;
+            const newMembers = [ ...newByEmail.values() ];
+            const newMemberToInsertVerified = [ ...newVerified.values() ];
+            const newMemberToInsertUnverified = [ ...newUnverified.values() ];
 
-            if (verifiedDomains.includes(getDomain(member.email))) {
-                memberToAdd = { _id: member._id, verified: true };
-                newVerified.set(member.email, member);
-            } else {
-                memberToAdd = { _id: member._id, verified: false };
-                newUnverified.set(member.email, member);
+            if (newMembers.length !== 0) {
+                const newMembersToInsertVerifiedTemplate = newMemberToInsertVerified.map(m => ({
+                    insertOne: {
+                        document: m,
+                    },
+                } as AnyBulkWriteOperation<IUser>));
+
+                const newMembersToInsertUnverifiedTemplate = newMemberToInsertUnverified.map(m => ({
+                    insertOne: {
+                        document: m,
+                    },
+                } as AnyBulkWriteOperation<IUser>));
+
+                verifiedUserOps.push(...newMembersToInsertVerifiedTemplate);
+                unverifiedUserOps.push(...newMembersToInsertUnverifiedTemplate);
             }
 
-            newByEmail.set(member.email, memberToAdd);
-        }
-
-        const newMembers = [ ...newByEmail.values() ];
-        const newMemberToInsertVerified = [ ...newVerified.values() ];
-        const newMemberToInsertUnverified = [ ...newUnverified.values() ];
-
-        if (newMembers.length !== 0) {
-            const newMembersToInsertVerifiedTemplate = newMemberToInsertVerified.map(m => ({
-                insertOne: {
-                    document: m,
+            // Delete members
+            verifiedUserOps.push({
+                deleteMany: {
+                    filter: { _id: { $in: verifiedMembersToDelete } },
                 },
-            } as AnyBulkWriteOperation<IUser>));
+            });
 
-            const newMembersToInsertUnverifiedTemplate = newMemberToInsertUnverified.map(m => ({
-                insertOne: {
-                    document: m,
+            unverifiedUserOps.push({
+                deleteMany: {
+                    filter: { _id: { $in: unverifiedMembersToDelete } },
                 },
-            } as AnyBulkWriteOperation<IUser>));
+            });
 
-            verifiedUserOps.push(...newMembersToInsertVerifiedTemplate);
-            unverifiedUserOps.push(...newMembersToInsertUnverifiedTemplate);
+            const deleteByEmail = new Map<string, ObjectId>();
+
+            for (const member of [ ...verifiedMembersToDelete, ...unverifiedMembersToDelete ]) {
+                deleteByEmail.set(member.toString(), member);
+            }
+
+            const membersToDelete = [ ...deleteByEmail.values() ];
+
+            // Add new and delete old
+            orgOps.push({
+                updateOne: {
+                    filter: { _id: orgId },
+                    update: { $push: { members: { $each: newMembers } } },
+                },
+            });
+
+            orgOps.push({
+                updateOne: {
+                    filter: { _id: orgId },
+                    update: { $pull: { members: { _id: { $in: membersToDelete } } } },
+                },
+            });
         }
-
-        // Delete members
-        verifiedUserOps.push({
-            deleteMany: {
-                filter: { _id: { $in: verifiedMembersToDelete } },
-            },
-        });
-
-        unverifiedUserOps.push({
-            deleteMany: {
-                filter: { _id: { $in: unverifiedMembersToDelete } },
-            },
-        });
-
-        const deleteByEmail = new Map<string, ObjectId>();
-
-        for (const member of [ ...verifiedMembersToDelete, ...unverifiedMembersToDelete ]) {
-            deleteByEmail.set(member.toString(), member);
-        }
-
-        const membersToDelete = [ ...deleteByEmail.values() ];
-
-        // Add new and delete old
-        orgOps.push({
-            updateOne: {
-                filter: { _id: orgId },
-                update: { $push: { members: { $each: newMembers } } },
-            },
-        });
-
-        orgOps.push({
-            updateOne: {
-                filter: { _id: orgId },
-                update: { $pull: { members: { _id: { $in: membersToDelete } } } },
-            },
-        })
 
         // Domain verification
         const currentDomains = organization.domains;
@@ -603,8 +611,10 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         await session.withTransaction(async () => {
             await req.db.collection<IOrg>('organizations').bulkWrite(orgOps, { session });
-            await req.db.collection<IUser>('users').bulkWrite(verifiedUserOps, { session });
-            await req.db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedUserOps, { session });
+            if (memberUploaded) {
+                await req.db.collection<IUser>('users').bulkWrite(verifiedUserOps, { session });
+                await req.db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedUserOps, { session });
+            }
         });
 
         console.log('Successfully updated organization.');

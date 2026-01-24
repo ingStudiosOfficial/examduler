@@ -80,13 +80,13 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
         const [seatSeat, seatEmail] = line.split(',').map(s => s.trim());
         if (!seatSeat || !seatEmail) {
             console.error('Seat or email not found.');
-            continue;
+            throw new Error('Invalid seat format.');
         }
 
         const rowMatch = seatSeat.match(/^[A-Z]+/);
         if (!rowMatch) {
             console.error('Row match failed.');
-            continue;
+            throw new Error('Invalid seat format.');
         }
 
         const row = rowMatch[0];

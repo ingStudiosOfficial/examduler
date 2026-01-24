@@ -19,4 +19,5 @@ export const orgUpdateSchema = Joi.object({
     domains: Joi.array().items(domainSchema).required(),
     members: Joi.array().items(editMemberSchema).required(),
     uploadedMembers: Joi.string().optional(),
+    memberUploaded: Joi.boolean().optional(),
 });

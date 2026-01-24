@@ -14,4 +14,5 @@ export type OrganizationCreate = Omit<Organization, 'members'> & {
 
 export interface OrganizationEdit extends Organization {
     uploadedMembers?: string;
+    memberUploaded?: boolean;
 }

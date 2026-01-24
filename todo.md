@@ -1,4 +1,4 @@
-1. Debug why members are not getting uploaded on update
+1. Enusre can upload empty members
 2. Edit exam
 3. Delete org
 4. Add table for editing members
