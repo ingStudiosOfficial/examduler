@@ -7,7 +7,8 @@
         <a href="#features">Features</a> •
         <a href="#development">Development</a> •
         <a href="#contributing">Contributing</a> •
-        <a href="#license">License</a>
+        <a href="#license">License</a> •
+        <a href="https://flavortown.hackclub.com/projects/10251">Support on Flavortown</a>
     </p>
     <hr />
 </p>
