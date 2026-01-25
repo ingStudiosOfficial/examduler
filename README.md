@@ -1,5 +1,5 @@
 <p align="center">
-    <!--<img src="./.github/assets/" width="200px" /><br />-->
+    <img src="./.github/assets/banner.png" width="200px" /><br />
     <h1 align="center">Examduler</h1>
     <p align="center">A <b>free</b>, <b>open-source</b> exam scheduler and management system.</p>
     <p align="center">
