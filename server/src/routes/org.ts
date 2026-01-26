@@ -631,3 +631,84 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         await session.endSession();
     }
 });
+
+orgRouter.delete('/delete/:id/', authenticateToken(), verifyRole('admin'), async (req: Request, res: Response) => {
+    if (!req.params.id || !ObjectId.isValid(req.params.id)) {
+        console.error('Organization ID is missing or invalid.');
+        return res.status(400).json({
+            message: 'Organization ID missing or invalid.',
+        });
+    }
+
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        console.error('User ID missing or invalid.');
+        return res.status(400).json({
+            message: 'User ID missing or invalid.',
+        });
+    }
+
+    const session = req.client.startSession();
+
+    try {
+        const verifiedUserOps: AnyBulkWriteOperation<IUser>[] = [];
+        const unverifiedUserOps: AnyBulkWriteOperation<IUser>[] = [];
+        const adminId = new ObjectId(req.user.id);
+        const orgId = new ObjectId(req.params.id);
+
+        const adminUser = await req.db.collection<IUser>('users').findOne({ _id: adminId });
+
+        if (!adminUser) {
+            console.error('Admin not found.');
+            return res.status(404).json({
+                message: 'Admin not found.',
+            });
+        }
+
+        const organization = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
+
+        if (!organization) {
+            console.error('Organization not found.');
+            return res.status(404).json({
+                message: 'Organization not found.',
+            });
+        }
+
+        // Delete members
+        const verifiedOrgMembers = organization.members.filter(m => m.verified).map(m => m._id);
+        const unverifiedOrgMembers = organization.members.filter(m => !m.verified).map(m => m._id);
+
+        verifiedUserOps.push({
+            deleteMany: {
+                filter: { _id: { $in: verifiedOrgMembers } },
+            },
+        });
+
+        unverifiedUserOps.push({
+            deleteMany: {
+                filter: { _id: { $in: unverifiedOrgMembers } },
+            },
+        });
+
+        // In the future, maybe delete exams
+
+        // Final bulk write
+        await session.withTransaction(async () => {
+            await req.db.collection<IOrg>('organizations').deleteOne({ _id: orgId });
+            if (verifiedOrgMembers.length !== 0) await req.db.collection<IUser>('users').bulkWrite(verifiedUserOps);
+            if (unverifiedOrgMembers.length !== 0) await req.db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedUserOps);
+        });
+
+        console.log('Successfully deleted organization.');
+
+        return res.status(200).json({
+            message: 'Successfully deleted organization.',
+        });
+    } catch (error) {
+        console.error('An error occurred while deleting organization:', error);
+        return res.status(500).json({
+            message: 'An internal server error occurred while deleting organization.',
+        });
+    } finally {
+        await session.endSession();
+    }
+});
