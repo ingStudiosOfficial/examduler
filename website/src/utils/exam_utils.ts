@@ -94,7 +94,7 @@ export async function createExam(examDetails: ExamCreate): Promise<FunctionNotif
 }
 
 export async function deleteExam(examDetails: Exam): Promise<FunctionNotifier> {
-    console.log('Deleteing exam:', examDetails);
+    console.log('Deleting exam:', examDetails);
 
     const examId = examDetails._id;
 
@@ -116,7 +116,7 @@ export async function deleteExam(examDetails: Exam): Promise<FunctionNotifier> {
         return { message: 'Successfully deleted examination', success: true }
     } catch (error) {
         console.error('Failed to delete exam:', error);
-        return { message: 'An unexpected error occurred while deleteing examination', success: false };
+        return { message: 'An unexpected error occurred while deleting examination', success: false };
     }
 }
 

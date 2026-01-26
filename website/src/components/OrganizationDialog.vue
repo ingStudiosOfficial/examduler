@@ -8,7 +8,7 @@ import '@material/web/fab/fab.js';
 import '@material/web/menu/menu.js';
 
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
-import { downloadMembersJson, editOrganization } from '@/utils/org_utils';
+import { deleteOrganization, downloadMembersJson, editOrganization } from '@/utils/org_utils';
 
 
 import SnackBar from './SnackBar.vue';
@@ -135,6 +135,22 @@ async function orgFormSubmit() {
     }
 }
 
+async function triggerDeleteOrg() {
+    if (!confirm(`Are you sure you want to delete the organization '${loadedOrganization.value?.name}'? This action is irreversible and will delete all members and domains.`)) return;
+
+    if (!loadedOrganization.value?._id) return;
+
+    const { message, success } = await deleteOrganization(loadedOrganization.value._id);
+
+    if (!success) {
+        triggerShowSnackBar(message);
+        return;
+    }
+
+    emit('success', message);
+    closeDialog();
+}
+
 watch(props, (newOrg) => {
     loadedOrganization.value = { ...newOrg };
 });
@@ -150,7 +166,7 @@ onMounted(() => {
         <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button type="button" v-vibrate>
+                    <md-icon-button type="button" v-vibrate @click="triggerDeleteOrg()">
                         <md-icon>delete</md-icon>
                     </md-icon-button>
                 </div>

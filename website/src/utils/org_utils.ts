@@ -70,6 +70,31 @@ export async function editOrganization(orgDetails: OrganizationEdit): Promise<Fu
     }
 }
 
+export async function deleteOrganization(orgId: string): Promise<FunctionNotifier> {
+    console.log('Deleting organization:', orgId);
+
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/organization/delete/${orgId}/`, {
+            method: 'DELETE',
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('An error occurred while deleting organization:', responseJson);
+            return { message: responseJson.message, success: false };
+        }
+
+        console.log('Successfully deleted organization:', responseJson);
+
+        return { message: 'Successfully deleted organization', success: true };
+    } catch (error) {
+        console.error('An error occurred while deleting organization:', error);
+        return { message: 'An unexpected error occurred while deleting the organization', success: false };
+    }
+}
+
 export async function fetchAllOrganizations(): Promise<Organization[]> {
     try {
         const response = await fetch(`${apiBaseUrl}/api/organizations/fetch/user/`, {

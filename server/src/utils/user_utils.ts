@@ -65,7 +65,6 @@ export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string, a
             email: { $in: emailsProcessed },
             domain: domain
         });
-
     } catch (error) {
         console.error('Bulk write failed:', error);
         throw error;

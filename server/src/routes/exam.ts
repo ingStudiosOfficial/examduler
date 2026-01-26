@@ -139,7 +139,7 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
     } catch (error) {
         console.error('An error occurred while deleting exam:', error);
         return res.status(500).json({
-            message: 'An internal server error occurred while deleteing the exam.',
+            message: 'An internal server error occurred while deleting the exam.',
         });
     }
 });

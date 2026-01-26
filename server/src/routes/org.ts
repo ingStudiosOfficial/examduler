@@ -719,6 +719,7 @@ orgRouter.delete('/delete/:id/', authenticateToken(), verifyRole('admin'), async
         // Final bulk write
         await session.withTransaction(async () => {
             await req.db.collection<IOrg>('organizations').deleteOne({ _id: orgId });
+            await req.db.collection<IUser>('users').updateOne({ _id: adminId }, { $pull: { organizations: orgId } });
             if (verifiedOrgMembers.length !== 0) await req.db.collection<IUser>('users').bulkWrite(verifiedUserOps);
             if (unverifiedOrgMembers.length !== 0) await req.db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedUserOps);
         });
