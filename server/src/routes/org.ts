@@ -126,9 +126,17 @@ orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (
         });
     }
 
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        console.error('User ID missing or invalid.');
+        return res.status(400).json({
+            message: 'User ID missing or invalid.',
+        });
+    }
+
     try {
         const orgId = new ObjectId(req.body.id);
         const domainToVerify = req.body.domain;
+        const adminId = new ObjectId(req.user.id);
 
         const organization = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
 
@@ -186,7 +194,7 @@ orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (
             });
         }
 
-        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify);
+        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify, adminId);
         
         console.log('Successfully verified domain.');
         
@@ -214,9 +222,17 @@ orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async 
         });
     }
 
+    if (!req.user?.id || !ObjectId.isValid(req.user.id)) {
+        console.error('User ID missing or invalid.');
+        return res.status(400).json({
+            message: 'User ID missing or invalid.',
+        });
+    }
+
     try {
         const orgId = new ObjectId(req.body.id);
         const domainToVerify = req.body.domain;
+        const adminId = new ObjectId(req.user.id);
 
         const organization = await req.db.collection<IOrg>('organizations').findOne({ _id: orgId });
 
@@ -274,7 +290,7 @@ orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async 
             });
         }
 
-        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify);
+        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify, adminId);
 
         console.log('Successfully verified domain.');
         

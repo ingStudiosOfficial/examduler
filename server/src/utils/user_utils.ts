@@ -1,5 +1,6 @@
-import type { Db, ObjectId } from "mongodb";
+import type { AnyBulkWriteOperation, Db, ObjectId } from "mongodb";
 import type { IUser } from "../interfaces/User.js";
+import { removeDomainPrefix } from "./org_utils.js";
 
 export function getDomain(email: string): string {
     if (!email) {
@@ -29,8 +30,9 @@ export function constructName(firstName?: string, middleName?: string, lastName?
     return name;
 }
 
-export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string) {
+export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string, adminId: ObjectId) {
     console.log('Domain:', domain);
+    console.log('User IDs:', userIds);
 
     const usersToVerify = await db.collection<IUser>('unverifiedUsers')
         .find({ _id: { $in: userIds }, domain: domain })
@@ -41,12 +43,12 @@ export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string) {
         return;
     }
 
-    const operations = usersToVerify.map(user => {
+    const operations: AnyBulkWriteOperation<IUser>[] = usersToVerify.map(user => {
         const { _id, ...userData } = user;
 
         return {
             updateOne: {
-                filter: { email: user.email },
+                filter: { email: user.email, _id: { $ne: adminId } },
                 update: { $set: userData },
                 upsert: true,
             }
@@ -54,7 +56,7 @@ export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string) {
     });
 
     try {
-        const writeResult = await db.collection('users').bulkWrite(operations, { ordered: false });
+        const writeResult = await db.collection<IUser>('users').bulkWrite(operations, { ordered: false });
         
         console.log(`Matched: ${writeResult.matchedCount}, Upserted: ${writeResult.upsertedCount}`);
 
