@@ -673,8 +673,17 @@ orgRouter.delete('/delete/:id/', authenticateToken(), verifyRole('admin'), async
             });
         }
 
+        // Check admin authorized
+        const adminAuthorized = organization.members.filter(m => m.verified).map(m => m._id.toString()).includes(adminId.toString());
+        if (!adminAuthorized) {
+            console.error('User forbidden from updating organization.');
+            return res.status(403).json({
+                message: 'User forbidden from updating organization.',
+            });
+        }
+
         // Delete members
-        const verifiedOrgMembers = organization.members.filter(m => m.verified).map(m => m._id);
+        const verifiedOrgMembers = organization.members.filter(m => (m.verified && m._id.toString() !== adminId.toString())).map(m => m._id);
         const unverifiedOrgMembers = organization.members.filter(m => !m.verified).map(m => m._id);
 
         verifiedUserOps.push({
