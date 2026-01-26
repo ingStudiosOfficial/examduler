@@ -2,9 +2,9 @@
 import type { Domain, DomainVerificationMethod } from '@/interfaces/Domain';
 import '@material/web/menu/menu.js';
 import '@material/web/icon/icon.js';
-import '@material/web/iconbutton/outlined-icon-button.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/menu/menu-item.js';
+import '@material/web/iconbutton/icon-button.js';
 import { onMounted, ref, watch } from 'vue';
 import { copyVerificationToken, verifyDomain } from '@/utils/org_utils';
 
@@ -37,7 +37,7 @@ function deleteDomain() {
 function toggleMenu() {
     console.log('Toggling menu...');
 
-    const domainVerificationMenu = document.getElementById('domain-verification-menu');
+    const domainVerificationMenu = document.getElementById(`domain-verification-menu-${props.index}`);
 
     if (!domainVerificationMenu) return;
 
@@ -49,6 +49,8 @@ async function triggerVerifyDomain(method: DomainVerificationMethod) {
         console.error('Domain missing.');
         return;
     }
+
+    console.log('Domain to verify:', domainToDisplay.value.domain);
 
     const { message, success } = await verifyDomain(domainToDisplay.value.domain, props.orgId, method);
 
@@ -69,6 +71,7 @@ watch(domainToDisplay, (newDomainValue) => {
 
 onMounted(() => {
     domainToDisplay.value = props.domain;
+    console.log(domainToDisplay.value);
 });
 </script>
 
@@ -78,13 +81,13 @@ onMounted(() => {
         <md-icon-button type="button" @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
             <md-icon>content_copy</md-icon>
         </md-icon-button>
-        <md-icon-button type="button" @click="toggleMenu()" id="domain-verification-btn" :disabled="!domain.verificationToken || domain.verified">
+        <md-icon-button type="button" @click="toggleMenu()" :id="`domain-verification-btn-${props.index}`" :disabled="!domain.verificationToken || domain.verified">
             <md-icon>domain_verification</md-icon>
         </md-icon-button>
         <md-icon-button type="button" @click="deleteDomain()">
             <md-icon>delete</md-icon>
         </md-icon-button>
-        <md-menu anchor="domain-verification-btn" id="domain-verification-menu" positioning="popover">
+        <md-menu :anchor="`domain-verification-btn-${props.index}`" :id="`domain-verification-menu-${props.index}`" positioning="popover">
             <md-menu-item type="button" @click="triggerVerifyDomain('txt')">
                 <div slot="headline">Verify using TXT record</div>
                 <md-icon slot="start">dns</md-icon>
