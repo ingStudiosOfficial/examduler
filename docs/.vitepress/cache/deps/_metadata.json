@@ -1,0 +1,55 @@
+{
+  "hash": "8dc9a1a7",
+  "configHash": "266d97d3",
+  "lockfileHash": "c5c7a7bb",
+  "browserHash": "fb98e2ed",
+  "optimized": {
+    "vue": {
+      "src": "../../../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "83faaecc",
+      "needsInterop": false
+    },
+    "vitepress > @vue/devtools-api": {
+      "src": "../../../../node_modules/@vue/devtools-api/dist/index.js",
+      "file": "vitepress___@vue_devtools-api.js",
+      "fileHash": "64cdaac3",
+      "needsInterop": false
+    },
+    "vitepress > @vueuse/core": {
+      "src": "../../../../node_modules/@vueuse/core/index.mjs",
+      "file": "vitepress___@vueuse_core.js",
+      "fileHash": "a3a3a07c",
+      "needsInterop": false
+    },
+    "@material/web/fab/fab.js": {
+      "src": "../../../../node_modules/@material/web/fab/fab.js",
+      "file": "@material_web_fab_fab__js.js",
+      "fileHash": "9a8f3e46",
+      "needsInterop": false
+    },
+    "@material/web/icon/icon.js": {
+      "src": "../../../../node_modules/@material/web/icon/icon.js",
+      "file": "@material_web_icon_icon__js.js",
+      "fileHash": "145c7f80",
+      "needsInterop": false
+    },
+    "@material/web/iconbutton/icon-button.js": {
+      "src": "../../../../node_modules/@material/web/iconbutton/icon-button.js",
+      "file": "@material_web_iconbutton_icon-button__js.js",
+      "fileHash": "444b11e8",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-QQUDCE3I": {
+      "file": "chunk-QQUDCE3I.js"
+    },
+    "chunk-IJMTHBBJ": {
+      "file": "chunk-IJMTHBBJ.js"
+    },
+    "chunk-XKDLJUKD": {
+      "file": "chunk-XKDLJUKD.js"
+    }
+  }
+}
