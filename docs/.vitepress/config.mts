@@ -1,9 +1,9 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Examduler",
-  description: "A lightweight yet powerful exam management app for teachers and students",
+  description: "A lightweight yet powerful exam management app for teachers and students.",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -23,7 +23,15 @@ export default defineConfig({
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ingStudiosOfficial/examduler' }
-    ]
+    ],
+
+    lastUpdated: {
+      text: 'Last updated at',
+      formatOptions: {
+        dateStyle: 'full',
+        timeStyle: 'medium',
+      }
+    }
   },
   vue: {
     template: {
