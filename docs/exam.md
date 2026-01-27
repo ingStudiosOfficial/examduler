@@ -4,7 +4,7 @@ import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
 </script>
 
-# Examination Help
+# Examination Docs
 
 ## View an Examination
 
@@ -46,10 +46,8 @@ Lastly, press <md-fab class="inline-button"><md-icon slot="icon">check</md-icon>
 
 ![Examination dialog view](/screenshots/exam_view_dialog.png)
 
-Open the examination dialog and click the <md-icon-button class="inline-button"><md-icon>delete</md-icon></md-icon-button>
+Open the examination dialog and click the <md-icon-button class="inline-button"><md-icon>delete</md-icon></md-icon-button> button.
 
-<style scoped>
-.inline-button {
-    margin: 0 20px;
-}
-</style>
+::: danger
+This action is irreversible!
+:::

@@ -157,3 +157,6 @@
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
 
+.inline-button {
+    margin: 0 20px;
+}
