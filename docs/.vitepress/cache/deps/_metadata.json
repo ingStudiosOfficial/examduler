@@ -2,12 +2,12 @@
   "hash": "8dc9a1a7",
   "configHash": "266d97d3",
   "lockfileHash": "c5c7a7bb",
-  "browserHash": "fb98e2ed",
+  "browserHash": "7af7647d",
   "optimized": {
     "vue": {
       "src": "../../../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "83faaecc",
+      "fileHash": "056018cb",
       "needsInterop": false
     },
     "vitepress > @vue/devtools-api": {
@@ -19,34 +19,46 @@
     "vitepress > @vueuse/core": {
       "src": "../../../../node_modules/@vueuse/core/index.mjs",
       "file": "vitepress___@vueuse_core.js",
-      "fileHash": "a3a3a07c",
+      "fileHash": "1dce8ba6",
       "needsInterop": false
     },
     "@material/web/fab/fab.js": {
       "src": "../../../../node_modules/@material/web/fab/fab.js",
       "file": "@material_web_fab_fab__js.js",
-      "fileHash": "9a8f3e46",
+      "fileHash": "843297ab",
       "needsInterop": false
     },
     "@material/web/icon/icon.js": {
       "src": "../../../../node_modules/@material/web/icon/icon.js",
       "file": "@material_web_icon_icon__js.js",
-      "fileHash": "145c7f80",
+      "fileHash": "7e9fd73c",
       "needsInterop": false
     },
     "@material/web/iconbutton/icon-button.js": {
       "src": "../../../../node_modules/@material/web/iconbutton/icon-button.js",
       "file": "@material_web_iconbutton_icon-button__js.js",
-      "fileHash": "444b11e8",
+      "fileHash": "512f7d40",
+      "needsInterop": false
+    },
+    "@material/web/button/filled-button.js": {
+      "src": "../../../../node_modules/@material/web/button/filled-button.js",
+      "file": "@material_web_button_filled-button__js.js",
+      "fileHash": "e51866bf",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-QQUDCE3I": {
-      "file": "chunk-QQUDCE3I.js"
+    "chunk-FS3O3Q4B": {
+      "file": "chunk-FS3O3Q4B.js"
     },
-    "chunk-IJMTHBBJ": {
-      "file": "chunk-IJMTHBBJ.js"
+    "chunk-XCAC23UO": {
+      "file": "chunk-XCAC23UO.js"
+    },
+    "chunk-3GACZIQV": {
+      "file": "chunk-3GACZIQV.js"
+    },
+    "chunk-EQFSNTKQ": {
+      "file": "chunk-EQFSNTKQ.js"
     },
     "chunk-XKDLJUKD": {
       "file": "chunk-XKDLJUKD.js"

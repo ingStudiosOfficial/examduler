@@ -1119,6 +1119,22 @@ function query(selector, cache) {
   };
 }
 
+// node_modules/@lit/reactive-element/development/decorators/query-assigned-elements.js
+function queryAssignedElements(options) {
+  return (obj, name) => {
+    const { slot, selector } = options ?? {};
+    const slotSelector = `slot${slot ? `[name=${slot}]` : ":not([name])"}`;
+    return desc(obj, name, {
+      get() {
+        var _a3;
+        const slotEl = (_a3 = this.renderRoot) == null ? void 0 : _a3.querySelector(slotSelector);
+        const elements = (slotEl == null ? void 0 : slotEl.assignedElements(options)) ?? [];
+        return selector === void 0 ? elements : elements.filter((node) => node.matches(selector));
+      }
+    });
+  };
+}
+
 // node_modules/lit-html/development/lit-html.js
 var DEV_MODE4 = true;
 var ENABLE_EXTRA_SECURITY_HOOKS = true;
@@ -2188,6 +2204,7 @@ export {
   property,
   state,
   query,
+  queryAssignedElements,
   html,
   svg,
   mathml,
@@ -2303,4 +2320,4 @@ lit-html/development/is-server.js:
    * SPDX-License-Identifier: BSD-3-Clause
    *)
 */
-//# sourceMappingURL=chunk-IJMTHBBJ.js.map
+//# sourceMappingURL=chunk-EQFSNTKQ.js.map

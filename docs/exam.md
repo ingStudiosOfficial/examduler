@@ -6,6 +6,8 @@ import '@material/web/iconbutton/icon-button.js';
 
 # Examination Docs
 
+An examination provides details on the actual examination such as time, seating, and description.
+
 ## View an Examination
 
 ![Dashboard with examination created](/screenshots/homepage_with_exam.png)
@@ -40,7 +42,7 @@ C2, youremail@yourdomain.com
 | C1 | youremail@yourdomain.com |
 | C2 | youremail@yourdomain.com |
 
-Lastly, press <md-fab class="inline-button"><md-icon slot="icon">check</md-icon></md-fab> and your examination should be created!
+Lastly, click <md-fab class="inline-button"><md-icon slot="icon">check</md-icon></md-fab> and your examination should be created!
 
 ## Delete an Examination
 
@@ -49,5 +51,5 @@ Lastly, press <md-fab class="inline-button"><md-icon slot="icon">check</md-icon>
 Open the examination dialog and click the <md-icon-button class="inline-button"><md-icon>delete</md-icon></md-icon-button> button.
 
 ::: danger
-This action is irreversible!
+This action is irreversible! All seating information will be deleted, and students and teachers will not be able to view the examination anymore.
 :::
