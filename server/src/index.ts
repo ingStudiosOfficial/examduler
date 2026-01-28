@@ -17,6 +17,7 @@ import { examsRouter } from './routes/exams.js';
 import { orgRouter } from './routes/org.js';
 import { orgsRouter } from './routes/orgs.js';
 import { publicRouter } from './routes/public.js';
+import { trustedTesterRouter } from './routes/trustedtester.js';
 
 import { setupPassport } from './utils/auth_utils.js';
 
@@ -73,6 +74,7 @@ app.use('/api/exams/', examsRouter);
 app.use('/api/organization/', orgRouter);
 app.use('/api/organizations/', orgsRouter);
 app.use('/api/public/', publicRouter);
+app.use('/api/trustedtester/', trustedTesterRouter);
 
 async function connectToMongo() {
     try {

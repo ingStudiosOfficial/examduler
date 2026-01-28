@@ -5,7 +5,7 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-    "module": "nodenext",
+    "module": "esnext",
     "target": "esnext",
     "types": ["node"],
     // For nodejs:

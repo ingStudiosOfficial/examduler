@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress';
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Examduler",
-  titleTemplate: ":title | Examduler Docs",
+  titleTemplate: ":title | Examduler",
   head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
   description: "A lightweight yet powerful exam management app for teachers and students.",
   themeConfig: {

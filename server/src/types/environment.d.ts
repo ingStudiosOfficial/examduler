@@ -10,6 +10,7 @@ declare global {
             GOOGLE_CALLBACK_URL: string;
             JWT_SECRET_KEY: string;
             SESSION_SECRET: string;
+            TRUSTED_SECRET: string;
         }
     }
 }
