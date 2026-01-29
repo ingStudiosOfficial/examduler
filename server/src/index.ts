@@ -20,6 +20,7 @@ import { publicRouter } from './routes/public.js';
 import { trustedTesterRouter } from './routes/trustedtester.js';
 
 import { setupPassport } from './utils/auth_utils.js';
+import { requiresTrustedTesterAuth } from './middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,6 +48,7 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 if (!process.env.SESSION_SECRET) {
     console.error('Session secret missing.');
     process.exit(1);
@@ -65,6 +67,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     req.client = client;
     next();
 });
+app.use(requiresTrustedTesterAuth);
 
 app.use('/api/oauth2/', authRouter);
 app.use('/api/session/', sessionRouter);

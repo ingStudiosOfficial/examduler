@@ -10,7 +10,9 @@ interface TrustedTesterPayload extends JwtPayload {
 export const trustedTesterRouter = Router();
 
 trustedTesterRouter.post('/set/', async (req: Request, res: Response) => {
-    const { token } = req.body;
+    console.log('Request body:', req.body);
+
+    const token = req.body.token;
 
     if (!process.env.TRUSTED_SECRET) return;
 
@@ -37,7 +39,7 @@ trustedTesterRouter.post('/set/', async (req: Request, res: Response) => {
             <body>
                 <h1>Welcome to the Trusted Tester Program for Examduler!</h1>
                 <p>You have successfully signed up to be a trusted tester. Please click the button below to acknowledge and redirect to login.</p>
-                <button id="redirect-button"></button>
+                <button id="redirect-button">Open login</button>
             </body>
             <style>
                 body {

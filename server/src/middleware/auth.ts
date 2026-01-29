@@ -115,3 +115,17 @@ export function verifyRole(role: Role) {
         next();
     };
 }
+
+export function requiresTrustedTesterAuth(req: Request, res: Response, next: NextFunction) {
+    const isTrustedTesterMode = process.env.
+
+    const token = req.cookies.trusted_tester_session;
+
+    if (!token) {
+        return res.status(401).json({
+            message: 'Trusted tester session token required.'
+        });
+    }
+
+    next();
+}
