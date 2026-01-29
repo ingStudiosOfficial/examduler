@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
-    "publish": "gh-pages -d dist --dotfiles",
+    "publish": "gh-pages -d dist --dotfiles"
   },
   "dependencies": {
     "@material/web": "^2.4.1",
