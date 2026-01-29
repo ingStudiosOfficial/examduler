@@ -8,6 +8,9 @@ hero:
   actions:
     - theme: brand
       text: Get Started
+      link: https://app.examduler.ingstudios.dev/login
+    - theme: alt
+      text: Qucickstart Guide
       link: https://docs.examduler.ingstudios.dev/get-started
     - theme: alt
       text: Documentation
