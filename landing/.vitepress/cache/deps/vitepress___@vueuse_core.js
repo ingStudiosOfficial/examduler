@@ -36,7 +36,7 @@ import {
   unref,
   watch,
   watchEffect
-} from "./chunk-XKDLJUKD.js";
+} from "./chunk-ELXMO34Z.js";
 
 // node_modules/@vueuse/shared/dist/index.js
 function computedEager(fn, options) {
@@ -122,13 +122,13 @@ function createGlobalState(stateFactory) {
   let initialized = false;
   let state;
   const scope = effectScope(true);
-  return (...args) => {
+  return ((...args) => {
     if (!initialized) {
       state = scope.run(() => stateFactory(...args));
       initialized = true;
     }
     return state;
-  };
+  });
 }
 var localProvidedStateMap = /* @__PURE__ */ new WeakMap();
 var injectLocal = (...args) => {
@@ -380,9 +380,9 @@ function toArray(value) {
 }
 function cacheStringFunction(fn) {
   const cache = /* @__PURE__ */ Object.create(null);
-  return (str) => {
+  return ((str) => {
     return cache[str] || (cache[str] = fn(str));
-  };
+  });
 }
 var hyphenateRE = /\B([A-Z])/g;
 var hyphenate = cacheStringFunction((str) => str.replace(hyphenateRE, "-$1").toLowerCase());
@@ -406,7 +406,7 @@ function createSharedComposable(composable) {
       scope = void 0;
     }
   };
-  return (...args) => {
+  return ((...args) => {
     subscribers += 1;
     if (!scope) {
       scope = effectScope(true);
@@ -414,7 +414,7 @@ function createSharedComposable(composable) {
     }
     tryOnScopeDispose(dispose);
     return state;
-  };
+  });
 }
 function extendRef(ref$1, extend, { enumerable = false, unwrap = true } = {}) {
   for (const [key, value] of Object.entries(extend)) {
@@ -910,7 +910,7 @@ function useArrayIncludes(...args) {
     const key = comparator;
     comparator = (element, value$1) => element[key] === toValue(value$1);
   }
-  comparator = (_comparator = comparator) !== null && _comparator !== void 0 ? _comparator : (element, value$1) => element === toValue(value$1);
+  comparator = (_comparator = comparator) !== null && _comparator !== void 0 ? _comparator : ((element, value$1) => element === toValue(value$1));
   return computed(() => toValue(list).slice(formIndex).some((element, index, array) => comparator(toValue(element), toValue(value), index, toValue(array))));
 }
 function useArrayJoin(list, separator) {
@@ -2426,7 +2426,7 @@ function useBluetooth(options) {
     error
   };
 }
-var ssrWidthSymbol = Symbol("vueuse-ssr-width");
+var ssrWidthSymbol = /* @__PURE__ */ Symbol("vueuse-ssr-width");
 function useSSRWidth() {
   const ssrWidth = hasInjectionContext() ? injectLocal(ssrWidthSymbol, null) : null;
   return typeof ssrWidth === "number" ? ssrWidth : void 0;

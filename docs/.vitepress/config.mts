@@ -3,14 +3,13 @@ import { defineConfig } from 'vitepress';
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Examduler",
-  titleTemplate: ":title | Examduler",
+  titleTemplate: ":title | Examduler Docs",
   head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
-  description: "A lightweight yet powerful exam management app for teachers and students.",
+  description: "A lightweight yet powerful exam management app for educators and students.",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Documentation Hub', link: '/docs' },
+      { text: 'Documentation Hub', link: '/' },
     ],
 
     logo: '/examduler_logo_trans_full.png',

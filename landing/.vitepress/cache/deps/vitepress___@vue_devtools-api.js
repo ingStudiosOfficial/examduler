@@ -26,10 +26,9 @@ var isBrowser = typeof navigator !== "undefined";
 var target = typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : typeof global !== "undefined" ? global : {};
 var isInChromePanel = typeof target.chrome !== "undefined" && !!target.chrome.devtools;
 var isInIframe = isBrowser && target.self !== target.top;
-var _a;
-var isInElectron = typeof navigator !== "undefined" && ((_a = navigator.userAgent) == null ? void 0 : _a.toLowerCase().includes("electron"));
+var isInElectron = typeof navigator !== "undefined" && navigator.userAgent?.toLowerCase().includes("electron");
 var isNuxtApp = typeof window !== "undefined" && !!window.__NUXT__;
-var require_rfdc = __commonJS({ "../../node_modules/.pnpm/rfdc@1.4.1/node_modules/rfdc/index.js": (exports, module) => {
+var require_rfdc = __commonJS({ "../../node_modules/.pnpm/rfdc@1.4.1/node_modules/rfdc/index.js": ((exports, module) => {
   module.exports = rfdc$1;
   function copyBuffer(cur) {
     if (cur instanceof Buffer) return Buffer.from(cur);
@@ -161,7 +160,7 @@ var require_rfdc = __commonJS({ "../../node_modules/.pnpm/rfdc@1.4.1/node_module
       return o2;
     }
   }
-} });
+}) });
 var import_rfdc = __toESM(require_rfdc(), 1);
 var classifyRE = /(?:^|[-_/])(\w)/g;
 function toUpper(_, c) {
@@ -490,9 +489,8 @@ var __toESM2 = (mod, isNodeMode, target$1) => (target$1 = mod != null ? __create
   enumerable: true
 }) : target$1, mod));
 function getComponentTypeName(options) {
-  var _a26;
   const name = options.name || options._componentTag || options.__VUE_DEVTOOLS_COMPONENT_GUSSED_NAME__ || options.__name;
-  if (name === "index" && ((_a26 = options.__file) == null ? void 0 : _a26.endsWith("index.vue"))) return "";
+  if (name === "index" && options.__file?.endsWith("index.vue")) return "";
   return name;
 }
 function getComponentFileName(options) {
@@ -508,26 +506,23 @@ function getAppRecord(instance) {
   else if (instance.root) return instance.appContext.app.__VUE_DEVTOOLS_NEXT_APP_RECORD__;
 }
 function isFragment(instance) {
-  var _a26, _b;
-  const subTreeType = (_a26 = instance.subTree) == null ? void 0 : _a26.type;
+  const subTreeType = instance.subTree?.type;
   const appRecord = getAppRecord(instance);
-  if (appRecord) return ((_b = appRecord == null ? void 0 : appRecord.types) == null ? void 0 : _b.Fragment) === subTreeType;
+  if (appRecord) return appRecord?.types?.Fragment === subTreeType;
   return false;
 }
 function getInstanceName(instance) {
-  var _a26, _b, _c;
-  const name = getComponentTypeName((instance == null ? void 0 : instance.type) || {});
+  const name = getComponentTypeName(instance?.type || {});
   if (name) return name;
-  if ((instance == null ? void 0 : instance.root) === instance) return "Root";
-  for (const key in (_b = (_a26 = instance.parent) == null ? void 0 : _a26.type) == null ? void 0 : _b.components) if (instance.parent.type.components[key] === (instance == null ? void 0 : instance.type)) return saveComponentGussedName(instance, key);
-  for (const key in (_c = instance.appContext) == null ? void 0 : _c.components) if (instance.appContext.components[key] === (instance == null ? void 0 : instance.type)) return saveComponentGussedName(instance, key);
-  const fileName = getComponentFileName((instance == null ? void 0 : instance.type) || {});
+  if (instance?.root === instance) return "Root";
+  for (const key in instance.parent?.type?.components) if (instance.parent.type.components[key] === instance?.type) return saveComponentGussedName(instance, key);
+  for (const key in instance.appContext?.components) if (instance.appContext.components[key] === instance?.type) return saveComponentGussedName(instance, key);
+  const fileName = getComponentFileName(instance?.type || {});
   if (fileName) return fileName;
   return "Anonymous Component";
 }
 function getUniqueComponentId(instance) {
-  var _a26, _b;
-  return `${((_b = (_a26 = instance == null ? void 0 : instance.appContext) == null ? void 0 : _a26.app) == null ? void 0 : _b.__VUE_DEVTOOLS_NEXT_APP_RECORD_ID__) ?? 0}:${instance === (instance == null ? void 0 : instance.root) ? "root" : instance.uid}`;
+  return `${instance?.appContext?.app?.__VUE_DEVTOOLS_NEXT_APP_RECORD_ID__ ?? 0}:${instance === instance?.root ? "root" : instance.uid}`;
 }
 function getComponentInstance(appRecord, instanceId) {
   instanceId = instanceId || `${appRecord.id}:root`;
@@ -589,7 +584,7 @@ function getComponentBoundingRect(instance) {
   const el = instance.subTree.el;
   if (typeof window === "undefined") return DEFAULT_RECT;
   if (isFragment(instance)) return getFragmentRect(instance.subTree);
-  else if ((el == null ? void 0 : el.nodeType) === 1) return el == null ? void 0 : el.getBoundingClientRect();
+  else if (el?.nodeType === 1) return el?.getBoundingClientRect();
   else if (instance.subTree.component) return getComponentBoundingRect(instance.subTree.component);
   else return DEFAULT_RECT;
 }
@@ -603,7 +598,7 @@ function getFragmentRootElements(vnode) {
   const list = [];
   vnode.children.forEach((childVnode) => {
     if (childVnode.component) list.push(...getRootElementsFromComponentInstance(childVnode.component));
-    else if (childVnode == null ? void 0 : childVnode.el) list.push(childVnode.el);
+    else if (childVnode?.el) list.push(childVnode.el);
   });
   return list;
 }
@@ -812,8 +807,7 @@ function scrollToComponent(options) {
     }, 1200);
   }
 }
-var _a2;
-(_a2 = target).__VUE_DEVTOOLS_COMPONENT_INSPECTOR_ENABLED__ ?? (_a2.__VUE_DEVTOOLS_COMPONENT_INSPECTOR_ENABLED__ = true);
+target.__VUE_DEVTOOLS_COMPONENT_INSPECTOR_ENABLED__ ??= true;
 function waitForInspectorInit(cb) {
   let total = 0;
   const timer = setInterval(() => {
@@ -845,14 +839,14 @@ function getComponentInspector() {
     else setup();
   });
 }
-var ReactiveFlags = function(ReactiveFlags$1) {
+var ReactiveFlags = (function(ReactiveFlags$1) {
   ReactiveFlags$1["SKIP"] = "__v_skip";
   ReactiveFlags$1["IS_REACTIVE"] = "__v_isReactive";
   ReactiveFlags$1["IS_READONLY"] = "__v_isReadonly";
   ReactiveFlags$1["IS_SHALLOW"] = "__v_isShallow";
   ReactiveFlags$1["RAW"] = "__v_raw";
   return ReactiveFlags$1;
-}({});
+})({});
 function isReadonly(value) {
   return !!(value && value[ReactiveFlags.IS_READONLY]);
 }
@@ -867,7 +861,6 @@ function toRaw$1(observed) {
   const raw = observed && observed[ReactiveFlags.RAW];
   return raw ? toRaw$1(raw) : observed;
 }
-var Fragment = Symbol.for("v-fgt");
 var StateEditor = class {
   constructor() {
     this.refEditor = new RefStateEditor();
@@ -979,8 +972,7 @@ function getTimelineLayersStateFromStorage() {
     selected: ""
   };
 }
-var _a3;
-(_a3 = target).__VUE_DEVTOOLS_KIT_TIMELINE_LAYERS ?? (_a3.__VUE_DEVTOOLS_KIT_TIMELINE_LAYERS = []);
+target.__VUE_DEVTOOLS_KIT_TIMELINE_LAYERS ??= [];
 var devtoolsTimelineLayers = new Proxy(target.__VUE_DEVTOOLS_KIT_TIMELINE_LAYERS, { get(target$1, prop, receiver) {
   return Reflect.get(target$1, prop, receiver);
 } });
@@ -992,8 +984,7 @@ function addTimelineLayer(options, descriptor) {
     appRecord: getAppRecord(descriptor.app)
   });
 }
-var _a4;
-(_a4 = target).__VUE_DEVTOOLS_KIT_INSPECTOR__ ?? (_a4.__VUE_DEVTOOLS_KIT_INSPECTOR__ = []);
+target.__VUE_DEVTOOLS_KIT_INSPECTOR__ ??= [];
 var devtoolsInspector = new Proxy(target.__VUE_DEVTOOLS_KIT_INSPECTOR__, { get(target$1, prop, receiver) {
   return Reflect.get(target$1, prop, receiver);
 } });
@@ -1014,14 +1005,13 @@ function addInspector(inspector, descriptor) {
 }
 function getActiveInspectors() {
   return devtoolsInspector.filter((inspector) => inspector.descriptor.app === activeAppRecord.value.app).filter((inspector) => inspector.descriptor.id !== "components").map((inspector) => {
-    var _a26;
     const descriptor = inspector.descriptor;
     const options = inspector.options;
     return {
       id: options.id,
       label: options.label,
       logo: descriptor.logo,
-      icon: `custom-ic-baseline-${(_a26 = options == null ? void 0 : options.icon) == null ? void 0 : _a26.replace(/_/g, "-")}`,
+      icon: `custom-ic-baseline-${options?.icon?.replace(/_/g, "-")}`,
       packageName: descriptor.packageName,
       homepage: descriptor.homepage,
       pluginId: descriptor.id
@@ -1031,7 +1021,7 @@ function getActiveInspectors() {
 function getInspector(id, app) {
   return devtoolsInspector.find((inspector) => inspector.options.id === id && (app ? inspector.descriptor.app === app : true));
 }
-var DevToolsV6PluginAPIHookKeys = function(DevToolsV6PluginAPIHookKeys$1) {
+var DevToolsV6PluginAPIHookKeys = (function(DevToolsV6PluginAPIHookKeys$1) {
   DevToolsV6PluginAPIHookKeys$1["VISIT_COMPONENT_TREE"] = "visitComponentTree";
   DevToolsV6PluginAPIHookKeys$1["INSPECT_COMPONENT"] = "inspectComponent";
   DevToolsV6PluginAPIHookKeys$1["EDIT_COMPONENT_STATE"] = "editComponentState";
@@ -1042,8 +1032,8 @@ var DevToolsV6PluginAPIHookKeys = function(DevToolsV6PluginAPIHookKeys$1) {
   DevToolsV6PluginAPIHookKeys$1["TIMELINE_CLEARED"] = "timelineCleared";
   DevToolsV6PluginAPIHookKeys$1["SET_PLUGIN_SETTINGS"] = "setPluginSettings";
   return DevToolsV6PluginAPIHookKeys$1;
-}({});
-var DevToolsContextHookKeys = function(DevToolsContextHookKeys$1) {
+})({});
+var DevToolsContextHookKeys = (function(DevToolsContextHookKeys$1) {
   DevToolsContextHookKeys$1["ADD_INSPECTOR"] = "addInspector";
   DevToolsContextHookKeys$1["SEND_INSPECTOR_TREE"] = "sendInspectorTree";
   DevToolsContextHookKeys$1["SEND_INSPECTOR_STATE"] = "sendInspectorState";
@@ -1056,8 +1046,8 @@ var DevToolsContextHookKeys = function(DevToolsContextHookKeys$1) {
   DevToolsContextHookKeys$1["COMPONENT_HIGHLIGHT"] = "componentHighlight";
   DevToolsContextHookKeys$1["COMPONENT_UNHIGHLIGHT"] = "componentUnhighlight";
   return DevToolsContextHookKeys$1;
-}({});
-var DevToolsMessagingHookKeys = function(DevToolsMessagingHookKeys$1) {
+})({});
+var DevToolsMessagingHookKeys = (function(DevToolsMessagingHookKeys$1) {
   DevToolsMessagingHookKeys$1["SEND_INSPECTOR_TREE_TO_CLIENT"] = "sendInspectorTreeToClient";
   DevToolsMessagingHookKeys$1["SEND_INSPECTOR_STATE_TO_CLIENT"] = "sendInspectorStateToClient";
   DevToolsMessagingHookKeys$1["SEND_TIMELINE_EVENT_TO_CLIENT"] = "sendTimelineEventToClient";
@@ -1067,20 +1057,19 @@ var DevToolsMessagingHookKeys = function(DevToolsMessagingHookKeys$1) {
   DevToolsMessagingHookKeys$1["DEVTOOLS_CONNECTED_UPDATED"] = "devtoolsConnectedUpdated";
   DevToolsMessagingHookKeys$1["ROUTER_INFO_UPDATED"] = "routerInfoUpdated";
   return DevToolsMessagingHookKeys$1;
-}({});
+})({});
 function createDevToolsCtxHooks() {
   const hooks$1 = createHooks();
   hooks$1.hook(DevToolsContextHookKeys.ADD_INSPECTOR, ({ inspector, plugin }) => {
     addInspector(inspector, plugin.descriptor);
   });
   const debounceSendInspectorTree = debounce(async ({ inspectorId, plugin }) => {
-    var _a26;
-    if (!inspectorId || !((_a26 = plugin == null ? void 0 : plugin.descriptor) == null ? void 0 : _a26.app) || devtoolsState.highPerfModeEnabled) return;
+    if (!inspectorId || !plugin?.descriptor?.app || devtoolsState.highPerfModeEnabled) return;
     const inspector = getInspector(inspectorId, plugin.descriptor.app);
     const _payload = {
       app: plugin.descriptor.app,
       inspectorId,
-      filter: (inspector == null ? void 0 : inspector.treeFilter) || "",
+      filter: inspector?.treeFilter || "",
       rootNodes: []
     };
     await new Promise((resolve) => {
@@ -1098,13 +1087,12 @@ function createDevToolsCtxHooks() {
   }, 120);
   hooks$1.hook(DevToolsContextHookKeys.SEND_INSPECTOR_TREE, debounceSendInspectorTree);
   const debounceSendInspectorState = debounce(async ({ inspectorId, plugin }) => {
-    var _a26;
-    if (!inspectorId || !((_a26 = plugin == null ? void 0 : plugin.descriptor) == null ? void 0 : _a26.app) || devtoolsState.highPerfModeEnabled) return;
+    if (!inspectorId || !plugin?.descriptor?.app || devtoolsState.highPerfModeEnabled) return;
     const inspector = getInspector(inspectorId, plugin.descriptor.app);
     const _payload = {
       app: plugin.descriptor.app,
       inspectorId,
-      nodeId: (inspector == null ? void 0 : inspector.selectedNodeId) || "",
+      nodeId: inspector?.selectedNodeId || "",
       state: null
     };
     const ctx = { currentTab: `custom-inspector:${inspectorId}` };
@@ -1132,8 +1120,7 @@ function createDevToolsCtxHooks() {
     addTimelineLayer(options, plugin.descriptor);
   });
   hooks$1.hook(DevToolsContextHookKeys.TIMELINE_EVENT_ADDED, ({ options, plugin }) => {
-    var _a26;
-    if (devtoolsState.highPerfModeEnabled || !((_a26 = devtoolsState.timelineLayersState) == null ? void 0 : _a26[plugin.descriptor.id]) && ![
+    if (devtoolsState.highPerfModeEnabled || !devtoolsState.timelineLayersState?.[plugin.descriptor.id] && ![
       "performance",
       "component-event",
       "keyboard",
@@ -1164,16 +1151,11 @@ function createDevToolsCtxHooks() {
   });
   return hooks$1;
 }
-var _a5;
-(_a5 = target).__VUE_DEVTOOLS_KIT_APP_RECORDS__ ?? (_a5.__VUE_DEVTOOLS_KIT_APP_RECORDS__ = []);
-var _a6;
-(_a6 = target).__VUE_DEVTOOLS_KIT_ACTIVE_APP_RECORD__ ?? (_a6.__VUE_DEVTOOLS_KIT_ACTIVE_APP_RECORD__ = {});
-var _a7;
-(_a7 = target).__VUE_DEVTOOLS_KIT_ACTIVE_APP_RECORD_ID__ ?? (_a7.__VUE_DEVTOOLS_KIT_ACTIVE_APP_RECORD_ID__ = "");
-var _a8;
-(_a8 = target).__VUE_DEVTOOLS_KIT_CUSTOM_TABS__ ?? (_a8.__VUE_DEVTOOLS_KIT_CUSTOM_TABS__ = []);
-var _a9;
-(_a9 = target).__VUE_DEVTOOLS_KIT_CUSTOM_COMMANDS__ ?? (_a9.__VUE_DEVTOOLS_KIT_CUSTOM_COMMANDS__ = []);
+target.__VUE_DEVTOOLS_KIT_APP_RECORDS__ ??= [];
+target.__VUE_DEVTOOLS_KIT_ACTIVE_APP_RECORD__ ??= {};
+target.__VUE_DEVTOOLS_KIT_ACTIVE_APP_RECORD_ID__ ??= "";
+target.__VUE_DEVTOOLS_KIT_CUSTOM_TABS__ ??= [];
+target.__VUE_DEVTOOLS_KIT_CUSTOM_COMMANDS__ ??= [];
 var STATE_KEY = "__VUE_DEVTOOLS_KIT_GLOBAL_STATE__";
 function initStateFactory() {
   return {
@@ -1190,8 +1172,7 @@ function initStateFactory() {
     timelineLayersState: getTimelineLayersStateFromStorage()
   };
 }
-var _a10;
-(_a10 = target)[STATE_KEY] ?? (_a10[STATE_KEY] = initStateFactory());
+target[STATE_KEY] ??= initStateFactory();
 var callStateUpdatedHook = debounce((state) => {
   devtoolsContext.hooks.callHook(DevToolsMessagingHookKeys.DEVTOOLS_STATE_UPDATED, { state });
 });
@@ -1296,12 +1277,11 @@ function removeCustomCommand(actionId) {
   updateAllStates();
 }
 function openInEditor(options = {}) {
-  var _a26;
   const { file, host, baseUrl = window.location.origin, line = 0, column = 0 } = options;
   if (file) {
     if (host === "chrome-extension") {
       const fileName = file.replace(/\\/g, "\\\\");
-      const _baseUrl = ((_a26 = window.VUE_DEVTOOLS_CONFIG) == null ? void 0 : _a26.openInEditorHost) ?? "/";
+      const _baseUrl = window.VUE_DEVTOOLS_CONFIG?.openInEditorHost ?? "/";
       fetch(`${_baseUrl}__open-in-editor?file=${encodeURI(file)}`).then((response) => {
         if (!response.ok) {
           const msg = `Opening component ${fileName} failed`;
@@ -1314,8 +1294,7 @@ function openInEditor(options = {}) {
     }
   }
 }
-var _a11;
-(_a11 = target).__VUE_DEVTOOLS_KIT_PLUGIN_BUFFER__ ?? (_a11.__VUE_DEVTOOLS_KIT_PLUGIN_BUFFER__ = []);
+target.__VUE_DEVTOOLS_KIT_PLUGIN_BUFFER__ ??= [];
 var devtoolsPluginBuffer = new Proxy(target.__VUE_DEVTOOLS_KIT_PLUGIN_BUFFER__, { get(target$1, prop, receiver) {
   return Reflect.get(target$1, prop, receiver);
 } });
@@ -1330,20 +1309,15 @@ function getPluginLocalKey(pluginId) {
   return `__VUE_DEVTOOLS_NEXT_PLUGIN_SETTINGS__${pluginId}__`;
 }
 function getPluginSettingsOptions(pluginId) {
-  var _a26, _b;
-  return ((_b = ((_a26 = devtoolsPluginBuffer.find((item) => {
-    var _a27;
-    return item[0].id === pluginId && !!((_a27 = item[0]) == null ? void 0 : _a27.settings);
-  })) == null ? void 0 : _a26[0]) ?? null) == null ? void 0 : _b.settings) ?? null;
+  return (devtoolsPluginBuffer.find((item) => item[0].id === pluginId && !!item[0]?.settings)?.[0] ?? null)?.settings ?? null;
 }
 function getPluginSettings(pluginId, fallbackValue) {
-  var _a26, _b;
   const localKey = getPluginLocalKey(pluginId);
   if (localKey) {
     const localSettings = localStorage.getItem(localKey);
     if (localSettings) return JSON.parse(localSettings);
   }
-  if (pluginId) return _getSettings(((_b = ((_a26 = devtoolsPluginBuffer.find((item) => item[0].id === pluginId)) == null ? void 0 : _a26[0]) ?? null) == null ? void 0 : _b.settings) ?? {});
+  if (pluginId) return _getSettings((devtoolsPluginBuffer.find((item) => item[0].id === pluginId)?.[0] ?? null)?.settings ?? {});
   return _getSettings(fallbackValue);
 }
 function initPluginSettings(pluginId, settings) {
@@ -1369,7 +1343,7 @@ function setPluginSettings(pluginId, key, value) {
     }));
   }, DevToolsV6PluginAPIHookKeys.SET_PLUGIN_SETTINGS);
 }
-var DevToolsHooks = function(DevToolsHooks$1) {
+var DevToolsHooks = (function(DevToolsHooks$1) {
   DevToolsHooks$1["APP_INIT"] = "app:init";
   DevToolsHooks$1["APP_UNMOUNT"] = "app:unmount";
   DevToolsHooks$1["COMPONENT_UPDATED"] = "component:updated";
@@ -1385,9 +1359,8 @@ var DevToolsHooks = function(DevToolsHooks$1) {
   DevToolsHooks$1["APP_CONNECTED"] = "app:connected";
   DevToolsHooks$1["SETUP_DEVTOOLS_PLUGIN"] = "devtools-plugin:setup";
   return DevToolsHooks$1;
-}({});
-var _a12;
-var devtoolsHooks = (_a12 = target).__VUE_DEVTOOLS_HOOK ?? (_a12.__VUE_DEVTOOLS_HOOK = createHooks());
+})({});
+var devtoolsHooks = target.__VUE_DEVTOOLS_HOOK ??= createHooks();
 var on = {
   vueAppInit(fn) {
     devtoolsHooks.hook(DevToolsHooks.APP_INIT, fn);
@@ -1463,15 +1436,14 @@ var DevToolsV6PluginAPI = class {
     };
   }
   notifyComponentUpdate(instance) {
-    var _a26;
     if (devtoolsState.highPerfModeEnabled) return;
     const inspector = getActiveInspectors().find((i) => i.packageName === this.plugin.descriptor.packageName);
-    if (inspector == null ? void 0 : inspector.id) {
+    if (inspector?.id) {
       if (instance) {
         const args = [
           instance.appContext.app,
           instance.uid,
-          (_a26 = instance.parent) == null ? void 0 : _a26.uid,
+          instance.parent?.uid,
           instance
         ];
         devtoolsHooks.callHook(DevToolsHooks.COMPONENT_UPDATED, ...args);
@@ -1565,8 +1537,7 @@ var reversedTokenMap = Object.entries(tokenMap).reduce((acc, [key, value]) => {
   acc[value] = key;
   return acc;
 }, {});
-var _a13;
-(_a13 = target).__VUE_DEVTOOLS_KIT__REGISTERED_PLUGIN_APPS__ ?? (_a13.__VUE_DEVTOOLS_KIT__REGISTERED_PLUGIN_APPS__ = /* @__PURE__ */ new Set());
+target.__VUE_DEVTOOLS_KIT__REGISTERED_PLUGIN_APPS__ ??= /* @__PURE__ */ new Set();
 function setupDevToolsPlugin(pluginDescriptor, setupFn) {
   return hook.setupDevToolsPlugin(pluginDescriptor, setupFn);
 }
@@ -1587,7 +1558,7 @@ function callDevToolsPluginSetupFn(plugin, app) {
 }
 function registerDevToolsPlugin(app, options) {
   if (target.__VUE_DEVTOOLS_KIT__REGISTERED_PLUGIN_APPS__.has(app)) return;
-  if (devtoolsState.highPerfModeEnabled && !(options == null ? void 0 : options.inspectingComponent)) return;
+  if (devtoolsState.highPerfModeEnabled && !options?.inspectingComponent) return;
   target.__VUE_DEVTOOLS_KIT__REGISTERED_PLUGIN_APPS__.add(app);
   devtoolsPluginBuffer.forEach((plugin) => {
     callDevToolsPluginSetupFn(plugin, app);
@@ -1595,13 +1566,11 @@ function registerDevToolsPlugin(app, options) {
 }
 var ROUTER_KEY = "__VUE_DEVTOOLS_ROUTER__";
 var ROUTER_INFO_KEY = "__VUE_DEVTOOLS_ROUTER_INFO__";
-var _a14;
-(_a14 = target)[ROUTER_INFO_KEY] ?? (_a14[ROUTER_INFO_KEY] = {
+target[ROUTER_INFO_KEY] ??= {
   currentRoute: null,
   routes: []
-});
-var _a15;
-(_a15 = target)[ROUTER_KEY] ?? (_a15[ROUTER_KEY] = {});
+};
+target[ROUTER_KEY] ??= {};
 var devtoolsRouterInfo = new Proxy(target[ROUTER_INFO_KEY], { get(target$1, property) {
   return target[ROUTER_INFO_KEY][property];
 } });
@@ -1610,12 +1579,12 @@ var devtoolsRouter = new Proxy(target[ROUTER_KEY], { get(target$1, property) {
 } });
 function getRoutes(router) {
   const routesMap = /* @__PURE__ */ new Map();
-  return ((router == null ? void 0 : router.getRoutes()) || []).filter((i) => !routesMap.has(i.path) && routesMap.set(i.path, 1));
+  return (router?.getRoutes() || []).filter((i) => !routesMap.has(i.path) && routesMap.set(i.path, 1));
 }
 function filterRoutes(routes) {
   return routes.map((item) => {
     let { path, name, children, meta } = item;
-    if (children == null ? void 0 : children.length) children = filterRoutes(children);
+    if (children?.length) children = filterRoutes(children);
     return {
       path,
       name,
@@ -1642,9 +1611,8 @@ function filterCurrentRoute(route) {
 }
 function normalizeRouterInfo(appRecord, activeAppRecord$1) {
   function init() {
-    var _a26;
-    const router = (_a26 = appRecord.app) == null ? void 0 : _a26.config.globalProperties.$router;
-    const currentRoute = filterCurrentRoute(router == null ? void 0 : router.currentRoute.value);
+    const router = appRecord.app?.config.globalProperties.$router;
+    const currentRoute = filterCurrentRoute(router?.currentRoute.value);
     const routes = filterRoutes(getRoutes(router));
     const c = console.warn;
     console.warn = () => {
@@ -1658,8 +1626,7 @@ function normalizeRouterInfo(appRecord, activeAppRecord$1) {
   }
   init();
   hook.on.componentUpdated(debounce(() => {
-    var _a26;
-    if (((_a26 = activeAppRecord$1.value) == null ? void 0 : _a26.app) !== appRecord.app) return;
+    if (activeAppRecord$1.value?.app !== appRecord.app) return;
     init();
     if (devtoolsState.highPerfModeEnabled) return;
     devtoolsContext.hooks.callHook(DevToolsMessagingHookKeys.ROUTER_INFO_UPDATED, { state: target[ROUTER_INFO_KEY] });
@@ -1727,7 +1694,7 @@ function createDevToolsApi(hooks$1) {
     },
     getComponentRenderCode(id) {
       const instance = getComponentInstance(activeAppRecord.value, id);
-      if (instance) return !(typeof (instance == null ? void 0 : instance.type) === "function") ? instance.render.toString() : instance.type.toString();
+      if (instance) return !(typeof instance?.type === "function") ? instance.render.toString() : instance.type.toString();
     },
     scrollToComponent(id) {
       return scrollToComponent({ id });
@@ -1762,11 +1729,9 @@ function createDevToolsApi(hooks$1) {
     }
   };
 }
-var _a16;
-(_a16 = target).__VUE_DEVTOOLS_ENV__ ?? (_a16.__VUE_DEVTOOLS_ENV__ = { vitePluginDetected: false });
+target.__VUE_DEVTOOLS_ENV__ ??= { vitePluginDetected: false };
 var hooks = createDevToolsCtxHooks();
-var _a17;
-(_a17 = target).__VUE_DEVTOOLS_KIT_CONTEXT__ ?? (_a17.__VUE_DEVTOOLS_KIT_CONTEXT__ = {
+target.__VUE_DEVTOOLS_KIT_CONTEXT__ ??= {
   hooks,
   get state() {
     return {
@@ -1777,9 +1742,9 @@ var _a17;
     };
   },
   api: createDevToolsApi(hooks)
-});
+};
 var devtoolsContext = target.__VUE_DEVTOOLS_KIT_CONTEXT__;
-var require_speakingurl$1 = __commonJS2({ "../../node_modules/.pnpm/speakingurl@14.0.1/node_modules/speakingurl/lib/speakingurl.js": (exports, module) => {
+var require_speakingurl$1 = __commonJS2({ "../../node_modules/.pnpm/speakingurl@14.0.1/node_modules/speakingurl/lib/speakingurl.js": ((exports, module) => {
   (function(root) {
     var charMap = {
       "À": "A",
@@ -3194,16 +3159,15 @@ var require_speakingurl$1 = __commonJS2({ "../../node_modules/.pnpm/speakingurl@
     } catch (e) {
     }
   })(exports);
-} });
-var require_speakingurl = __commonJS2({ "../../node_modules/.pnpm/speakingurl@14.0.1/node_modules/speakingurl/index.js": (exports, module) => {
+}) });
+var require_speakingurl = __commonJS2({ "../../node_modules/.pnpm/speakingurl@14.0.1/node_modules/speakingurl/index.js": ((exports, module) => {
   module.exports = require_speakingurl$1();
-} });
+}) });
 var import_speakingurl = __toESM2(require_speakingurl(), 1);
-var _a18;
-var appRecordInfo = (_a18 = target).__VUE_DEVTOOLS_NEXT_APP_RECORD_INFO__ ?? (_a18.__VUE_DEVTOOLS_NEXT_APP_RECORD_INFO__ = {
+var appRecordInfo = target.__VUE_DEVTOOLS_NEXT_APP_RECORD_INFO__ ??= {
   id: 0,
   appIds: /* @__PURE__ */ new Set()
-});
+};
 function onDevToolsClientConnected(fn) {
   return new Promise((resolve) => {
     if (devtoolsState.connected && devtoolsState.clientConnected) {
@@ -3230,8 +3194,7 @@ function updateDevToolsClientDetected(params) {
   };
   toggleHighPerfMode(!Object.values(devtoolsState.devtoolsClientDetected).some(Boolean));
 }
-var _a19;
-(_a19 = target).__VUE_DEVTOOLS_UPDATE_CLIENT_DETECTED__ ?? (_a19.__VUE_DEVTOOLS_UPDATE_CLIENT_DETECTED__ = updateDevToolsClientDetected);
+target.__VUE_DEVTOOLS_UPDATE_CLIENT_DETECTED__ ??= updateDevToolsClientDetected;
 var DoubleIndexedKV = class {
   constructor() {
     this.keyToValue = /* @__PURE__ */ new Map();
@@ -3466,7 +3429,7 @@ var typedArrayRule = compositeTransformation(isTypedArray, (v) => ["typed-array"
   return new ctor(v);
 });
 function isInstanceOfRegisteredClass(potentialClass, superJson) {
-  if (potentialClass == null ? void 0 : potentialClass.constructor) return !!superJson.classRegistry.getIdentifier(potentialClass.constructor);
+  if (potentialClass?.constructor) return !!superJson.classRegistry.getIdentifier(potentialClass.constructor);
   return false;
 }
 var classRule = compositeTransformation(isInstanceOfRegisteredClass, (clazz, superJson) => {
@@ -3699,7 +3662,7 @@ var walker = (object, identities, superJson, dedupe, path = [], objectsInThisPat
   }
   if (includes(objectsInThisPath, object)) return { transformedValue: null };
   const transformationResult = transformValue(object, superJson);
-  const transformed = (transformationResult == null ? void 0 : transformationResult.value) ?? object;
+  const transformed = transformationResult?.value ?? object;
   const transformedValue = isArray$2(transformed) ? [] : {};
   const innerAnnotations = {};
   forEach(transformed, (value, index) => {
@@ -3793,8 +3756,8 @@ var SuperJSON = class {
   deserialize(payload) {
     const { json, meta } = payload;
     let result = copy(json);
-    if (meta == null ? void 0 : meta.values) result = applyValueAnnotations(result, meta.values, this);
-    if (meta == null ? void 0 : meta.referentialEqualities) result = applyReferentialEqualityAnnotations(result, meta.referentialEqualities);
+    if (meta?.values) result = applyValueAnnotations(result, meta.values, this);
+    if (meta?.referentialEqualities) result = applyReferentialEqualityAnnotations(result, meta.referentialEqualities);
     return result;
   }
   stringify(object) {
@@ -3836,18 +3799,12 @@ var registerClass = SuperJSON.registerClass;
 var registerCustom = SuperJSON.registerCustom;
 var registerSymbol = SuperJSON.registerSymbol;
 var allowErrorProps = SuperJSON.allowErrorProps;
-var _a20;
-(_a20 = target).__VUE_DEVTOOLS_KIT_MESSAGE_CHANNELS__ ?? (_a20.__VUE_DEVTOOLS_KIT_MESSAGE_CHANNELS__ = []);
-var _a21;
-(_a21 = target).__VUE_DEVTOOLS_KIT_RPC_CLIENT__ ?? (_a21.__VUE_DEVTOOLS_KIT_RPC_CLIENT__ = null);
-var _a22;
-(_a22 = target).__VUE_DEVTOOLS_KIT_RPC_SERVER__ ?? (_a22.__VUE_DEVTOOLS_KIT_RPC_SERVER__ = null);
-var _a23;
-(_a23 = target).__VUE_DEVTOOLS_KIT_VITE_RPC_CLIENT__ ?? (_a23.__VUE_DEVTOOLS_KIT_VITE_RPC_CLIENT__ = null);
-var _a24;
-(_a24 = target).__VUE_DEVTOOLS_KIT_VITE_RPC_SERVER__ ?? (_a24.__VUE_DEVTOOLS_KIT_VITE_RPC_SERVER__ = null);
-var _a25;
-(_a25 = target).__VUE_DEVTOOLS_KIT_BROADCAST_RPC_SERVER__ ?? (_a25.__VUE_DEVTOOLS_KIT_BROADCAST_RPC_SERVER__ = null);
+target.__VUE_DEVTOOLS_KIT_MESSAGE_CHANNELS__ ??= [];
+target.__VUE_DEVTOOLS_KIT_RPC_CLIENT__ ??= null;
+target.__VUE_DEVTOOLS_KIT_RPC_SERVER__ ??= null;
+target.__VUE_DEVTOOLS_KIT_VITE_RPC_CLIENT__ ??= null;
+target.__VUE_DEVTOOLS_KIT_VITE_RPC_SERVER__ ??= null;
+target.__VUE_DEVTOOLS_KIT_BROADCAST_RPC_SERVER__ ??= null;
 var MAX_SERIALIZED_SIZE = 2 * 1024 * 1024;
 export {
   addCustomCommand,

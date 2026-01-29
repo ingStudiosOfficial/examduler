@@ -154,6 +154,7 @@ export async function fetchPublicExam(id: string): Promise<PublicExam> {
     try {
         const response = await fetch(`${apiBaseUrl}/api/public/exam/fetch/${id}/`, {
             method: 'GET',
+            credentials: 'include',
         });
 
         const responseJson: ResponseJson = await response.json();
