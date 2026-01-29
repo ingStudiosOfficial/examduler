@@ -4,6 +4,11 @@ import { Collection, ObjectId } from 'mongodb';
 import type { Role } from '../types/user.js';
 import type { UsersCollection } from '../types/mongodb.js';
 import type { IUser } from '../interfaces/User.js';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export function authenticateToken() {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -117,15 +122,15 @@ export function verifyRole(role: Role) {
 }
 
 export function requiresTrustedTesterAuth(req: Request, res: Response, next: NextFunction) {
-    const isTrustedTesterMode = process.env.
+    const isTrustedTesterMode = process.env.TRUSTED_TESTER_MODE === 'tester';
+
+    if (!isTrustedTesterMode) return next();
 
     const token = req.cookies.trusted_tester_session;
 
     if (!token) {
-        return res.status(401).json({
-            message: 'Trusted tester session token required.'
-        });
+        return res.status(401).sendFile(path.join(__dirname, '../public/trustedtester.html'));
     }
 
-    next();
+    return next();
 }
