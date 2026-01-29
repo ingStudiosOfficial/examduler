@@ -49,5 +49,5 @@ export default defineConfig({
       },
     },
   },
-  base: '/docs/',
+  base: '/',
 });
