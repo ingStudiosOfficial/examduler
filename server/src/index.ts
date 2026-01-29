@@ -41,7 +41,7 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: process.env.BASE_CLIENT_URL,
         credentials: true,
         methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     }),
@@ -67,7 +67,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     req.client = client;
     next();
 });
-app.use(requiresTrustedTesterAuth);
+app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.path.includes('/api/trustedtester/')) next();
+
+    requiresTrustedTesterAuth(req, res, next);
+});
 
 app.use('/api/oauth2/', authRouter);
 app.use('/api/session/', sessionRouter);

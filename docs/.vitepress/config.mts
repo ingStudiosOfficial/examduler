@@ -49,4 +49,5 @@ export default defineConfig({
       },
     },
   },
+  base: '/docs/',
 });
