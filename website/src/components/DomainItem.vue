@@ -31,7 +31,7 @@ async function triggerCopyToken(token: string) {
 }
 
 function deleteDomain() {
-    emit('deleteDomain');
+    emit('deleteDomain', props.index);
 }
 
 function toggleMenu() {

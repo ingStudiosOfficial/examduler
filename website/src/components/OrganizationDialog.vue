@@ -37,7 +37,10 @@ function closeDialog() {
 }
 
 function deleteDomain(index: number) {
-    loadedOrganization.value?.domains.splice(index, 1)
+    console.log('Index:', index);
+    console.log('Org before splice:', loadedOrganization.value?.domains);
+    loadedOrganization.value?.domains.splice(index, 1);
+    console.log('Org after splice:', loadedOrganization.value?.domains);
 }
 
 function openFilePicker() {
@@ -181,7 +184,7 @@ onMounted(() => {
             <md-outlined-text-field class="dialog-settings-field" v-model="loadedOrganization.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization." maxlength="50"></md-outlined-text-field>
             <h2 class="subheader">Domains</h2>
             <div class="domains">
-                <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain${index}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
+                <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain-${domain.domain}-${domain.verificationToken}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
                 <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             </div>
             <h2 class="subheader">Members</h2>
