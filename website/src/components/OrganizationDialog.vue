@@ -174,7 +174,7 @@ onMounted(() => {
                     </md-icon-button>
                 </div>
                 <div class="right-buttons">
-                    <md-icon-button type="button" @click="closeDialog()">
+                    <md-icon-button type="button" v-vibrate @click="closeDialog()">
                         <md-icon>close</md-icon>
                     </md-icon-button>
                 </div>
