@@ -194,6 +194,17 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), asy
             await req.db.collection<IExam>('exams').bulkWrite(examOps);
             await req.db.collection<IUser>('users').bulkWrite(userOps);
         });
+
+        console.log('Successfully updated the exam.');
+
+        return res.status(200).json({
+            message: 'Successfully updated the exam.',
+        });
+    } catch (error) {
+        console.error('An error occurred while updating the exam:', error);
+        return res.status(500).json({
+            message: 'An internal server error occurred while updating the exam.',
+        });
     }
 });
 
@@ -243,7 +254,7 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
             message: 'Exam deleted successfully.',
         });
     } catch (error) {
-        console.error('An error occurred while deleting exam:', error);
+        console.error('An error occurred while deleting the exam:', error);
         return res.status(500).json({
             message: 'An internal server error occurred while deleting the exam.',
         });
