@@ -12,4 +12,8 @@ export type ExamCreate = Omit<Exam, 'seating'> & {
     seating: string;
 };
 
+export interface ExamEdit extends Exam {
+    uploadedSeating?: string;
+}
+
 export type PublicExam = Omit<Exam, 'seating'>;

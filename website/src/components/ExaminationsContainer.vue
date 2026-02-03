@@ -6,6 +6,7 @@ import { onMounted, ref, watch } from 'vue';
 import ExaminationCard from './ExaminationCard.vue';
 import ExaminationDialog from './ExaminationDialog.vue';
 import LoaderContainer from './LoaderContainer.vue';
+import ExaminationEditDialog from './ExaminationEditDialog.vue';
 
 // Interfaces
 import type { Exam } from '@/interfaces/Exam';
@@ -28,7 +29,9 @@ const exams = ref<Exam[]>();
 const examOpened = ref<boolean>(false);
 const examDetails = ref<Exam | null>(null);
 const sbMessage = ref<string>();
-const sbOpened = ref<StateObject>({ visible: false })
+const sbOpened = ref<StateObject>({ visible: false });
+const editDialogOpened = ref<boolean>(false);
+const examToEdit = ref<Exam>();
 
 function displayExamDialog(examInfo: Exam) {
     examDetails.value = examInfo;
@@ -54,6 +57,11 @@ async function refreshExams() {
 function displaySb(message: string) {
     sbMessage.value = message;
     showSnackBar(4000, sbOpened.value);
+}
+
+function showEditDialog(exam: Exam) {
+    examToEdit.value = exam;
+    editDialogOpened.value = true;
 }
 
 watch(examOpened, (isOpen: boolean) => {
@@ -98,7 +106,8 @@ onMounted(async () => {
         </div>
         <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your examinations..."></LoaderContainer>
 
-        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()"></ExaminationDialog>
+        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()" @edit="showEditDialog"></ExaminationDialog>
+        <ExaminationEditDialog v-if="editDialogOpened && examToEdit" :_id="examToEdit._id" :name="examToEdit.name" :date="examToEdit.date" :description="examToEdit.description" :seating="examToEdit.seating"></ExaminationEditDialog>
 
         <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
     </div>

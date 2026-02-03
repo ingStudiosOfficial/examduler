@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <md-filled-button :href="props.href" class="login-button">Continue with {{ props.provider }}</md-filled-button>
+    <md-filled-button v-vibrate :href="props.href" class="login-button">Continue with {{ props.provider }}</md-filled-button>
 </template>
 
 <style scoped></style>

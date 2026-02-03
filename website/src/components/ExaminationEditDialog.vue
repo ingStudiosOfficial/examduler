@@ -17,13 +17,10 @@ import { createExam } from '@/utils/exam_utils';
 
 const emit = defineEmits(['close', 'success']);
 
+const props = defineProps<ExamCreate>();
+
 const dates = ref();
-const examToCreate = ref<ExamCreate>({
-    name: '',
-    date: '',
-    description: '',
-    seating: '',
-});
+const examToEdit = ref<ExamCreate>(props);
 const seatingPicker = ref();
 const submitButton = ref();
 const uploadedSeatName = ref<string>();
@@ -31,7 +28,7 @@ const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
 
 function closeDialog() {
-    examToCreate.value = {
+    examToEdit.value = {
         name: '',
         date: '',
         description: '',
@@ -75,7 +72,7 @@ function handleFileUpload(e: Event) {
 
         console.log('Read result:', ef.target.result);
 
-        examToCreate.value.seating = ef.target.result;
+        examToEdit.value.seating = ef.target.result;
     };
 
     reader.readAsText(uploadedFile);
@@ -86,9 +83,9 @@ function handleFileUpload(e: Event) {
 async function examFormSubmit() {
     const examDateObject = new Date(dates.value);
 
-    examToCreate.value.date = examDateObject.getTime().toString();
+    examToEdit.value.date = examDateObject.getTime().toString();
 
-    const { message, success } = await createExam(examToCreate.value);
+    const { message, success } = await createExam(examToEdit.value);
     console.log(message);
 
     examCreationMessage.value = message;
@@ -119,14 +116,14 @@ watch(dates, (newValue) => {
             </div>
             <h1 class="header-title">Create Examination</h1>
             <h2 class="subheader">Details</h2>
-            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
+            <md-outlined-text-field class="dialog-settings-field" v-model="examToEdit.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
             <p>Examination date</p>
             <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
-            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
+            <md-outlined-text-field class="dialog-settings-field" v-model="examToEdit.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
             <h2 class="subheader">Seating</h2>
             <div class="seating-input">
                 <p>Your seating</p>
-                <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
+                <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>upload</md-icon>

@@ -17,7 +17,7 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
-const emit = defineEmits(['close', 'showSb', 'refresh']);
+const emit = defineEmits(['close', 'showSb', 'refresh', 'edit']);
 
 function tryGetUserSeat(): Seating | null {
     try {
@@ -67,6 +67,8 @@ async function triggerDeleteExam() {
 
 async function triggerEditExam() {
     console.log('Attempting to edit exam...');
+    emit('edit', props.exam);
+    closeDialog();
 }
 
 function closeDialog() {
