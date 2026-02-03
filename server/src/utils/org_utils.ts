@@ -121,7 +121,7 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
         // Get admin
         const admin = await db.collection<IUser>('users').updateOne(
             { _id: adminId },
-            { $push: { organizations: organization } },
+            { $addToSet: { organizations: organization } },
         );
 
         if (admin.matchedCount === 0) {

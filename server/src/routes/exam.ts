@@ -108,9 +108,11 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), asy
     try {
         const userId = new ObjectId(req.user.id);
         const examId = new ObjectId(req.params.id);
-        const examToUpdate: IExam = req.body;
-        const examOps: AnyBulkWriteOperation[] = [];
-        const fieldsToUpdate: object[] = [];
+        const examToUpdate: IExamCreate = req.body;
+        const examOps: AnyBulkWriteOperation<IExam>[] = [];
+        const userOps: AnyBulkWriteOperation<IUser>[] = [];
+
+        const session = req.client.startSession();
 
         const user = await req.db.collection<IUser>('users').findOne({ _id: userId });
 
@@ -150,6 +152,48 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), asy
                 },
             });
         }
+
+        // Email seating logic
+        const parsedSeating = await parseExamSeating(examToUpdate.seating, req);
+
+        const existingEmails = await req.db.collection<IUser>('users').find({ exams: examId }).project<Pick<IUser, 'email'>>({ email: 1 }).toArray();
+        
+        const oldSet = new Set<string>(existingEmails.map(u => u.email));
+        const newSet = new Set<string>(parsedSeating.flat().map(s => s.email));
+
+
+        const toAdd = [ ...newSet ].filter(email => !oldSet.has(email));
+        const toDelete = [ ...oldSet ].filter(email => !newSet.has(email));
+
+        toAdd.forEach(email => {
+            userOps.push({
+                updateOne: {
+                    filter: { email: email },
+                    update: { $addToSet: { exams: examId } },
+                },
+            });
+        });
+
+        toDelete.forEach(email => {
+            userOps.push({
+                updateOne: {
+                    filter: { email: email },
+                    update: { $pull: { exams: examId } },
+                },
+            });
+        });
+
+        examOps.push({
+            updateOne: {
+                filter: { _id: examId },
+                update: { $set: { seating: parsedSeating } },
+            },
+        });
+
+        await session.withTransaction(async () => {
+            await req.db.collection<IExam>('exams').bulkWrite(examOps);
+            await req.db.collection<IUser>('users').bulkWrite(userOps);
+        });
     }
 });
 

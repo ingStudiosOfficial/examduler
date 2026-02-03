@@ -46,7 +46,7 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
             usersToUpdate.map(user => ({
                 updateOne: {
                     filter: { email: user.email },
-                    update: { $push: { exams: user.examToAdd } }
+                    update: { $addToSet: { exams: user.examToAdd } }
                 }
             }))
         );

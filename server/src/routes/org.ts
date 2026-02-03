@@ -544,7 +544,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             orgOps.push({
                 updateOne: {
                     filter: { _id: orgId },
-                    update: { $push: { members: { $each: newMembers } } },
+                    update: { $addToSet: { members: { $each: newMembers } } },
                 },
             });
 
@@ -593,7 +593,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             updateOne: {
                 filter: { _id: orgId },
                 update: {
-                    $push: { domains: { $each: newDomainsArray } }, // Add new domains
+                    $addToSet: { domains: { $each: newDomainsArray } }, // Add new domains
                 },
             },
         });
