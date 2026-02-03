@@ -11,16 +11,16 @@ import '@material/web/iconbutton/icon-button.js';
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
-import type { ExamCreate } from '@/interfaces/Exam';
+import type { ExamEdit } from '@/interfaces/Exam';
 
 import { createExam } from '@/utils/exam_utils';
 
 const emit = defineEmits(['close', 'success']);
 
-const props = defineProps<ExamCreate>();
+const props = defineProps<ExamEdit>();
 
 const dates = ref();
-const examToEdit = ref<ExamCreate>(props);
+const examToEdit = ref<ExamEdit>(props);
 const seatingPicker = ref();
 const submitButton = ref();
 const uploadedSeatName = ref<string>();
@@ -32,7 +32,7 @@ function closeDialog() {
         name: '',
         date: '',
         description: '',
-        seating: '',
+        seating: [],
     };
 
     emit('close');
@@ -72,7 +72,7 @@ function handleFileUpload(e: Event) {
 
         console.log('Read result:', ef.target.result);
 
-        examToEdit.value.seating = ef.target.result;
+        examToEdit.value.uploadedSeating = ef.target.result;
     };
 
     reader.readAsText(uploadedFile);
