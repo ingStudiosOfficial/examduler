@@ -3,8 +3,7 @@ import type { Seating } from '@/interfaces/Seating';
 
 interface SeatingProp {
     seating: Seating[][];
-    email: string;
-    userSeat: Seating | null;
+    userSeat?: Seating | null;
 }
 
 const props = defineProps<SeatingProp>();

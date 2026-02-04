@@ -13,13 +13,13 @@ import '@vuepic/vue-datepicker/dist/main.css';
 
 import type { ExamEdit } from '@/interfaces/Exam';
 
-import { createExam } from '@/utils/exam_utils';
+import SeatingContainer from './SeatingContainer.vue';
 
 const emit = defineEmits(['close', 'success']);
 
 const props = defineProps<ExamEdit>();
 
-const dates = ref();
+const dates = ref(new Date(props.date));
 const examToEdit = ref<ExamEdit>(props);
 const seatingPicker = ref();
 const submitButton = ref();
@@ -81,6 +81,7 @@ function handleFileUpload(e: Event) {
 }
 
 async function examFormSubmit() {
+    /*
     const examDateObject = new Date(dates.value);
 
     examToEdit.value.date = examDateObject.getTime().toString();
@@ -95,6 +96,7 @@ async function examFormSubmit() {
         closeDialog();
         emit('success');
     }
+    */
 }
 
 function pressExamSubmit() {
@@ -114,13 +116,16 @@ watch(dates, (newValue) => {
                     <md-icon>close</md-icon>
                 </md-icon-button>
             </div>
-            <h1 class="header-title">Create Examination</h1>
+            <h1 class="header-title">Edit Examination</h1>
             <h2 class="subheader">Details</h2>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToEdit.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
             <p>Examination date</p>
             <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToEdit.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
             <h2 class="subheader">Seating</h2>
+            <div class="seating-wrapper">
+                <SeatingContainer :seating="examToEdit.seating" class="seating"></SeatingContainer>
+            </div>
             <div class="seating-input">
                 <p>Your seating</p>
                 <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
@@ -257,5 +262,16 @@ watch(dates, (newValue) => {
 
 .hidden-submit {
     display: none;
+}
+
+.seating-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.seating {
+    max-width: 90%;
 }
 </style>

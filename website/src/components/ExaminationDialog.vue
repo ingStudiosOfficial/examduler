@@ -19,14 +19,14 @@ const props = defineProps<ComponentProps>();
 
 const emit = defineEmits(['close', 'showSb', 'refresh', 'edit']);
 
-function tryGetUserSeat(): Seating | null {
+function tryGetUserSeat(seating: Seating[][], email: string): Seating | null {
     try {
-        if (!props.exam.seating || !props.user.email) {
+        if (!seating || !email) {
             console.error('Seating or email data not found.');
             return null;
         }
 
-        return getUserSeat(props.exam.seating, props.user.email);
+        return getUserSeat(seating, email);
     } catch (error) {
         console.error('Error while fetching user seat:', error);
         return null;
@@ -110,9 +110,9 @@ const userData = props.user;
             <h1 class="section-header">Description</h1>
             <p class="exam-description">{{ props.exam.description }}</p>
             <h1 class="section-header">Seating</h1>
-            <p>Your seat: <b>{{ tryGetUserSeat()?.seat }}</b></p>
+            <p>Your seat: <b>{{ tryGetUserSeat(props.exam.seating, props.user.email)?.seat }}</b></p>
             <div class="seating-wrapper">
-                <SeatingContainer :seating="props.exam.seating" :email="userData.email" :user-seat="tryGetUserSeat()" class="seating"></SeatingContainer>
+                <SeatingContainer :seating="props.exam.seating" :user-seat="tryGetUserSeat(props.exam.seating, props.user.email)" class="seating"></SeatingContainer>
             </div>
         </div>
     </div>
