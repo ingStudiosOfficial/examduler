@@ -18,7 +18,7 @@ Examduler is a free, open-source exam scheduler and management system. Exam, sea
 
 ## Features
 * **AI exam summaries**
-Students get AI assisted overviews powered by local models<sup>1</sup>
+Students get AI assisted overviews powered by local models<sup>^</sup><sup>1</sup>
 * **Clean and minimalist homepage for viewing exams**
 Take a quick glance at all your exams in a Material You themed homepage
 * **Invigilation management**.
