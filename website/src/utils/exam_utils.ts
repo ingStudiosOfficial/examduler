@@ -1,4 +1,4 @@
-import type { Exam, ExamCreate, PublicExam } from '@/interfaces/Exam';
+import type { Exam, ExamCreate, ExamEdit, PublicExam } from '@/interfaces/Exam';
 import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { Seating } from '@/interfaces/Seating';
 import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
@@ -90,6 +90,38 @@ export async function createExam(examDetails: ExamCreate): Promise<FunctionNotif
     } catch (error) {
         console.error('Error while creating exam:', error);
         return { message: 'An unexpected error occurred while creating the examination.', success: false };
+    }
+}
+
+export async function editExam(examDetails: ExamEdit): Promise<FunctionNotifier> {
+    console.log('Editing exam:', examDetails);
+
+    const examId = examDetails._id;
+    const examBody = JSON.stringify(examDetails);
+
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/exam/update/${examId}/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: examBody,
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('Failed to edit exam:', responseJson);
+            return { message: responseJson.message, success: false };
+        }
+
+        console.log('Successfully edited exam.');
+
+        return { message: 'Successfully edited examination', success: true };
+    } catch (error) {
+        console.error('Failed to edit exam:', error);
+        return { message: 'An unexpected error occurred while editing examination', success: false };
     }
 }
 
