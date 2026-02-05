@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import { ObjectId, type AnyBulkWriteOperation } from 'mongodb';
 import type { IExam, IExamCreate, IEXamUpdate } from '../interfaces/Exam.js';
-import { validateCreateExamSchema } from '../middleware/validate_schema.js';
+import { validateCreateExamSchema, validateUpdateExamSchema } from '../middleware/validate_schema.js';
 import { assignExamToUsers, parseExamSeating } from '../utils/exam_utils.js';
 import type { ExamsCollection } from '../types/mongodb.js';
 import type { IUser } from '../interfaces/User.js';
@@ -69,6 +69,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
         const exam = { ...tempExam, seating: parsedSeating } as IExam;
 
         console.log('Exam:', exam);
+        console.log('Type of date:', (typeof exam.date));
 
         const result = await req.db.collection<IExam>('exams').insertOne(exam);
 
@@ -92,7 +93,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
     }
 });
 
-examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), async (req: Request, res: Response) => {
+examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), validateUpdateExamSchema, async (req: Request, res: Response) => {
     if (!req.params.id || !ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
             message: 'Exam ID missing or invalid.',
@@ -118,6 +119,8 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), asy
 
         console.log('User exams:', user?.exams);
         console.log('Exam ID:', examId);
+        console.log('Exam to update:', examToUpdate);
+        console.log('Type of date:', (typeof examToUpdate.date));
 
         if (!user?.exams.map(e => e.toString()).includes(examId.toString())) {
             return res.status(403).json({

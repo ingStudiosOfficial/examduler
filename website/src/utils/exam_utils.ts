@@ -52,6 +52,8 @@ export function getUserSeat(seating: Seating[][], userEmail: string): Seating {
 }
 
 export function formatExamDate(examDate: string): string {
+    console.log('Exam date:', examDate);
+
     const parsedDate = new Date(examDate);
 
     const day = parsedDate.getDate();
