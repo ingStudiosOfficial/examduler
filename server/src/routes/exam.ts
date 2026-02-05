@@ -154,7 +154,7 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), asy
         }
 
         // Email seating logic
-        if (examToUpdate) {
+        if (examToUpdate.uploadedSeating) {
             const parsedSeating = await parseExamSeating(examToUpdate.uploadedSeating, req);
 
             const existingEmails = await req.db.collection<IUser>('users').find({ exams: examId }).project<Pick<IUser, 'email'>>({ email: 1 }).toArray();
@@ -193,8 +193,8 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), asy
         }
 
         await session.withTransaction(async () => {
-            await req.db.collection<IExam>('exams').bulkWrite(examOps);
-            await req.db.collection<IUser>('users').bulkWrite(userOps);
+            if (examOps.length !== 0) await req.db.collection<IExam>('exams').bulkWrite(examOps);
+            if (examOps.length !== 0) await req.db.collection<IUser>('users').bulkWrite(userOps);
         });
 
         console.log('Successfully updated the exam.');

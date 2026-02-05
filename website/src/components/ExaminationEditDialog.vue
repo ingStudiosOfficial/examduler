@@ -14,13 +14,14 @@ import '@vuepic/vue-datepicker/dist/main.css';
 import type { ExamEdit } from '@/interfaces/Exam';
 
 import SeatingContainer from './SeatingContainer.vue';
+import { editExam } from '@/utils/exam_utils';
 
 const emit = defineEmits(['close', 'success']);
 
 const props = defineProps<ExamEdit>();
 
 const dates = ref(new Date(props.date));
-const examToEdit = ref<ExamEdit>(props);
+const examToEdit = ref<ExamEdit>({ ...props });
 const seatingPicker = ref();
 const submitButton = ref();
 const uploadedSeatName = ref<string>();
@@ -81,12 +82,11 @@ function handleFileUpload(e: Event) {
 }
 
 async function examFormSubmit() {
-    /*
     const examDateObject = new Date(dates.value);
 
     examToEdit.value.date = examDateObject.getTime().toString();
 
-    const { message, success } = await createExam(examToEdit.value);
+    const { message, success } = await editExam(examToEdit.value);
     console.log(message);
 
     examCreationMessage.value = message;
@@ -96,7 +96,6 @@ async function examFormSubmit() {
         closeDialog();
         emit('success');
     }
-    */
 }
 
 function pressExamSubmit() {
