@@ -12,6 +12,7 @@ interface ComponentProps {
     domain: Domain;
     index: number;
     orgId: string;
+    keyId?: string;
 }
 
 interface MdMenuItem extends HTMLElement {
@@ -37,7 +38,7 @@ function deleteDomain() {
 function toggleMenu() {
     console.log('Toggling menu...');
 
-    const domainVerificationMenu = document.getElementById(`domain-verification-menu-${props.index}`);
+    const domainVerificationMenu = document.getElementById(`domain-verification-menu-${props.keyId}`);
 
     if (!domainVerificationMenu) return;
 
@@ -67,7 +68,7 @@ async function triggerVerifyDomain(method: DomainVerificationMethod) {
 
 watch(domainToDisplay, (newDomainValue) => {
     emit('domainChange', newDomainValue, props.index);
-});
+}, { deep: true });
 
 onMounted(() => {
     domainToDisplay.value = props.domain;
@@ -76,18 +77,18 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="domainToDisplay" class="domain-group">
+    <div v-if="domainToDisplay && props.keyId" class="domain-group">
         <md-outlined-text-field class="domain-input" v-model="domainToDisplay.domain" :label="`Domain ${props.index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
         <md-icon-button type="button" @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
             <md-icon>content_copy</md-icon>
         </md-icon-button>
-        <md-icon-button type="button" @click="toggleMenu()" :id="`domain-verification-btn-${props.index}`" :disabled="!domain.verificationToken || domain.verified">
+        <md-icon-button type="button" @click="toggleMenu()" :id="`domain-verification-btn-${props.keyId}`" :disabled="!domain.verificationToken || domain.verified">
             <md-icon>domain_verification</md-icon>
         </md-icon-button>
         <md-icon-button type="button" @click="deleteDomain()">
             <md-icon>delete</md-icon>
         </md-icon-button>
-        <md-menu :anchor="`domain-verification-btn-${props.index}`" :id="`domain-verification-menu-${props.index}`" positioning="popover">
+        <md-menu :anchor="`domain-verification-btn-${props.keyId}`" :id="`domain-verification-menu-${props.keyId}`" positioning="popover">
             <md-menu-item type="button" @click="triggerVerifyDomain('txt')">
                 <div slot="headline">Verify using TXT record</div>
                 <md-icon slot="start">dns</md-icon>

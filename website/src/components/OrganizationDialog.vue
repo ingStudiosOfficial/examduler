@@ -113,6 +113,7 @@ function addDomain() {
     if (!loadedOrganization.value) return;
 
     loadedOrganization.value.domains.push({
+        keyId: window.crypto.randomUUID(),
         domain: '',
         verificationToken: '',
         verified: false,
@@ -155,12 +156,18 @@ async function triggerDeleteOrg() {
 }
 
 watch(props, (newOrg) => {
-    loadedOrganization.value = { ...newOrg };
+    loadedOrganization.value = window.structuredClone(newOrg);
 });
 
 onMounted(() => {
-    loadedOrganization.value = { ...props };
-    loadedOrganization.value.memberUploaded = false;
+    loadedOrganization.value = {
+        ...props,
+        domains: props.domains.map(d => ({
+            ...d,
+            keyId: window.crypto.randomUUID(),
+        })),
+        memberUploaded: false,
+    };
 });
 </script>
 
@@ -184,7 +191,7 @@ onMounted(() => {
             <md-outlined-text-field class="dialog-settings-field" v-model="loadedOrganization.name" label="Organization name" required no-asterisk="true" supporting-text="The name of the organization." maxlength="50"></md-outlined-text-field>
             <h2 class="subheader">Domains</h2>
             <div class="domains">
-                <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="`domain-${domain.domain}-${domain.verificationToken}`" :domain="domain" :index="index" :org-id="loadedOrganization._id" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
+                <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="domain.keyId" :domain="domain" :index="index" :org-id="loadedOrganization._id" :key-id="domain.keyId" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
                 <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             </div>
             <h2 class="subheader">Members</h2>

@@ -1,4 +1,5 @@
 export interface Domain {
+    keyId?: string;
     domain: string;
     verificationToken: string;
     verified: boolean;

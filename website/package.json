@@ -17,6 +17,7 @@
   "dependencies": {
     "@material/web": "^2.4.1",
     "@vuepic/vue-datepicker": "^12.1.0",
+    "crypto": "^1.0.1",
     "ics": "^3.8.1",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
