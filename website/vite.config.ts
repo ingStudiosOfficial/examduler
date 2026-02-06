@@ -43,6 +43,68 @@ export default defineConfig({
             purpose: 'monochrome',
           },
         ],
+        screenshots: [
+          {
+            src: 'screenshots/desktop_dashboard.png',
+            sizes: '1920x1128',
+            form_factor: 'wide',
+            label: 'Dashboard on desktop'
+          },
+          {
+            src: 'screenshots/desktop_exam_dialog.png',
+            sizes: '1920x1128',
+            form_factor: 'wide',
+            label: 'Examination dialog on desktop'
+          },
+          {
+            src: 'screenshots/desktop_create_exam_dialog.png',
+            sizes: '1920x1128',
+            form_factor: 'wide',
+            label: 'Examination creation dialog on desktop'
+          },
+          {
+            src: 'screenshots/desktop_org_dialog.png',
+            sizes: '1920x1128',
+            form_factor: 'wide',
+            label: 'Organization dialog view on desktop'
+          },
+          {
+            src: 'screenshots/desktop_exam_view.png',
+            sizes: '1920x1128',
+            form_factor: 'wide',
+            label: 'Examination view on desktop'
+          },
+          {
+            src: 'screenshots/mobile_dashboard.png',
+            sizes: '1080x2400',
+            form_factor: 'narrow',
+            label: 'Dashboard on mobile'
+          },
+          {
+            src: 'screenshots/mobile_exam_dialog.png',
+            sizes: '1080x2400',
+            form_factor: 'narrow',
+            label: 'Examination dialog on mobile'
+          },
+          {
+            src: 'screenshots/mobile_create_exam_dialog.png',
+            sizes: '1080x2400',
+            form_factor: 'narrow',
+            label: 'Examination creation dialog on mobile'
+          },
+          {
+            src: 'screenshots/mobile_org_dialog.png',
+            sizes: '1080x2400',
+            form_factor: 'narrow',
+            label: 'Organization dialog view on mobile'
+          },
+          {
+            src: 'screenshots/mobile_exam_view.png',
+            sizes: '1080x2400',
+            form_factor: 'narrow',
+            label: 'Examination view on mobile'
+          },
+        ],
         start_url: '/',
         display: 'standalone',
         theme_color: '#126682',
