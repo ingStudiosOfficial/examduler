@@ -196,7 +196,7 @@ onMounted(() => {
             </div>
             <h2 class="subheader">Members</h2>
             <p>{{ loadedOrganization.members.length }} members</p>
-            <div class="members-output">
+            <div class="file-input">
                 <p>Download members</p>
                 <label class="file-upload-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
                     <md-ripple></md-ripple>
@@ -204,7 +204,7 @@ onMounted(() => {
                     <md-icon>download</md-icon>
                 </label>
             </div>
-            <div class="members-input">
+            <div class="file-input">
                 <p>Upload members</p>
                 <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
@@ -276,25 +276,6 @@ onMounted(() => {
     gap: 20px;
     width: 100%;
 }
-
-.domain-input {
-    width: 60%;
-}
-
-.members-output, .members-input {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: var(--md-sys-color-surface-container);
-    color: var(--md-sys-color-on-surface-container);
-    border-radius: 25px;
-    padding: 20px;
-    gap: 10px;
-    width: 40%;
-    box-sizing: border-box;
-}
-
-
 
 .submit-button {
     position: sticky;

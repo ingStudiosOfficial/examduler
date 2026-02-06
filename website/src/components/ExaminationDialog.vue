@@ -95,10 +95,10 @@ const userData = props.user;
                     <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
                 </div>
                 <div class="right-buttons">
-                    <md-icon-button @click="triggerShareExam()">
+                    <md-icon-button v-vibrate @click="triggerShareExam()">
                         <md-icon>share</md-icon>
                     </md-icon-button>
-                    <md-icon-button @click="closeDialog()">
+                    <md-icon-button v-vibrate @click="closeDialog()">
                         <md-icon>close</md-icon>
                     </md-icon-button>
                 </div>

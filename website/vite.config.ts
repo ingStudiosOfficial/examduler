@@ -1,8 +1,9 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import vueDevTools from 'vite-plugin-vue-devtools';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,6 +16,81 @@ export default defineConfig({
       }
     }),
     vueDevTools(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      strategies: 'generateSW',
+      manifest: {
+        short_name: 'Examduler',
+        name: 'Examduler',
+        description: 'A lightweight yet powerful exam management app for educators and students.',
+        icons: [
+          {
+            src: 'examduler_logo_trans_full.png',
+            sizes: '500x500',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'examduler_logo_trans.png',
+            sizes: '500x500',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: 'examduler_logo_monochrome_full.png',
+            sizes: '500x500',
+            type: 'image/png',
+            purpose: 'monochrome',
+          },
+        ],
+        start_url: '/',
+        display: 'standalone',
+        theme_color: '#126682',
+        background_color: '#F6FAFD',
+      },
+      srcDir: 'src/',
+      includeAssets: ['public/*'],
+      workbox: {
+        globPatterns: [
+          '**/*.{html,css,js,png,svg,ico,jcon}',
+        ],
+        cacheId: 'v1.0.0',
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        navigateFallback: 'index.html',
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 *365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gstatic-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 *365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            }
+          },
+        ],
+      }
+    }),
   ],
   resolve: {
     alias: {

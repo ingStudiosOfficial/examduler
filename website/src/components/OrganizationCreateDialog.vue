@@ -121,7 +121,7 @@ async function orgFormSubmit() {
             </div>
             <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             <h2 class="subheader">Members</h2>
-            <div class="members-input">
+            <div class="file-input">
                 <p>Your members</p>
                 <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
@@ -190,21 +190,6 @@ async function orgFormSubmit() {
 .domain-input {
     width: 80%;
 }
-
-.members-input {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: var(--md-sys-color-surface-container);
-    color: var(--md-sys-color-on-surface-container);
-    border-radius: 25px;
-    padding: 20px;
-    gap: 10px;
-    width: 40%;
-    box-sizing: border-box;
-}
-
-
 
 .file-chosen {
     word-wrap: break-word;

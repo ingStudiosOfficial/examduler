@@ -111,6 +111,10 @@ onMounted(() => {
     width: 40%;
 }
 
+.domain-input {
+    width: 60%;
+}
+
 @media (max-width: 768px) {
     .domain-group {
         width: 80%;

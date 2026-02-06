@@ -77,6 +77,19 @@ body {
     color: var(--md-sys-color-on-primary-container);
 }
 
+.file-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface-container);
+    border-radius: 25px;
+    padding: 20px;
+    gap: 10px;
+    width: 40%;
+    box-sizing: border-box;
+}
+
 @media (max-width: 768px) {
     .dialog {
         width: 100%;
@@ -85,6 +98,10 @@ body {
     }
 
     .dialog-settings-field {
+        width: 80%;
+    }
+
+    .file-input {
         width: 80%;
     }
 }

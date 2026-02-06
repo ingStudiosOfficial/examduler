@@ -125,7 +125,7 @@ watch(dates, (newValue) => {
             <div class="seating-wrapper">
                 <SeatingContainer :seating="examToEdit.seating" class="seating"></SeatingContainer>
             </div>
-            <div class="seating-input">
+            <div class="file-input">
                 <p>Your seating</p>
                 <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
@@ -173,26 +173,9 @@ watch(dates, (newValue) => {
     color: var(--md-sys-color-primary)
 }
 
-
-
 .date-picker {
     width: 40%;
 }
-
-.seating-input {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: var(--md-sys-color-surface-container);
-    color: var(--md-sys-color-on-surface-container);
-    border-radius: 25px;
-    padding: 20px;
-    gap: 10px;
-    width: 40%;
-    box-sizing: border-box;
-}
-
-
 
 .file-chosen {
     word-wrap: break-word;
@@ -219,6 +202,6 @@ watch(dates, (newValue) => {
 }
 
 .seating {
-    max-width: 90%;
+    max-width: 80%;
 }
 </style>

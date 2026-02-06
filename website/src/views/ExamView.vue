@@ -29,6 +29,7 @@ async function tryFetchExam() {
         console.log('Fetched exam:', exam);
 
         examDetails.value = exam;
+        document.title = `Exam ${exam.name} | Examduler`
     } catch (error) {
         console.error('Error while fetching exams:', error);
     }
