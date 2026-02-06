@@ -192,13 +192,13 @@ onMounted(() => {
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="domain.keyId" :domain="domain" :index="index" :org-id="loadedOrganization._id" :key-id="domain.keyId" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
-                <md-filled-button type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
+                <md-filled-button v-vibrate type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
             </div>
             <h2 class="subheader">Members</h2>
             <p>{{ loadedOrganization.members.length }} members</p>
             <div class="file-input">
                 <p>Download members</p>
-                <label class="file-upload-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
+                <label v-vibrate class="file-upload-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>download</md-icon>
@@ -206,7 +206,7 @@ onMounted(() => {
             </div>
             <div class="file-input">
                 <p>Upload members</p>
-                <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
+                <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>upload</md-icon>

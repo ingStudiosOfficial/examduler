@@ -79,21 +79,21 @@ onMounted(() => {
 <template>
     <div v-if="domainToDisplay && props.keyId" class="domain-group">
         <md-outlined-text-field class="domain-input" v-model="domainToDisplay.domain" :label="`Domain ${props.index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
-        <md-icon-button type="button" @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
+        <md-icon-button v-vibrate type="button" @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
             <md-icon>content_copy</md-icon>
         </md-icon-button>
-        <md-icon-button type="button" @click="toggleMenu()" :id="`domain-verification-btn-${props.keyId}`" :disabled="!domain.verificationToken || domain.verified">
+        <md-icon-button v-vibrate type="button" @click="toggleMenu()" :id="`domain-verification-btn-${props.keyId}`" :disabled="!domain.verificationToken || domain.verified">
             <md-icon>domain_verification</md-icon>
         </md-icon-button>
-        <md-icon-button type="button" @click="deleteDomain()">
+        <md-icon-button v-vibrate type="button" @click="deleteDomain()">
             <md-icon>delete</md-icon>
         </md-icon-button>
         <md-menu :anchor="`domain-verification-btn-${props.keyId}`" :id="`domain-verification-menu-${props.keyId}`" positioning="popover">
-            <md-menu-item type="button" @click="triggerVerifyDomain('txt')">
+            <md-menu-item v-vibrate type="button" @click="triggerVerifyDomain('txt')">
                 <div slot="headline">Verify using TXT record</div>
                 <md-icon slot="start">dns</md-icon>
             </md-menu-item>
-            <md-menu-item type="button" @click="triggerVerifyDomain('http')">
+            <md-menu-item v-vibrate type="button" @click="triggerVerifyDomain('http')">
                 <div slot="headline">Verify using HTTP</div>
                 <md-icon slot="start">http</md-icon>
             </md-menu-item>
