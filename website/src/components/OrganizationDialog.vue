@@ -198,7 +198,7 @@ onMounted(() => {
             <p>{{ loadedOrganization.members.length }} members</p>
             <div class="members-output">
                 <p>Download members</p>
-                <label class="file-download-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
+                <label class="file-upload-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>download</md-icon>
@@ -226,47 +226,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-}
-
-.dialog {
-    width: 75vw;
-    height: 75dvh;
-    background-color: var(--md-sys-color-surface);
-    color: var(--md-sys-color-on-surface);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    border-radius: 25px;
-    overflow-y: scroll;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    z-index: 1000;
-    position: relative;
-    gap: 20px;
-}
-
-.dialog * {
-    margin: 0;
-}
-
-.dialog-settings-field {
-    width: 40%;
-    color: var(--md-sys-color-on-primary-container);
-}
-
 .top-panel {
     position: sticky;
     background-color: var(--md-sys-color-surface);
@@ -335,20 +294,7 @@ onMounted(() => {
     box-sizing: border-box;
 }
 
-.file-download-button, .file-upload-button {
-    display: block;
-    position: relative;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-    padding: 10px;
-    border-radius: 25px;
-    cursor: pointer;
-    display: inline-block;
-    box-sizing: border-box;
-    text-align: center;
-    height: 50px;
-    outline: none;
-}
+
 
 .submit-button {
     position: sticky;

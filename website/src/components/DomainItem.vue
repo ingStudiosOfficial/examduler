@@ -110,4 +110,10 @@ onMounted(() => {
     justify-content: space-between;
     width: 40%;
 }
+
+@media (max-width: 768px) {
+    .domain-group {
+        width: 80%;
+    }
+}
 </style>

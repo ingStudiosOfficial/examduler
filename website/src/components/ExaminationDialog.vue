@@ -119,42 +119,6 @@ const userData = props.user;
 </template>
 
 <style scoped>
-.backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-}
-
-.dialog {
-    width: 75vw;
-    height: 75dvh;
-    background-color: var(--md-sys-color-surface);
-    color: var(--md-sys-color-on-surface);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    border-radius: 25px;
-    overflow-y: scroll;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    z-index: 1000;
-    position: relative;
-    gap: 20px;
-}
-
-.dialog * {
-    margin: 0;
-}
-
 .dialog p {
     white-space: pre-wrap;
 }
@@ -261,6 +225,10 @@ const userData = props.user;
 
     .mobile-headers {
         display: flex;
+    }
+
+    .exam-name {
+        max-width: 90%;
     }
 }
 </style>
