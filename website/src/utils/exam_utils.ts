@@ -3,6 +3,7 @@ import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { Seating } from '@/interfaces/Seating';
 import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
 import { createEvent, type EventAttributes } from 'ics';
+import { formatDistance } from 'date-fns';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
@@ -317,4 +318,12 @@ export async function shareExam(examDetails: PublicExam): Promise<FunctionNotifi
         console.error('An error occurred while sharing examination:', error);
         return { message: 'An unexpected error occurred while sharing examination', success: false };
     }
+}
+
+export function getTimeTillExam(examDate: Date): string {
+    const now = new Date();
+
+    const timeTill = formatDistance(examDate, now, { addSuffix: true });
+
+    return timeTill;
 }
