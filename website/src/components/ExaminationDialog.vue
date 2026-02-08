@@ -9,6 +9,7 @@ import type { User } from '@/interfaces/User';
 import type { Seating } from '@/interfaces/Seating';
 
 import { deleteExam, formatExamDate, getUserSeat, shareExam } from '@/utils/exam_utils';
+import { DialogUtils } from '@/utils/dialog_utils';
 
 interface ComponentProps {
     exam: Exam;
@@ -48,7 +49,7 @@ async function triggerShareExam() {
 }
 
 async function triggerDeleteExam() {
-    if (!confirm(`Are you sure you want to delete the examination '${props.exam.name}'?`)) return;
+    if (!(await DialogUtils.confirm(`Are you sure you want to delete the examination '${props.exam.name}'?`, 'Delete Examination'))) return;
 
     const { message, success } = await deleteExam(props.exam);
 

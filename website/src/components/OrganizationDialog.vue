@@ -18,6 +18,7 @@ import { showSnackBar } from '@/utils/snackbar';
 import type { StateObject } from '@/interfaces/SnackBar';
 import type { Member } from '@/interfaces/Member';
 import type { Domain } from '@/interfaces/Domain';
+import { DialogUtils } from '@/utils/dialog_utils';
 
 const props = defineProps<Organization>();
 
@@ -140,7 +141,7 @@ async function orgFormSubmit() {
 }
 
 async function triggerDeleteOrg() {
-    if (!confirm(`Are you sure you want to delete the organization '${loadedOrganization.value?.name}'? This action is irreversible and will delete all members and domains.`)) return;
+    if (!(await DialogUtils.confirm(`Are you sure you want to delete the organization '${loadedOrganization.value?.name}'? This action is irreversible and will delete all members and domains.`, 'Delete Organization'))) return;
 
     if (!loadedOrganization.value?._id) return;
 
