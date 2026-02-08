@@ -19,21 +19,30 @@ export function parseExams(exams: string): Exam[] {
 }
 
 export function sortExams(exams: Exam[]): Exam[] {
-    return [...exams].sort((b, a) => {
+    const now = new Date().getTime();
+
+    return [...exams].sort((a, b) => {
         const timeA = new Date(a.date).getTime();
         const timeB = new Date(b.date).getTime();
 
         const isInvalidA = isNaN(timeA);
         const isInvalidB = isNaN(timeB);
 
-        // A and B invalid, keep the same order
+        // Handle Invalid Dates (Move to the absolute end)
         if (isInvalidA && isInvalidB) return 0;
-        // A invalid, move to the end
         if (isInvalidA) return 1;
-        // B invalid, move to the end
         if (isInvalidB) return -1;
 
-        return timeB - timeA;
+        const isPastA = timeA < now;
+        const isPastB = timeB < now;
+
+        // If one is past and the other is future, move the past one down
+        if (!isPastA && isPastB) return -1;
+        if (isPastA && !isPastB) return 1;
+
+        // If both are future: sort by soonest first (ascending)
+        // If both are past: sort by most recent first (descending)
+        return timeA - timeB;
     });
 }
 

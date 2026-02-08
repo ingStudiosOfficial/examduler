@@ -62,7 +62,7 @@ watch(
         <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
         <h1 class="exam-name">{{ props.exam.name }}</h1>
         <p class="countdown-text">{{ timeTillExam }}</p>
-        <div class="exam-details">
+        <div class="exam-details" v-if="examIsFuture">
             <p class="exam-date">{{ formatExamDate(props.exam.date) }}</p>
             <p v-show="userSeat" class="exam-seat">Seat {{ userSeat?.seat }}</p>
         </div>
