@@ -24,6 +24,6 @@ window.addEventListener('click', (event) => {
 
     if (btn) {
         console.log('Vibrating with element:', btn);
-        vibrate([10]);
+        vibrate([6]);
     }
 }, true);

@@ -2,6 +2,7 @@
 import '@material/web/dialog/dialog.js';
 import '@material/web/button/filled-button.js';
 import { ref } from 'vue';
+import { vibrate } from '@/utils/vibrate';
 
 interface ComponentProps {
     title: string;
@@ -14,6 +15,7 @@ const props = defineProps<ComponentProps>();
 const isVisible = ref<boolean>(true);
 
 function acknowledge() {
+    vibrate([6]);
     isVisible.value = false;
 }
 
