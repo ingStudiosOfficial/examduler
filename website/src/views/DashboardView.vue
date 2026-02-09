@@ -12,20 +12,29 @@ import type { User } from '@/interfaces/User';
 
 import { fetchUserData } from '@/utils/user_utils';
 import { fetchCachedUserData } from '@/utils/cache_utils';
+import SnackBar from '@/components/SnackBar.vue';
+import type { StateObject } from '@/interfaces/SnackBar';
+import { showSnackBar } from '@/utils/snackbar';
 
 const userData = ref<User | null>(null);
 const examCreateDialogOpened = ref<boolean>(false);
 const refreshExams = ref<boolean>(false);
 const windowWidth = ref<number>(window.innerWidth);
+const sbMessage = ref<string>();
+const sbOpened = ref<StateObject>({ visible: false });
 
 onMounted(async () => {
     try {
         userData.value = await fetchUserData();
     } catch (error) {
         console.error('Error while fetching user:', error);
+
         const cachedUserData = await fetchCachedUserData();
         if (!cachedUserData) document.location.href = '/login';
         else userData.value = cachedUserData;
+
+        sbMessage.value = 'You are currently offline. Viewing read-only cached data.';
+        showSnackBar(4000, sbOpened.value);
     }
 });
 
@@ -69,6 +78,8 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
     </div>
 
     <LoaderContainer v-else class="loader-container" loading-text="Hang on while we load the neccessary data..." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
+
+    <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
 </template>
 
 <style scoped>
