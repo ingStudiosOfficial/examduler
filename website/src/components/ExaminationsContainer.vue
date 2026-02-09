@@ -17,6 +17,7 @@ import { fetchAllExams, sortExams } from '@/utils/exam_utils';
 import SnackBar from './SnackBar.vue';
 import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
+import { fetchCachedExams } from '@/utils/cache_utils';
 
 interface ComponentProps {
     user: User;
@@ -56,7 +57,10 @@ async function refreshExams() {
         exams.value = sortExams(fetchedExams);
     } catch (error) {
         console.error('Error while fetching exams:', error);
-        exams.value = [];
+
+        const cachedExams = await fetchCachedExams();
+        console.log('Cached exams:', cachedExams);
+        exams.value = cachedExams;
     }
 }
 

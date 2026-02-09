@@ -23,23 +23,30 @@ router.beforeEach(async (to: RouteLocationNormalized, _, next: NavigationGuardNe
     if (to.path === '/') {
         console.log('Fetching response...');
 
-        const response = await fetch(`${apiBaseUrl}/api/session/verify/`, {
-            method: 'GET',
-            credentials: 'include',
-        });
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/session/verify/`, {
+                method: 'GET',
+                credentials: 'include',
+            });
 
-        console.log('Fetched response.');
+            console.log('Fetched response.');
 
-        const responseJson: ResponseJson = await response.json();
+            const responseJson: ResponseJson = await response.json();
 
-        console.log('Response:', responseJson);
+            console.log('Response:', responseJson);
 
-        if (response.ok) {
-            console.log('User authenticated successfully.');
-            next('/dashboard');
-        } else {
-            console.error('Failed to authenticate user:', response.status);
-            next('/login');
+            if (response.ok) {
+                console.log('User authenticated successfully.');
+                localStorage.setItem('lastAuthenticated', 'true');
+                next('/dashboard');
+            } else {
+                console.error('Failed to authenticate user:', response.status);
+                next('/login');
+            }
+        } catch (error) {
+            console.error('Failed to authenticate user:', error);
+            if (JSON.parse(localStorage.getItem('lastAuthenticated') || 'false') === true) next();
+            else next('/login');
         }
     }
 
@@ -64,6 +71,7 @@ router.beforeEach(async (to: RouteLocationNormalized, _, next: NavigationGuardNe
 
             if (response.ok) {
                 console.log('User authenticated successfully.');
+                localStorage.setItem('lastAuthenticated', 'true');
                 next();
             } else {
                 console.error('Failed to authenticate user:', response.status);
@@ -71,7 +79,9 @@ router.beforeEach(async (to: RouteLocationNormalized, _, next: NavigationGuardNe
             }
         } catch (error) {
             console.error('Failed to authenticate user:', error);
-            next('/login');
+            if (navigator.onLine) next('/login');
+            else if (!navigator.onLine && JSON.parse(localStorage.getItem('lastAuthenticated') || 'false') === true) next();
+            else next('/login');
         }
     } else {
         next();

@@ -1,5 +1,6 @@
 import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { User } from '@/interfaces/User';
+import { cacheUserData } from './cache_utils';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,6 +20,8 @@ export async function fetchUserData(): Promise<User> {
                 console.error('User not found.');
                 throw new Error('User not found.');
             }
+
+            cacheUserData(responseJson.user as User);
 
             return responseJson.user as User;
         } else {

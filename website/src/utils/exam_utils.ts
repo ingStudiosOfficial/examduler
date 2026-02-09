@@ -4,6 +4,7 @@ import type { Seating } from '@/interfaces/Seating';
 import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
 import { createEvent, type EventAttributes } from 'ics';
 import { formatDistance } from 'date-fns';
+import { cacheExams } from './cache_utils';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
@@ -185,7 +186,9 @@ export async function fetchAllExams(): Promise<Exam[]> {
 
         const exams: Exam[] = responseJson.exams as Exam[];
 
-        console.log('Fetched exams:', exams);
+        console.log('Fetched and caching exams:', exams);
+
+        cacheExams(exams);
 
         return exams;
     } catch (error) {

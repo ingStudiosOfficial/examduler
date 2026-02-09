@@ -9,6 +9,7 @@ import OrganizationDialog from './OrganizationDialog.vue';
 import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
 import SnackBar from './SnackBar.vue';
+import { fetchCachedOrganizations } from '@/utils/cache_utils';
 
 const organizations = ref<Organization[]>();
 const orgsLoaded = ref<boolean>(false);
@@ -38,7 +39,9 @@ async function refreshOrgs(message: string | null) {
         orgsLoaded.value = true;
     } catch (error) {
         console.error('Error while fetching all organizations:', error);
-        orgsLoaded.value = false;
+        const cachedOrgs = await fetchCachedOrganizations();
+        organizations.value = cachedOrgs;
+        orgsLoaded.value = true;
     }
 }
 

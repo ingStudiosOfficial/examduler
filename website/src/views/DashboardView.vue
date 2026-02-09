@@ -11,6 +11,7 @@ import LoaderContainer from '@/components/LoaderContainer.vue';
 import type { User } from '@/interfaces/User';
 
 import { fetchUserData } from '@/utils/user_utils';
+import { fetchCachedUserData } from '@/utils/cache_utils';
 
 const userData = ref<User | null>(null);
 const examCreateDialogOpened = ref<boolean>(false);
@@ -22,6 +23,9 @@ onMounted(async () => {
         userData.value = await fetchUserData();
     } catch (error) {
         console.error('Error while fetching user:', error);
+        const cachedUserData = await fetchCachedUserData();
+        if (!cachedUserData) document.location.href = '/login';
+        else userData.value = cachedUserData;
     }
 });
 

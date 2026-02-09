@@ -3,6 +3,7 @@ import type { Organization, OrganizationCreate, OrganizationEdit } from "@/inter
 import type { FunctionNotifier } from "@/interfaces/FunctionNotifier";
 import type { ResponseJson } from "@/interfaces/ResponseJson";
 import type { DomainVerificationMethod } from "@/interfaces/Domain";
+import { cacheOrganizations } from "./cache_utils";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -117,6 +118,8 @@ export async function fetchAllOrganizations(): Promise<Organization[]> {
         const organizations: Organization[] = responseJson.organizations as Organization[];
 
         console.log('Fetched organizations:', organizations);
+
+        cacheOrganizations(organizations);
 
         return organizations;
     } catch (error) {
