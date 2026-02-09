@@ -90,6 +90,11 @@ body {
     box-sizing: border-box;
 }
 
+.dialog-bg {
+    z-index: 2000;
+    position: relative;
+}
+
 @media (max-width: 768px) {
     .dialog {
         width: 100%;

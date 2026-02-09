@@ -7,6 +7,7 @@ export const DialogUtils = {
         console.log('Initiating confirm dialog:', message, title)
 
         const container = document.createElement('div');
+        container.classList.add('dialog-bd');
         document.body.appendChild(container);
 
         return new Promise((resolve) => {
