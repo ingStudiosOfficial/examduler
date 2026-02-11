@@ -9,7 +9,7 @@ declare global {
     }
 }
 
-export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk: string) => void, onDownload: (progress: number) => void): Promise<string> {
+export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk: string) => void, onDownload: (progress: number) => void, onEvent: (message: string) => void): Promise<string> {
     if (!('Summarizer' in window)) {
         console.error('Summarizer API not supported by browser.');
         throw new Error('Summarizer API not supported by browser');
@@ -22,6 +22,8 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
         expectedInputLanguages: ['en-US'],
         outputLanguage: 'en-US',
     };
+
+    onEvent('Checking summarizer availability...');
 
     const availability = await Summarizer.availability(summarizerOptions);
 
@@ -47,6 +49,8 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
             throw new Error('An unexpected error occurred');
     }
 
+    onEvent('Creating summarizer instance...');
+
     const summarizer = await Summarizer.create({
         ...summarizerOptions,
         sharedContext: 'A summary of the user\'s upcoming examinations. Make it tailored to the user. Use words like \'you\', referring to the user. An example seat would be B5, so say \'Your seat is B5 for {exam name}.\'.',
@@ -69,6 +73,8 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
     } catch (error) {
         console.error('Failed to fetch seats for user:', error);
     }
+
+    onEvent('Generating summary...');
 
     const prompt = `Examination: ${JSON.stringify(
         userSeats.map((examWithSeat) => {
