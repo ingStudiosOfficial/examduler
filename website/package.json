@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",
+    "@types/dom-chromium-ai": "^0.0.14",
     "@types/node": "^24.10.1",
     "@types/wicg-file-system-access": "^2023.10.7",
     "@vitejs/plugin-vue": "^6.0.2",

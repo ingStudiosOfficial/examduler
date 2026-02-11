@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import '@material/web/progress/circular-progress';
+
 const props = defineProps({
     loadingText: String,
     loaderColor: String,
@@ -7,13 +9,7 @@ const props = defineProps({
 
 <template>
     <div class="loader-wrapper">
-        <span
-            class="loader"
-            :style="{
-                'border-color': props.loaderColor,
-                'border-bottom-color': 'transparent',
-            }"
-        ></span>
+        <md-circular-progress class="loader" indeterminate></md-circular-progress>
         <p
             class="loader-text"
             :style="{
@@ -33,19 +29,7 @@ const props = defineProps({
 }
 
 .loader {
-    width: 48px;
-    height: 48px;
-    border-width: 5px;
-    border-style: solid;
-
-    border-color: #fff;
-
-    border-bottom-color: transparent;
-
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
+    --md-circular-progress-size: 60px;
 }
 
 .loader-text {

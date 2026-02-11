@@ -9,7 +9,8 @@
       "@/*": ["./src/*"]
     },
     "types": [
-      "wicg-file-system-access"
+      "wicg-file-system-access",
+      "dom-chromium-ai"
     ]
   }
 }
