@@ -16,6 +16,7 @@ import { fetchCachedUserData } from '@/utils/cache_utils';
 import SnackBar from '@/components/SnackBar.vue';
 import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
+import type { Exam } from '@/interfaces/Exam';
 
 const userData = ref<User | null>(null);
 const examCreateDialogOpened = ref<boolean>(false);
@@ -24,6 +25,7 @@ const windowWidth = ref<number>(window.innerWidth);
 const sbMessage = ref<string>();
 const sbOpened = ref<StateObject>({ visible: false });
 const aiSummarySupported = ref<boolean>('Summarizer' in window);
+const exams = ref<Exam[]>();
 
 onMounted(async () => {
     try {
@@ -53,6 +55,10 @@ function alertRefreshExams() {
     refreshExams.value = true;
 }
 
+function onFetchExams(fetchedExams: Exam[]) {
+    exams.value = fetchedExams;
+}
+
 watch(examCreateDialogOpened, (isOpen: boolean) => {
     const handleEscape = (e: KeyboardEvent) => {
         if (e.key === 'Escape') closeCreateExamDialog();
@@ -68,9 +74,9 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
 <template>
     <div v-if="userData" class="content-wrapper">
-        <SummaryContainer v-if="aiSummarySupported"></SummaryContainer>
+        <SummaryContainer v-if="aiSummarySupported && exams" :exams="exams" :user="userData"></SummaryContainer>
 
-        <ExaminationsContainer :user="userData" :refresh="refreshExams"></ExaminationsContainer>
+        <ExaminationsContainer :user="userData" :refresh="refreshExams" @fetched-exams="onFetchExams"></ExaminationsContainer>
 
         <OrganizationsContainer v-if="userData.role === 'admin'"></OrganizationsContainer>
 

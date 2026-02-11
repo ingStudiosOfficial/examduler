@@ -26,6 +26,8 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
+const emit = defineEmits(['fetchedExams']);
+
 const exams = ref<Exam[]>();
 const examOpened = ref<boolean>(false);
 const examDetails = ref<Exam | null>(null);
@@ -61,6 +63,8 @@ async function refreshExams() {
         const cachedExams = await fetchCachedExams();
         console.log('Cached exams:', cachedExams);
         exams.value = cachedExams;
+    } finally {
+        emit('fetchedExams', exams.value);
     }
 }
 

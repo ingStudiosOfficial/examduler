@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import '@material/web/progress/circular-progress';
+import '@material/web/progress/circular-progress.js';
 
 const props = defineProps({
     loadingText: String,

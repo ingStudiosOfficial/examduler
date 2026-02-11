@@ -1,25 +1,38 @@
 <script setup lang="ts">
-import { Exam } from '@/interfaces/Exam';
+import type { Exam } from '@/interfaces/Exam';
 import { summarizeExams } from '@/utils/ai_utils';
 import { onMounted, ref } from 'vue';
+import '@material/web/progress/linear-progress.js';
+import type { User } from '@/interfaces/User';
 
-const props = defineProps<Exam[]>();
+interface ComponentProps {
+    exams: Exam[];
+    user: User;
+}
+
+const props = defineProps<ComponentProps>();
 
 const summary = ref<string>('');
+const modelDownloadProgress = ref<number | null>(null);
 
 function onChunk(generatedSummary: string) {
     summary.value = generatedSummary;
 }
 
-onMounted(() => {
-    summarizeExams(props, onChunk, )
+function onDownload(progress: number) {
+    modelDownloadProgress.value = progress;
+}
+
+onMounted(async () => {
+    await summarizeExams(props.exams, props.user, onChunk, onDownload);
 });
 </script>
 
 <template>
     <div class="summary-container">
         <h1 class="summary-header">AI Summary</h1>
-        <p>text</p>
+        <md-linear-progress v-if="modelDownloadProgress !== null && modelDownloadProgress !== 1" :value="modelDownloadProgress"></md-linear-progress>
+        <p v-if="summary">{{ summary }}</p>
     </div>
 </template>
 
