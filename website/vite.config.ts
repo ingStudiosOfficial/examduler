@@ -114,13 +114,12 @@ export default defineConfig({
       includeAssets: ['public/*'],
       workbox: {
         globPatterns: [
-          '**/*.{html,css,js,png,svg,ico,jcon}',
+          '**/*.{html,css,js,png,svg,ico,json}',
         ],
         cacheId: 'v1.0.0',
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        navigateFallback: 'index.html',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
