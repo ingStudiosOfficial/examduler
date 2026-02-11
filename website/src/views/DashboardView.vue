@@ -7,6 +7,7 @@ import ExaminationsContainer from '@/components/ExaminationsContainer.vue';
 import OrganizationsContainer from '@/components/OrganizationsContainer.vue';
 import ExaminationCreateDialog from '@/components/ExaminationCreateDialog.vue';
 import LoaderContainer from '@/components/LoaderContainer.vue';
+import SummaryContainer from '@/components/SummaryContainer.vue';
 
 import type { User } from '@/interfaces/User';
 
@@ -22,6 +23,7 @@ const refreshExams = ref<boolean>(false);
 const windowWidth = ref<number>(window.innerWidth);
 const sbMessage = ref<string>();
 const sbOpened = ref<StateObject>({ visible: false });
+const aiSummarySupported = ref<boolean>('Summarizer' in window);
 
 onMounted(async () => {
     try {
@@ -66,6 +68,8 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
 <template>
     <div v-if="userData" class="content-wrapper">
+        <SummaryContainer v-if="aiSummarySupported"></SummaryContainer>
+
         <ExaminationsContainer :user="userData" :refresh="refreshExams"></ExaminationsContainer>
 
         <OrganizationsContainer v-if="userData.role === 'admin'"></OrganizationsContainer>

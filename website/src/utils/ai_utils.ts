@@ -1,9 +1,16 @@
 import type { Exam } from "@/interfaces/Exam";
 
-export async function summarizeExams(exams: Exam[]) {
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    interface ReadableStream<R = any> {
+        [Symbol.asyncIterator](): AsyncIterableIterator<R>;
+    }
+}
+
+export async function summarizeExams(exams: Exam[], onChunk: (chunk: string) => void, onDownload: (progress: number) => void): Promise<string> {
     if (!('Summarizer' in window)) {
-        console.error('Summarizer API not supported in browser.');
-        return;
+        console.error('Summarizer API not supported by browser.');
+        throw new Error('Summarizer API not supported by browser');
     }
 
     const summarizerOptions: SummarizerCreateCoreOptions = {
@@ -31,11 +38,11 @@ export async function summarizeExams(exams: Exam[]) {
 
         case 'unavailable':
             console.error('Summarizer is unavailable');
-            return;
+            throw new Error('Summarizer is unavailable');
 
         default:
             console.error('Unknown summarizer state.');
-            return;
+            throw new Error('An unexpected error occurred');
     }
 
     const summarizer = await Summarizer.create({
@@ -45,9 +52,20 @@ export async function summarizeExams(exams: Exam[]) {
             m.addEventListener('downloadprogress', (e) => {
                 const percentageComplete = Math.round((e.loaded / e.total));
                 console.log('Percentage complete:', percentageComplete * 100);
-
-                
+                onDownload(percentageComplete);
             });
         },
     });
+
+    const stream = summarizer.summarizeStreaming(exams.toString());
+    let summary = '';
+
+    for await (const chunk of stream) {
+        summary += chunk;
+        onChunk(summary);
+    }
+
+    console.log('Final summary:', summary);
+
+    return summary;
 }
