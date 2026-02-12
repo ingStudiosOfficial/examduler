@@ -9,7 +9,7 @@ declare global {
     }
 }
 
-export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk: string) => void, onDownload: (progress: number) => void, onEvent: (message: string) => void): Promise<string> {
+export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk: string) => void, onDownload: (progress: number) => void, onEvent: (message: string) => void, onComplete: () => void): Promise<string> {
     if (!('Summarizer' in window)) {
         console.error('Summarizer API not supported by browser.');
         throw new Error('Summarizer API not supported by browser');
@@ -97,6 +97,8 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
     }
 
     console.log('Final summary:', summary);
+
+    onComplete();
 
     return summary;
 }

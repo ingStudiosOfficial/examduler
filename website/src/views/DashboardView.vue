@@ -42,6 +42,11 @@ onMounted(async () => {
     }
 });
 
+function onSummaryError(message: string) {
+    sbMessage.value = message;
+    showSnackBar(4000, sbOpened.value);
+}
+
 function openCreateExamDialog() {
     examCreateDialogOpened.value = true;
 }
@@ -74,7 +79,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
 <template>
     <div v-if="userData" class="content-wrapper">
-        <SummaryContainer v-if="aiSummarySupported && exams" :exams="exams" :user="userData"></SummaryContainer>
+        <SummaryContainer v-if="aiSummarySupported && exams" :exams="exams" :user="userData" @error="onSummaryError"></SummaryContainer>
 
         <ExaminationsContainer :user="userData" :refresh="refreshExams" @fetched-exams="onFetchExams"></ExaminationsContainer>
 
