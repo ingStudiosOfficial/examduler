@@ -5,6 +5,7 @@
     <p align="center">
         <a href="#about">About</a> •
         <a href="#features">Features</a> •
+        <a href="https://docs.examduler.ingstudios.dev">Documentation</a> •
         <a href="#development">Development</a> •
         <a href="#contributing">Contributing</a> •
         <a href="#license">License</a> •
@@ -18,11 +19,13 @@ Examduler is a free, open-source exam scheduler and management system. Exam, sea
 
 ## Features
 * **AI exam summaries**
-Students get AI assisted overviews powered by local models<sup>^</sup><sup>1</sup>
+Students get AI assisted overviews powered by local models<sup>1</sup>
 * **Clean and minimalist homepage for viewing exams**
 Take a quick glance at all your exams in a Material You themed homepage
 * **Invigilation management**.
 Assign teachers to exams instantly<sup>^</sup>
+* **Organization management**
+Connect multiple domains to one organization to assign staff and students roles
 
 <sup><sup>^</sup> Coming soon</sup>
 <sup><sup>1</sup> Only works on certain browsers</sup>
