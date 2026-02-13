@@ -107,7 +107,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 .loader-container {
     position: fixed;
     top: 50dvh;
-    left: 50vw;
+    left: 50dvw;
     transform: translate(-50%, -50%);
 }
 

@@ -26,9 +26,9 @@ function executeAction() {
 .sb {
     position: fixed;
     bottom: 0;
-    left: 50vw;
+    left: 50dvw;
     transform: translate(-50%, -50%);
-    width: 80vw;
+    width: 80dvw;
     height: fit-content;
     padding: 20px;
     border-radius: 10px;

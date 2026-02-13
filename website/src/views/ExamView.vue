@@ -33,7 +33,7 @@ async function tryFetchExam() {
         console.log('Fetched exam:', exam);
 
         examDetails.value = exam;
-        document.title = `Exam ${exam.name} | Examduler`
+        document.title = `Examination ${exam.name} | Examduler`
     } catch (error) {
         console.error('Error while fetching exams:', error);
     }
@@ -95,13 +95,13 @@ onMounted(async () => {
             <h1 class="exam-name">{{ examDetails.name }}</h1>
             <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
             <p class="exam-description">{{ examDetails.description }}</p>
-            <md-outlined-button id="download-button" class="download-button" @click="toggleMenu()">Add event</md-outlined-button>
+            <md-outlined-button v-vibrate id="download-button" class="download-button" @click="toggleMenu()">Add event</md-outlined-button>
             <md-menu anchor="download-button" id="download-menu" positioning="popover">
-                <md-menu-item>
-                    <div slot="headline" @click="triggerAddExamToGoogleCalendar()">Add to Google Calendar</div>
+                <md-menu-item v-vibrate @click="triggerAddExamToGoogleCalendar()">
+                    <div slot="headline">Add to Google Calendar</div>
                     <md-icon slot="start">calendar_add_on</md-icon>
                 </md-menu-item>
-                <md-menu-item @click="triggerDownloadExam()">
+                <md-menu-item v-vibrate @click="triggerDownloadExam()">
                     <div slot="headline">Download as event</div>
                     <md-icon slot="start">download</md-icon>
                 </md-menu-item>
@@ -127,12 +127,12 @@ onMounted(async () => {
 .exam-card {
     position: fixed;
     top: 50dvh;
-    left: 50vw;
+    left: 50dvw;
     transform: translate(-50%, -50%);
     text-align: center;
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
-    width: 40vw;
+    width: 40dvw;
     height: 80dvh;
     border-radius: 25px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
@@ -172,7 +172,7 @@ onMounted(async () => {
 .loader {
     position: fixed;
     top: 50dvh;
-    left: 50vw;
+    left: 50dvw;
     transform: translate(-50%, -50%);
     z-index: 500;
     display: flex;
@@ -201,7 +201,7 @@ onMounted(async () => {
 
 @media (max-width: 768px) {
     .exam-card {
-        width: 90vw;
+        width: 90dvw;
     }
 
     .download-button {

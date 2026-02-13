@@ -62,7 +62,7 @@ async function refreshExams() {
 
         const cachedExams = await fetchCachedExams();
         console.log('Cached exams:', cachedExams);
-        exams.value = cachedExams;
+        exams.value = sortExams(cachedExams);
     } finally {
         emit('fetchedExams', exams.value);
     }
@@ -155,7 +155,7 @@ onMounted(async () => {
 
 .examinations {
     display: grid;
-    grid-template-columns: repeat(3, minmax(30vw, 1fr));
+    grid-template-columns: repeat(3, minmax(30dvw, 1fr));
     grid-template-rows: auto;
     gap: 10px;
     box-sizing: border-box;

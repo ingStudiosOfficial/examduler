@@ -20,7 +20,7 @@ const API_BASE_URL = ref<string>(import.meta.env.VITE_API_BASE_URL);
 .content-wrapper {
     position: fixed;
     top: 50dvh;
-    left: 50vw;
+    left: 50dvw;
     display: flex;
     flex-direction: column;
     align-items: center;

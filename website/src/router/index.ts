@@ -1,15 +1,15 @@
-import { createRouter, createWebHistory, type NavigationGuardNext, type RouteLocationNormalized } from 'vue-router';
+import { createRouter, createWebHistory, type NavigationGuardNext, type RouteLocationNormalized, type RouteRecordRaw } from 'vue-router';
 
 import LoginView from '@/views/LoginView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import ExamView from '@/views/ExamView.vue';
 import type { ResponseJson } from '@/interfaces/ResponseJson';
 
-const routes = [
+const routes: RouteRecordRaw[] = [
     { path: '/', name: 'home', component: LoginView, meta: { title: 'Home', requiresAuth: false } },
     { path: '/login', name: 'login', component: LoginView, meta: { title: 'Login', requiresAuth: false } },
     { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { title: 'Dashboard', requiresAuth: true } },
-    { path: '/exam', name: 'exam', component: ExamView, meta: { title: 'Exam', requiresAuth: false } },
+    { path: '/exam', name: 'exam', component: ExamView, meta: { title: 'Examination', requiresAuth: false } },
 ];
 
 const router = createRouter({
