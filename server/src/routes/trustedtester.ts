@@ -48,7 +48,7 @@ trustedTesterRouter.post('/set/', async (req: Request, res: Response) => {
             </style>
             <script>
             document.getElementById('redirect-button').addEventListener('click', () => {
-                document.location.href = '${process.env.CLIENT_URL}/login';
+                window.location.href = '${process.env.CLIENT_URL}/login';
             });
             </script>
         </html>

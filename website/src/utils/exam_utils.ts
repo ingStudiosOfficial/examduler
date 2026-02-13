@@ -3,7 +3,7 @@ import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { Seating } from '@/interfaces/Seating';
 import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
 import { createEvent, type EventAttributes } from 'ics';
-import { formatDistance } from 'date-fns';
+import { addHours, format, formatDistance } from 'date-fns';
 import { cacheExams } from './cache_utils';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -301,6 +301,21 @@ function formatExamDateToICSFormat(dateString: string): number[] {
     console.log('Converted date:', dateList);
 
     return dateList;
+}
+
+export function addExamToGoogleCalendar(examDetails: PublicExam) {
+    const name = encodeURIComponent(examDetails.name);
+    const description = encodeURIComponent(`${examDetails.description}\n\n${clientUrl}/exam?examId=${examDetails._id}`);
+    
+    const start = new Date(examDetails.date);
+    const end = addHours(start, 1);
+
+    const startFormatted = format(start, "yyyyMMdd'T'HHmmss");
+    const endFormatted = format(end, "yyyyMMdd'T'HHmmss")
+
+    const url = new URL(`https://calendar.google.com/r/eventedit?text=${name}&dates=${startFormatted}/${endFormatted}&details=${description}`);
+
+    window.open(url, '_blank');
 }
 
 export async function shareExam(examDetails: PublicExam): Promise<FunctionNotifier> {

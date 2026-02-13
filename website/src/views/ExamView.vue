@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import LoaderContainer from '@/components/LoaderContainer.vue';
 import type { PublicExam } from '@/interfaces/Exam';
-import { fetchPublicExam, getExamId, formatExamDate, downloadExam } from '@/utils/exam_utils';
+import { fetchPublicExam, getExamId, formatExamDate, downloadExam, addExamToGoogleCalendar } from '@/utils/exam_utils';
 import { onMounted, ref } from 'vue';
 import '@material/web/button/outlined-button.js';
+import '@material/web/menu/menu.js';
+import '@material/web/menu/menu-item.js';
+import '@material/web/icon/icon.js';
 import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
 import SnackBar from '@/components/SnackBar.vue';
+import type { MdMenuItem } from '@/interfaces/MdMenuItem';
 
 const examDetails = ref<PublicExam>();
 const examId = ref<string | null>();
@@ -60,6 +64,23 @@ async function triggerDownloadExam() {
     showSnackBar(4000, displaySb.value);
 }
 
+function triggerAddExamToGoogleCalendar() {
+    if (!examDetails.value) {
+        console.error('Exam details is missing.');
+        examDownloadMessage.value = 'No examination details found';
+        showSnackBar(4000, displaySb.value);
+        return;
+    }
+
+    addExamToGoogleCalendar(examDetails.value);
+}
+
+function toggleMenu() {
+    const downloadMenu = document.getElementById('download-menu');
+    if (!downloadMenu) return;
+    (downloadMenu as MdMenuItem).open = !(downloadMenu as MdMenuItem).open;
+}
+
 onMounted(async () => {
     await tryFetchExam();
 });
@@ -74,7 +95,17 @@ onMounted(async () => {
             <h1 class="exam-name">{{ examDetails.name }}</h1>
             <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
             <p class="exam-description">{{ examDetails.description }}</p>
-            <md-outlined-button class="download-button" @click="triggerDownloadExam()">Download event</md-outlined-button>
+            <md-outlined-button id="download-button" class="download-button" @click="toggleMenu()">Add event</md-outlined-button>
+            <md-menu anchor="download-button" id="download-menu" positioning="popover">
+                <md-menu-item>
+                    <div slot="headline" @click="triggerAddExamToGoogleCalendar()">Add to Google Calendar</div>
+                    <md-icon slot="start">calendar_add_on</md-icon>
+                </md-menu-item>
+                <md-menu-item @click="triggerDownloadExam()">
+                    <div slot="headline">Download as event</div>
+                    <md-icon slot="start">download</md-icon>
+                </md-menu-item>
+            </md-menu>
             <p class="examduler-footer">Powered by Examduler</p>
         </div>
         <div v-else-if="examId && !isLoading" class="exam-card not-found">

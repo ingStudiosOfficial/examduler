@@ -34,7 +34,7 @@ onMounted(async () => {
         console.error('Error while fetching user:', error);
 
         const cachedUserData = await fetchCachedUserData();
-        if (!cachedUserData) document.location.href = '/login';
+        if (!cachedUserData) window.location.href = '/login';
         else userData.value = cachedUserData;
 
         sbMessage.value = 'You are currently offline. Viewing read-only cached data.';

@@ -58,7 +58,7 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
             m.addEventListener('downloadprogress', (e) => {
                 const percentageComplete = e.loaded / e.total;
                 console.log('Percentage complete:', percentageComplete * 100);
-                onDownload(percentageComplete);
+                if (percentageComplete !== 0 && percentageComplete !== 1) onDownload(percentageComplete);
             });
         },
     });

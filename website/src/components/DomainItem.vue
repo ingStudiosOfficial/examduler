@@ -7,16 +7,13 @@ import '@material/web/menu/menu-item.js';
 import '@material/web/iconbutton/icon-button.js';
 import { onMounted, ref, watch } from 'vue';
 import { copyVerificationToken, verifyDomain } from '@/utils/org_utils';
+import type { MdMenuItem } from '@/interfaces/MdMenuItem';
 
 interface ComponentProps {
     domain: Domain;
     index: number;
     orgId: string;
     keyId?: string;
-}
-
-interface MdMenuItem extends HTMLElement {
-    open: boolean;
 }
 
 const props = defineProps<ComponentProps>();

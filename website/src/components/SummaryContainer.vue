@@ -54,7 +54,7 @@ onMounted(async () => {
             <md-circular-progress :value="modelDownloadProgress"></md-circular-progress>
             <p class="loading-message">Downloading Gemini Nano ({{ Math.round(modelDownloadProgress * 100) }}% complete)</p>
         </div>
-        <div v-else-if="!summary && !hasError" class="loading">
+        <div v-else-if="!summary && !hasError && modelDownloadProgress === null" class="loading">
             <md-circular-progress indeterminate four-color></md-circular-progress>
             <p class="loading-message">{{ message }}</p>
         </div>

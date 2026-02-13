@@ -6,6 +6,7 @@ import '@material/web/icon/icon.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/fab/fab.js';
 import '@material/web/menu/menu.js';
+import '@material/web/menu/menu-item.js';
 
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
 import { deleteOrganization, downloadMembersJson, editOrganization } from '@/utils/org_utils';
