@@ -44,6 +44,7 @@ main {
     height: 100%;
     overflow-y: auto;
     flex: 1;
+    min-width: 0;
 }
 
 @media (max-width: 768px) {
