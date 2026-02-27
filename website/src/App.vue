@@ -46,7 +46,8 @@ main {
 
 @media (max-width: 768px) {
     main {
-        flex-direction: column;   
+        flex-direction: column;
+        overflow-x: hidden;
     }
 
     .nav-menu {
