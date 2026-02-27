@@ -51,6 +51,7 @@ main {
     main {
         flex-direction: column;
         overflow-x: hidden;
+        height: 100dvh;
     }
 
     .nav-menu {
@@ -65,7 +66,7 @@ main {
     }
 
     .router-view {
-        height: auto;
+        overflow-y: auto;
         flex: 1;
         width: 100%;
     }
