@@ -1,24 +1,18 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router';
 import NavBar from './components/NavBar.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const route = useRoute();
 
 const routeTitle = computed(() => {
     return route.meta.title || 'Examduler';
 });
-
-const expanded = ref<boolean>(false);
-
-function toggleExpand(expandValue: boolean) {
-    expanded.value = expandValue;
-}
 </script>
 
 <template>
-    <main :class="expanded ? 'expanded' : ''">
-        <NavBar class="navbar" :title="routeTitle" @expand="toggleExpand"></NavBar>
+    <main>
+        <NavBar v-if="routeTitle.toLowerCase() !== 'login'" class="navbar" :page-title="routeTitle" />
         <div class="router-view">
             <RouterView></RouterView>
         </div>
@@ -27,20 +21,26 @@ function toggleExpand(expandValue: boolean) {
 
 <style scoped>
 main {
-    display: grid;
-    grid-template-columns: 6dvw 94dvw;
-    width: 100%;
-}
-
-main.expanded {
-    grid-template-columns: 20dvw 80dvw;
+    display: flex;
+    flex-direction: row;
+    width: 100dvw;
+    height: 100dvh;
 }
 
 .navbar {
-    width: 100%;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .router-view {
-    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        display: none;
+    }
 }
 </style>

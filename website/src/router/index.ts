@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
     { path: '/exam', name: 'exam', component: ExamView, meta: { title: 'Examination', requiresAuth: false } },
 ];
 
-const router = createRouter({
+export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: routes,
 });

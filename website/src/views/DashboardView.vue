@@ -17,6 +17,7 @@ import SnackBar from '@/components/SnackBar.vue';
 import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
 import type { Exam } from '@/interfaces/Exam';
+import { router } from '../router/index';
 
 const userData = ref<User | null>(null);
 const examCreateDialogOpened = ref<boolean>(false);
@@ -34,7 +35,7 @@ onMounted(async () => {
         console.error('Error while fetching user:', error);
 
         const cachedUserData = await fetchCachedUserData();
-        if (!cachedUserData) window.location.href = '/login';
+        if (!cachedUserData) router.push({ name: 'login' });
         else userData.value = cachedUserData;
 
         sbMessage.value = 'You are currently offline. Viewing read-only cached data.';

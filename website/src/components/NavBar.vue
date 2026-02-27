@@ -1,65 +1,48 @@
 <script setup lang="ts">
-import '@material/web/iconbutton/icon-button.js';
-import '@material/web/icon/icon.js';
-import { ref } from 'vue';
+import '@m3e/web/nav-menu';
+import '@m3e/web/icon-button';
+import '@m3e/web/icon';
+import '@m3e/web/fab';
+import { router } from '../router/index';
 
 interface ComponentProps {
-    title: string;
+    pageTitle: string;
 }
 
 const props = defineProps<ComponentProps>();
 
-const emit = defineEmits(['expand']);
-
-const expanded = ref<boolean>(false);
-
-function toggleExpand() {
-    expanded.value = !expanded.value;
-    emit('expand', expanded.value);
+function navigateToPage(page: string) {
+    router.push({ name: page });
 }
 </script>
 
 <template>
-    <aside class="sidebar">
-        <div class="icon-wrapper">
-            <md-icon-button @click="toggleExpand()">
-                <md-icon>menu</md-icon>
-            </md-icon-button>
-        </div>
-
-        <div class="sub-sidebar">
-            
-        </div>
-    </aside>
+    <div class="menu">
+        <p class="title">Examduler</p>
+        <m3e-nav-menu>
+            <m3e-nav-menu-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" @click="navigateToPage('dashboard')">
+                <m3e-icon slot="icon" name="dashboard"></m3e-icon>
+                <span slot="label">Dashboard</span>
+            </m3e-nav-menu-item>
+        </m3e-nav-menu>
+    </div>
 </template>
 
 <style scoped>
-.sidebar {
-    position: sticky;
-    top: 0;
-    left: 0;
-    height: 100dvh;
+.title {
+    font-size: 1.2rem;
+    color: var(--md-sys-color-primary);
+    font-weight: 600;
+}
+
+.menu {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; 
-    padding: 20px 0;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    padding: 10px;
     box-sizing: border-box;
     background-color: var(--md-sys-color-surface-container);
-    transition: width 0.3s ease;
-}
-
-.icon-wrapper {
-    width: 6dvw; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.sub-sidebar {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
 }
 </style>
