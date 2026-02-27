@@ -29,6 +29,7 @@ main {
     height: 100dvh;
     box-sizing: border-box;
     overflow: hidden;
+    overscroll-behavior-y: none;
 }
 
 .nav-menu {
@@ -69,6 +70,7 @@ main {
         overflow-y: auto;
         flex: 1;
         width: 100%;
+        -webkit-overflow-scrolling: touch;
     }
 }
 </style>
