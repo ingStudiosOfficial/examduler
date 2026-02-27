@@ -28,7 +28,7 @@ main {
     width: 100dvw;
     height: 100dvh;
     box-sizing: border-box;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 .nav-menu {
@@ -50,7 +50,7 @@ main {
 @media (max-width: 768px) {
     main {
         flex-direction: column;
-        overflow-x: hidden;
+        overflow: hidden;
         height: 100dvh;
     }
 
@@ -60,7 +60,7 @@ main {
 
     .navbar {
         display: flex;
-        height: 10dvh;
+        height: 10svh;
         width: 100%;
         flex-shrink: 0;
     }
