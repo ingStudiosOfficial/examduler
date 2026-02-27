@@ -55,8 +55,8 @@ main {
     }
 
     .navbar {
-        display: block;
-        height: auto;
+        display: flex;
+        height: 10dvh;
         width: 100%;
         flex-shrink: 0;
     }

@@ -17,7 +17,7 @@ function navigateToPage(page: string) {
 <template>
     <div class="bar">
         <m3e-nav-bar mode="compact">
-            <m3e-nav-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" @click="navigateToPage('dashboard')">
+            <m3e-nav-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" v-vibrate @click="navigateToPage('dashboard')">
                 <m3e-icon slot="icon" name="dashboard"></m3e-icon>
                 Dashboard
             </m3e-nav-item>
@@ -36,8 +36,8 @@ function navigateToPage(page: string) {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    height: fit-content;
     padding: 10px;
     box-sizing: border-box;
     background-color: var(--md-sys-color-surface-container);

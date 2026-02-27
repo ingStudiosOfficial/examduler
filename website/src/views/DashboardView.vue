@@ -119,12 +119,9 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 }
 
 .add-button {
-    display: block;
-    position: sticky;
-    align-self: flex-end;
+    position: fixed;
     bottom: 25px;
     right: 25px;
-    margin-top: auto;
 }
 
 .mobile-add-button {
@@ -138,11 +135,9 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
     .mobile-add-button {
         display: block;
-        position: sticky;
-        align-self: flex-end;
-        bottom: 25px;
+        position: fixed;
+        bottom: calc(10dvh + 25px);
         right: 25px;
-        margin-top: auto;
     }
 }
 </style>

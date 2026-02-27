@@ -18,7 +18,7 @@ function navigateToPage(page: string) {
     <div class="menu">
         <p class="title">Examduler</p>
         <m3e-nav-menu>
-            <m3e-nav-menu-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" @click="navigateToPage('dashboard')">
+            <m3e-nav-menu-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" v-vibrate @click="navigateToPage('dashboard')">
                 <m3e-icon slot="icon" name="dashboard"></m3e-icon>
                 <span slot="label">Dashboard</span>
             </m3e-nav-menu-item>
