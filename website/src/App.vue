@@ -27,6 +27,8 @@ main {
     flex-direction: row;
     width: 100dvw;
     height: 100dvh;
+    box-sizing: border-box;
+    overflow-y: hidden;
 }
 
 .nav-menu {
