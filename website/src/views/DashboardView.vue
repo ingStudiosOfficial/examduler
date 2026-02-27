@@ -22,7 +22,6 @@ import { router } from '../router/index';
 const userData = ref<User | null>(null);
 const examCreateDialogOpened = ref<boolean>(false);
 const refreshExams = ref<boolean>(false);
-const windowWidth = ref<number>(window.innerWidth);
 const sbMessage = ref<string>();
 const sbOpened = ref<StateObject>({ visible: false });
 const aiSummarySupported = ref<boolean>('Summarizer' in window);
@@ -79,7 +78,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 </script>
 
 <template>
-    <div v-if="userData" class="content-wrapper">
+    <div v-if="userData" class="dashboard-wrapper">
         <SummaryContainer v-if="aiSummarySupported && exams" :exams="exams" :user="userData" @error="onSummaryError"></SummaryContainer>
 
         <ExaminationsContainer :user="userData" :refresh="refreshExams" @fetched-exams="onFetchExams"></ExaminationsContainer>
@@ -88,7 +87,10 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
         <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
 
-        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" :label="windowWidth > 768 ? 'Create' : ''" :size="windowWidth > 768 ? 'medium' : 'large'" v-vibrate @click="openCreateExamDialog()">
+        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" label="Create" size="medium" v-vibrate @click="openCreateExamDialog()">
+            <md-icon slot="icon">add</md-icon>
+        </md-fab>
+        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="mobile-add-button" size="large" v-vibrate @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>
         </md-fab>
     </div>
@@ -99,10 +101,14 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 </template>
 
 <style scoped>
-.content-wrapper {
+.dashboard-wrapper {
     width: 100%;
     box-sizing: border-box;
     overflow: visible;
+    position: relative;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .loader-container {
@@ -113,9 +119,30 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 }
 
 .add-button {
-    position: fixed;
-    margin: 25px;
-    bottom: 0;
-    right: 0;
+    display: block;
+    position: sticky;
+    align-self: flex-end;
+    bottom: 25px;
+    right: 25px;
+    margin-top: auto;
+}
+
+.mobile-add-button {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .add-button {
+        display: none;
+    }
+
+    .mobile-add-button {
+        display: block;
+        position: sticky;
+        align-self: flex-end;
+        bottom: 25px;
+        right: 25px;
+        margin-top: auto;
+    }
 }
 </style>

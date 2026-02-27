@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router';
+import NavMenu from './components/NavMenu.vue';
 import NavBar from './components/NavBar.vue';
 import { computed } from 'vue';
 
@@ -12,10 +13,11 @@ const routeTitle = computed(() => {
 
 <template>
     <main>
-        <NavBar v-if="routeTitle.toLowerCase() !== 'login'" class="navbar" :page-title="routeTitle" />
+        <NavMenu v-if="routeTitle.toLowerCase() !== 'login'" class="nav-menu" :page-title="routeTitle"></NavMenu>
         <div class="router-view">
             <RouterView></RouterView>
         </div>
+        <NavBar v-if="routeTitle.toLowerCase() !== 'login'" class="navbar" :page-title="routeTitle"></NavBar>
     </main>
 </template>
 
@@ -27,9 +29,13 @@ main {
     height: 100dvh;
 }
 
-.navbar {
+.nav-menu {
     height: 100%;
     overflow-y: auto;
+}
+
+.navbar {
+    display: none;
 }
 
 .router-view {
@@ -39,8 +45,25 @@ main {
 }
 
 @media (max-width: 768px) {
-    .navbar {
+    main {
+        flex-direction: column;   
+    }
+
+    .nav-menu {
         display: none;
+    }
+
+    .navbar {
+        display: block;
+        height: auto;
+        width: 100%;
+        flex-shrink: 0;
+    }
+
+    .router-view {
+        height: auto;
+        flex: 1;
+        width: 100%;
     }
 }
 </style>

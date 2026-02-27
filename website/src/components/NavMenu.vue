@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import '@m3e/web/nav-bar';
+import '@m3e/web/nav-menu';
 import '@m3e/web/icon';
 import { router } from '../router/index';
 
@@ -15,13 +15,14 @@ function navigateToPage(page: string) {
 </script>
 
 <template>
-    <div class="bar">
-        <m3e-nav-bar mode="compact">
-            <m3e-nav-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" @click="navigateToPage('dashboard')">
+    <div class="menu">
+        <p class="title">Examduler</p>
+        <m3e-nav-menu>
+            <m3e-nav-menu-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" @click="navigateToPage('dashboard')">
                 <m3e-icon slot="icon" name="dashboard"></m3e-icon>
-                Dashboard
-            </m3e-nav-item>
-        </m3e-nav-bar>
+                <span slot="label">Dashboard</span>
+            </m3e-nav-menu-item>
+        </m3e-nav-menu>
     </div>
 </template>
 
@@ -32,12 +33,12 @@ function navigateToPage(page: string) {
     font-weight: 600;
 }
 
-.bar {
+.menu {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     text-align: center;
-    height: fit-content;
+    height: 100%;
     padding: 10px;
     box-sizing: border-box;
     background-color: var(--md-sys-color-surface-container);

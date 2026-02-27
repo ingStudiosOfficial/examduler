@@ -122,12 +122,13 @@ onMounted(async () => {
 .content-wrapper {
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 .exam-card {
-    position: fixed;
-    top: 50dvh;
-    left: 50dvw;
+    position: absolute;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
     background-color: var(--md-sys-color-primary-container);
