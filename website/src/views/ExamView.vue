@@ -94,7 +94,9 @@ onMounted(async () => {
         <div v-if="examDetails && !isLoading" class="exam-card">
             <h1 class="exam-name">{{ examDetails.name }}</h1>
             <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
-            <p class="exam-description">{{ examDetails.description }}</p>
+            <div class="description-wrapper">
+                 <p class="exam-description">{{ examDetails.description }}</p>
+            </div>
             <md-outlined-button v-vibrate id="download-button" class="download-button" @click="toggleMenu()">Add event</md-outlined-button>
             <md-menu anchor="download-button" id="download-menu" positioning="popover">
                 <md-menu-item v-vibrate @click="triggerAddExamToGoogleCalendar()">
@@ -198,6 +200,15 @@ onMounted(async () => {
     overflow-wrap: break-word;
     word-break: break-all;
     white-space: pre-wrap;
+}
+
+.description-wrapper {
+    width: 100%;
+    height: 65%;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @media (max-width: 768px) {
