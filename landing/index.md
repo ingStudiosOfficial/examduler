@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: "Examduler"
-  text: "A lightweight yet powerful exam management app."
+  text: "A lightweight yet powerful exam management app"
   tagline: Manage your examinations with ease
   actions:
     - theme: brand
