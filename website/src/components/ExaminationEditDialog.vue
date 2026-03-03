@@ -15,10 +15,13 @@ import type { ExamEdit } from '@/interfaces/Exam';
 
 import SeatingContainer from './SeatingContainer.vue';
 import { editExam } from '@/utils/exam_utils';
+import { useCheckMobile } from '@/composables/screen_width_composables';
 
 const emit = defineEmits(['close', 'success']);
 
 const props = defineProps<ExamEdit>();
+
+const { isMobile } = useCheckMobile();
 
 const dates = ref(new Date(props.date));
 const examToEdit = ref<ExamEdit>({ ...props });
@@ -119,10 +122,10 @@ watch(dates, (newValue) => {
             <h2 class="subheader">Details</h2>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToEdit.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
             <p>Examination date</p>
-            <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
+            <VueDatePicker teleport="body" v-model="dates" :multi-calendars="!isMobile" class="date-picker"></VueDatePicker>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToEdit.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
-            <h2 class="subheader">Seating</h2>
-            <div class="seating-wrapper">
+            <h2 v-if="examToEdit.seating" class="subheader">Seating</h2>
+            <div v-if="examToEdit.seating" class="seating-wrapper">
                 <SeatingContainer :seating="examToEdit.seating" class="seating"></SeatingContainer>
             </div>
             <div class="file-input">

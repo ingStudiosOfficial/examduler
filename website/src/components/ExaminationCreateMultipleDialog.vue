@@ -7,7 +7,6 @@ import '@material/web/focus/md-focus-ring.js';
 import '@material/web/fab/fab.js';
 import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
-import '@m3e/web/expansion-panel';
 
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -15,12 +14,8 @@ import '@vuepic/vue-datepicker/dist/main.css';
 import type { ExamCreate } from '@/interfaces/Exam';
 
 import { createExam } from '@/utils/exam_utils';
-import { useCheckMobile } from '@/composables/screen_width_composables';
 
 const emit = defineEmits(['close', 'success']);
-
-
-const { isMobile } = useCheckMobile();
 
 const dates = ref();
 const examToCreate = ref<ExamCreate>({
@@ -119,7 +114,7 @@ watch(dates, (newValue) => {
         <form class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button type="button" disabled v-vibrate>
+                    <md-icon-button type="button" v-vibrate>
                         <md-icon>file_copy</md-icon>
                     </md-icon-button>
                 </div>
@@ -133,24 +128,19 @@ watch(dates, (newValue) => {
             <h2 class="subheader">Details</h2>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
             <p>Examination date</p>
-            <VueDatePicker v-model="dates" teleport="body" :multi-calendars="!isMobile" class="date-picker"></VueDatePicker>
+            <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
-            <m3e-expansion-panel toggle-position="before" toggle-direction="horizontal" class="advanced-expansion">
-                <span slot="header">Advanced</span>
-                <div class="advanced-content">
-                    <h2 class="subheader">Seating</h2>
-                    <div class="file-input">
-                        <p>Your seating</p>
-                        <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
-                            <md-ripple></md-ripple>
-                            <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-                            <md-icon>upload</md-icon>
-                        </label>
-                        <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
-                        <p class="file-chosen">{{ uploadedSeatName }}</p>
-                    </div>
-                </div>
-            </m3e-expansion-panel>
+            <h2 class="subheader">Seating</h2>
+            <div class="file-input">
+                <p>Your seating</p>
+                <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
+                    <md-ripple></md-ripple>
+                    <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
+                    <md-icon>upload</md-icon>
+                </label>
+                <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
+                <p class="file-chosen">{{ uploadedSeatName }}</p>
+            </div>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressExamSubmit()">
@@ -170,7 +160,7 @@ watch(dates, (newValue) => {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 10px;
     box-sizing: border-box;
     width: 100%;

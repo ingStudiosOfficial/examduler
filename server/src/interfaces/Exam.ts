@@ -7,13 +7,13 @@ export interface IExam {
     name: string;
     date: string;
     description: string;
-    seating: ISeating[][];
+    seating?: ISeating[][];
 }
 
 export type IExamCreate = Omit<IExam, 'seating'> & {
-    seating: string;
+    seating?: string;
 };
 
 export interface IEXamUpdate extends IExam {
-    uploadedSeating: string;
+    uploadedSeating?: string;
 }

@@ -96,6 +96,23 @@ body {
     position: relative;
 }
 
+.advanced-expansion {
+    width: 40%;
+    --m3e-expansion-panel-shape: 25px;
+}
+
+.advanced-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.advanced-content * {
+    width: 100% !important;
+}
+
 @media (max-width: 768px) {
     .dialog {
         width: 100%;
@@ -108,6 +125,10 @@ body {
     }
 
     .file-input {
+        width: 80%;
+    }
+
+    .advanced-expansion {
         width: 80%;
     }
 }

@@ -5,11 +5,11 @@ export interface Exam {
     name: string;
     date: string;
     description: string;
-    seating: Seating[][];
+    seating?: Seating[][];
 }
 
 export type ExamCreate = Omit<Exam, 'seating'> & {
-    seating: string;
+    seating?: string;
 };
 
 export interface ExamEdit extends Exam {

@@ -64,9 +64,16 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
         }
 
         const examBody: IExamCreate = req.body;
+
+        let exam: IExam;
+
         const { seating, ...tempExam } = examBody;
-        const parsedSeating = await parseExamSeating(examBody.seating, req);
-        const exam = { ...tempExam, seating: parsedSeating } as IExam;
+        if (examBody.seating) {
+            const parsedSeating = await parseExamSeating(examBody.seating, req);
+            exam = { ...tempExam, seating: parsedSeating } as IExam;
+        } else {
+            exam = tempExam;
+        }
 
         console.log('Exam:', exam);
         console.log('Type of date:', (typeof exam.date));
@@ -80,7 +87,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
             });
         }
 
-        assignExamToUsers(exam, req, res, user.email);
+        if (exam.seating) assignExamToUsers(exam, req, res, user.email);
 
         return res.status(200).json({
             message: 'Successfully inserted exam.',

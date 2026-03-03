@@ -42,9 +42,7 @@ function tryGetUserSeat() {
     }
 }
 
-watch(
-    () => props.exam.seating,
-    (newSeating: Seating[][]) => {
+watch(() => (props.exam.seating || []), (newSeating: Seating[][]) => {
         if (newSeating && newSeating.length > 0) {
             tryGetUserSeat();
         }
@@ -64,7 +62,7 @@ watch(
         <p class="countdown-text">{{ timeTillExam }}</p>
         <div class="exam-details" v-if="examIsFuture">
             <p class="exam-date">{{ formatExamDate(props.exam.date) }}</p>
-            <p v-show="userSeat" class="exam-seat">Seat {{ userSeat?.seat }}</p>
+            <p v-if="userSeat" class="exam-seat">Seat {{ userSeat?.seat }}</p>
         </div>
     </button>
 </template>

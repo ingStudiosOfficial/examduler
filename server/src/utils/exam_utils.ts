@@ -20,6 +20,11 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
 
     const seating = exam.seating;
 
+    if (!seating) {
+        console.error('No seating provided.');
+        return;
+    }
+
     const usersToUpdate: UserExamUpdate[] = [];
 
     usersToUpdate.push({ email: creatorEmail, examToAdd: exam._id })

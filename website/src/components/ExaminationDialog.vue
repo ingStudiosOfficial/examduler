@@ -110,9 +110,9 @@ const userData = props.user;
             </div>
             <h1 class="section-header">Description</h1>
             <p class="exam-description">{{ props.exam.description }}</p>
-            <h1 class="section-header">Seating</h1>
-            <p>Your seat: <b>{{ tryGetUserSeat(props.exam.seating, props.user.email)?.seat }}</b></p>
-            <div class="seating-wrapper">
+            <h1 v-if="props.exam.seating" class="section-header">Seating</h1>
+            <p v-if="props.exam.seating">Your seat: <b>{{ tryGetUserSeat(props.exam.seating, props.user.email)?.seat }}</b></p>
+            <div v-if="props.exam.seating" class="seating-wrapper">
                 <SeatingContainer :seating="props.exam.seating" :user-seat="tryGetUserSeat(props.exam.seating, props.user.email)" class="seating"></SeatingContainer>
             </div>
         </div>

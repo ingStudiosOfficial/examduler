@@ -63,12 +63,17 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
         },
     });
 
-    const userSeats = [];
+    const userSeats: { seat: string, exam: Exam }[] = [];
+    const examsWithoutSeat: Exam[] = [];
 
     try {
         for (const exam of exams) {
-            const userSeat = { seat: getUserSeat(exam.seating, user.email).seat, exam: exam };
-            userSeats.push(userSeat);
+            if (exam.seating) {
+                const userSeat = { seat: getUserSeat(exam.seating, user.email).seat, exam: exam };
+                userSeats.push(userSeat);   
+            } else {
+                examsWithoutSeat.push(exam);
+            }
         }
     } catch (error) {
         console.error('Failed to fetch seats for user:', error);
@@ -76,13 +81,21 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
 
     onEvent('Generating summary...');
 
-    const prompt = `Examination: ${JSON.stringify(
+    const prompt = `Examinations (with seating): ${JSON.stringify(
         userSeats.map((examWithSeat) => {
             const { _id, seating, ...examWithoutSeating } = examWithSeat.exam;
             console.log('Removed seating:', _id, seating);
             return {
                 seat: examWithSeat.seat,
                 exam: examWithoutSeating
+            };
+        })
+    )}, Examinations (without seating): ${JSON.stringify(
+        examsWithoutSeat.map((exam) => {
+            const { _id, seating, ...examWithoutId } = exam;
+            console.log('Removed seating:', _id, seating);
+            return {
+                exam: examWithoutId,
             };
         })
     )}, User: ${JSON.stringify(user)}`;

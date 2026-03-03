@@ -15,7 +15,7 @@ function executeAction() {
 
 <template>
     <Transition name="sb-fade">
-        <div v-show="props.displayed" class="sb">
+        <div v-if="props.displayed" class="sb">
             <p>{{ props.message }}</p>
             <md-outlined-button v-if="props.button" @click="executeAction()">{{ props.button }}</md-outlined-button>
         </div>
