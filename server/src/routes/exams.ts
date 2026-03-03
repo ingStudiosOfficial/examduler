@@ -41,7 +41,10 @@ examsRouter.get('/fetch/user/', authenticateToken(), async (req: Request, res: R
 
         const userExams: ObjectId[] = user.exams;
 
-        const fetchedUserExams = await req.db.collection<IUser>('exams').find({ _id: { $in: userExams } }).toArray();
+        const fetchedUserExams = await req.db
+            .collection<IUser>('exams')
+            .find({ _id: { $in: userExams } })
+            .toArray();
 
         return res.status(200).json({
             message: 'Successfully fetched exams.',

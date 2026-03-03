@@ -1,6 +1,6 @@
-import { Router, type Request, type Response } from "express";
-import { ObjectId } from "mongodb";
-import type { IExam } from "../interfaces/Exam.js";
+import { Router, type Request, type Response } from 'express';
+import { ObjectId } from 'mongodb';
+import type { IExam } from '../interfaces/Exam.js';
 
 export const publicRouter = Router();
 

@@ -13,4 +13,4 @@ export interface IDomainVerification {
 export type IEditDomain = Omit<IDomain, 'verified' | 'verificationToken'> & {
     verified?: boolean;
     verificationToken?: string;
-}
+};

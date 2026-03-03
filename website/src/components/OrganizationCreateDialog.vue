@@ -10,7 +10,7 @@ import type { OrganizationCreate } from '@/interfaces/Org';
 
 import { createOrganization } from '@/utils/org_utils';
 
-const emit = defineEmits<{ (e: 'close'): void, (e: 'success', message: string): void }>();
+const emit = defineEmits<{ (e: 'close'): void; (e: 'success', message: string): void }>();
 
 const organizationToCreate = ref<OrganizationCreate>({
     name: '',
@@ -168,8 +168,6 @@ async function orgFormSubmit() {
     font-size: 1.7em;
     color: var(--md-sys-color-primary);
 }
-
-
 
 .domains {
     display: flex;

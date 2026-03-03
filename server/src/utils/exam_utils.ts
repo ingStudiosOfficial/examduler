@@ -27,7 +27,7 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
 
     const usersToUpdate: UserExamUpdate[] = [];
 
-    usersToUpdate.push({ email: creatorEmail, examToAdd: exam._id })
+    usersToUpdate.push({ email: creatorEmail, examToAdd: exam._id });
 
     try {
         for (const row of seating) {
@@ -48,17 +48,17 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
         }
 
         const result = await req.db.collection<IUser>('users').bulkWrite(
-            usersToUpdate.map(user => ({
+            usersToUpdate.map((user) => ({
                 updateOne: {
                     filter: { email: user.email },
-                    update: { $addToSet: { exams: user.examToAdd } }
-                }
-            }))
+                    update: { $addToSet: { exams: user.examToAdd } },
+                },
+            })),
         );
 
         if (result.hasWriteErrors()) {
             console.error('Error while assigning exam to users.');
-                return res.status(500).json({
+            return res.status(500).json({
                 message: 'An internal server error occurred while assigning exam to users.',
             });
         }
@@ -76,13 +76,13 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
     // Parses seating
     const seatingArray = seatingString.split(/\r?\n/).filter((line) => line.trim());
     const seatingMap = new Map<string, ISeating[]>();
-    
-    const parsedRows: { seat: string, email: string, row: string }[] = [];
+
+    const parsedRows: { seat: string; email: string; row: string }[] = [];
     const emailsToFetch = new Set<string>();
 
     for (const line of seatingArray) {
         // Gets seat and email
-        const [seatSeat, seatEmail] = line.split(',').map(s => s.trim());
+        const [seatSeat, seatEmail] = line.split(',').map((s) => s.trim());
         if (!seatSeat || !seatEmail) {
             console.error('Seat or email not found.');
             throw new Error('Invalid seat format.');
@@ -104,11 +104,12 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
     }
 
     // Batch finds all the users
-    const users = await req.db.collection<IUser>('users')
+    const users = await req.db
+        .collection<IUser>('users')
         .find({ email: { $in: Array.from(emailsToFetch) } })
         .toArray();
 
-    const userMap = new Map(users.map(u => [u.email, u.name]));
+    const userMap = new Map(users.map((u) => [u.email, u.name]));
 
     for (const item of parsedRows) {
         const formattedSeat: ISeating = {
@@ -129,7 +130,7 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
     }
 
     const sortedRowKeys = Array.from(seatingMap.keys()).sort();
-    
+
     return sortedRowKeys.map((rowKey) => {
         const rowSeats = seatingMap.get(rowKey)!;
         return rowSeats.sort((a, b) => a.seat.localeCompare(b.seat, undefined, { numeric: true }));

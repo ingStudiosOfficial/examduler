@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from 'vue';
 
 export function useCheckMobile() {
     const isMobile = ref<boolean>(false);

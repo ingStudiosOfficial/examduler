@@ -1,6 +1,6 @@
-import type { AnyBulkWriteOperation, Db, ObjectId } from "mongodb";
-import type { IUser } from "../interfaces/User.js";
-import { removeDomainPrefix } from "./org_utils.js";
+import type { AnyBulkWriteOperation, Db, ObjectId } from 'mongodb';
+import type { IUser } from '../interfaces/User.js';
+import { removeDomainPrefix } from './org_utils.js';
 
 export function getDomain(email: string): string {
     if (!email) {
@@ -34,7 +34,8 @@ export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string, a
     console.log('Domain:', domain);
     console.log('User IDs:', userIds);
 
-    const usersToVerify = await db.collection<IUser>('unverifiedUsers')
+    const usersToVerify = await db
+        .collection<IUser>('unverifiedUsers')
         .find({ _id: { $in: userIds }, domain: domain })
         .toArray();
 
@@ -43,7 +44,7 @@ export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string, a
         return;
     }
 
-    const operations: AnyBulkWriteOperation<IUser>[] = usersToVerify.map(user => {
+    const operations: AnyBulkWriteOperation<IUser>[] = usersToVerify.map((user) => {
         const { _id, ...userData } = user;
 
         return {
@@ -51,19 +52,19 @@ export async function verifyUsers(db: Db, userIds: ObjectId[], domain: string, a
                 filter: { email: user.email, _id: { $ne: adminId } },
                 update: { $set: userData },
                 upsert: true,
-            }
+            },
         };
     });
 
     try {
         const writeResult = await db.collection<IUser>('users').bulkWrite(operations, { ordered: false });
-        
+
         console.log(`Matched: ${writeResult.matchedCount}, Upserted: ${writeResult.upsertedCount}`);
 
-        const emailsProcessed = usersToVerify.map(u => u.email);
+        const emailsProcessed = usersToVerify.map((u) => u.email);
         await db.collection('unverifiedUsers').deleteMany({
             email: { $in: emailsProcessed },
-            domain: domain
+            domain: domain,
         });
     } catch (error) {
         console.error('Bulk write failed:', error);

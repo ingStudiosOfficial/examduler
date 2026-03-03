@@ -116,7 +116,7 @@ export async function editExam(examDetails: ExamEdit): Promise<FunctionNotifier>
         const response = await fetch(`${apiBaseUrl}/api/exam/update/${examId}/`, {
             method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: examBody,
             credentials: 'include',
@@ -158,7 +158,7 @@ export async function deleteExam(examDetails: Exam): Promise<FunctionNotifier> {
 
         console.log('Successfully deleted exam.');
 
-        return { message: 'Successfully deleted examination', success: true }
+        return { message: 'Successfully deleted examination', success: true };
     } catch (error) {
         console.error('Failed to delete exam:', error);
         return { message: 'An unexpected error occurred while deleting examination', success: false };
@@ -249,16 +249,18 @@ export async function downloadExam(examDetails: PublicExam): Promise<FunctionNot
 
         console.log('Event:', value);
 
-        const examEvent = new Blob([ value ], { type: 'text/calendar' });
+        const examEvent = new Blob([value], { type: 'text/calendar' });
 
         if ('showSaveFilePicker' in window) {
             const handle = await window.showSaveFilePicker({
                 suggestedName: fileName,
                 startIn: 'downloads',
-                types: [{
-                    description: 'Examduler exam export',
-                    accept: { 'text/calendar': ['.ics'] },
-                }],
+                types: [
+                    {
+                        description: 'Examduler exam export',
+                        accept: { 'text/calendar': ['.ics'] },
+                    },
+                ],
             });
 
             const writable = await handle.createWritable();
@@ -282,7 +284,7 @@ export async function downloadExam(examDetails: PublicExam): Promise<FunctionNot
         }
 
         console.error('An error occurred while downloading exam:', error);
-        
+
         return { message: 'Failed to download examination', success: false };
     }
 }
@@ -290,13 +292,7 @@ export async function downloadExam(examDetails: PublicExam): Promise<FunctionNot
 function formatExamDateToICSFormat(dateString: string): number[] {
     const date = new Date(dateString);
 
-    const dateList = [
-        date.getFullYear(),
-        date.getMonth() + 1,
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-    ];
+    const dateList = [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes()];
 
     console.log('Converted date:', dateList);
 
@@ -306,12 +302,12 @@ function formatExamDateToICSFormat(dateString: string): number[] {
 export function addExamToGoogleCalendar(examDetails: PublicExam) {
     const name = encodeURIComponent(examDetails.name);
     const description = encodeURIComponent(`${examDetails.description}\n\n${clientUrl}/exam?examId=${examDetails._id}`);
-    
+
     const start = new Date(examDetails.date);
     const end = addHours(start, 1);
 
     const startFormatted = format(start, "yyyyMMdd'T'HHmmss");
-    const endFormatted = format(end, "yyyyMMdd'T'HHmmss")
+    const endFormatted = format(end, "yyyyMMdd'T'HHmmss");
 
     const url = new URL(`https://calendar.google.com/r/eventedit?text=${name}&dates=${startFormatted}/${endFormatted}&details=${description}`);
 

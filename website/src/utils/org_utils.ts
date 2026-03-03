@@ -1,9 +1,9 @@
-import type { Member } from "@/interfaces/Member";
-import type { Organization, OrganizationCreate, OrganizationEdit } from "@/interfaces/Org";
-import type { FunctionNotifier } from "@/interfaces/FunctionNotifier";
-import type { ResponseJson } from "@/interfaces/ResponseJson";
-import type { DomainVerificationMethod } from "@/interfaces/Domain";
-import { cacheOrganizations } from "./cache_utils";
+import type { Member } from '@/interfaces/Member';
+import type { Organization, OrganizationCreate, OrganizationEdit } from '@/interfaces/Org';
+import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
+import type { ResponseJson } from '@/interfaces/ResponseJson';
+import type { DomainVerificationMethod } from '@/interfaces/Domain';
+import { cacheOrganizations } from './cache_utils';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -130,7 +130,7 @@ export async function fetchAllOrganizations(): Promise<Organization[]> {
 
 export async function downloadMembersJson(members: Member[]): Promise<FunctionNotifier> {
     try {
-        const jsonMembers = new Blob([ JSON.stringify(members) ], { type: 'application/json' });
+        const jsonMembers = new Blob([JSON.stringify(members)], { type: 'application/json' });
 
         const fileName = `examduler_members_export_on_${Date.now().toString()}`;
 
@@ -138,10 +138,12 @@ export async function downloadMembersJson(members: Member[]): Promise<FunctionNo
             const handle = await window.showSaveFilePicker({
                 suggestedName: fileName,
                 startIn: 'downloads',
-                types: [{
-                    description: 'JSON file',
-                    accept: { 'application/json': ['.json'] },
-                }],
+                types: [
+                    {
+                        description: 'JSON file',
+                        accept: { 'application/json': ['.json'] },
+                    },
+                ],
             });
 
             const writable = await handle.createWritable();
@@ -163,7 +165,7 @@ export async function downloadMembersJson(members: Member[]): Promise<FunctionNo
                 a.remove();
             }, 1000);
 
-            return { message: 'Successfully downloaded members', success: true, params: [ blobUrl ] };
+            return { message: 'Successfully downloaded members', success: true, params: [blobUrl] };
         }
     } catch (error) {
         if ((error as Error).name === 'AbortError') {

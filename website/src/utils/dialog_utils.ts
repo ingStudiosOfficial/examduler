@@ -4,7 +4,7 @@ import AlertDialog from '@/components/AlertDialog.vue';
 
 export const DialogUtils = {
     confirm(message: string, title: string = 'Confirm Action'): Promise<boolean> {
-        console.log('Initiating confirm dialog:', message, title)
+        console.log('Initiating confirm dialog:', message, title);
 
         const container = document.createElement('div');
         container.classList.add('dialog-bd');
@@ -18,7 +18,7 @@ export const DialogUtils = {
                     resolve(value);
                     render(null, container);
                     container.remove();
-                }
+                },
             });
 
             render(vnode, container);
@@ -42,5 +42,5 @@ export const DialogUtils = {
 
             render(vnode, container);
         });
-    }
+    },
 };

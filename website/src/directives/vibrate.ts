@@ -1,5 +1,5 @@
-import { vibrate } from "@/utils/vibrate";
-import type { DirectiveBinding } from "vue";
+import { vibrate } from '@/utils/vibrate';
+import type { DirectiveBinding } from 'vue';
 
 export function vibrateDirective(el: Element, binding: DirectiveBinding) {
     return () => {

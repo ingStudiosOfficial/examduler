@@ -11,7 +11,6 @@ import '@material/web/menu/menu-item.js';
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
 import { deleteOrganization, downloadMembersJson, editOrganization } from '@/utils/org_utils';
 
-
 import SnackBar from './SnackBar.vue';
 import DomainItem from './DomainItem.vue';
 
@@ -23,7 +22,7 @@ import { DialogUtils } from '@/utils/dialog_utils';
 
 const props = defineProps<Organization>();
 
-const emit = defineEmits<{ (e: 'close'): void, (e: 'success', message: string): void }>();
+const emit = defineEmits<{ (e: 'close'): void; (e: 'success', message: string): void }>();
 
 const loadedOrganization = ref<OrganizationEdit>();
 const membersPicker = ref();
@@ -164,7 +163,7 @@ watch(props, (newOrg) => {
 onMounted(() => {
     loadedOrganization.value = {
         ...props,
-        domains: props.domains.map(d => ({
+        domains: props.domains.map((d) => ({
             ...d,
             keyId: window.crypto.randomUUID(),
         })),

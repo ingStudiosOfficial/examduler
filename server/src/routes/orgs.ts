@@ -1,9 +1,9 @@
-import { Router, type Request, type Response } from "express";
-import { authenticateToken, verifyRole } from "../middleware/auth.js";
-import { ObjectId } from "mongodb";
-import type { IUser } from "../interfaces/User.js";
-import type { IOrg, IReturnOrg } from "../interfaces/Org.js";
-import type { IStoredMember, IReturnMember } from "../interfaces/Member.js";
+import { Router, type Request, type Response } from 'express';
+import { authenticateToken, verifyRole } from '../middleware/auth.js';
+import { ObjectId } from 'mongodb';
+import type { IUser } from '../interfaces/User.js';
+import type { IOrg, IReturnOrg } from '../interfaces/Org.js';
+import type { IStoredMember, IReturnMember } from '../interfaces/Member.js';
 
 export const orgsRouter = Router();
 
@@ -13,7 +13,7 @@ orgsRouter.get('/fetch/user/', authenticateToken(), verifyRole('admin'), async (
         return res.status(400).json({
             message: 'User ID missing or invalid.',
         });
-    } 
+    }
 
     try {
         const userId = new ObjectId(req.user.id);
@@ -36,7 +36,10 @@ orgsRouter.get('/fetch/user/', authenticateToken(), verifyRole('admin'), async (
 
         const organizationIds = fetchedUser.organizations;
 
-        const organizations = await req.db.collection<IOrg>('organizations').find({ _id: { $in: organizationIds } }).toArray();
+        const organizations = await req.db
+            .collection<IOrg>('organizations')
+            .find({ _id: { $in: organizationIds } })
+            .toArray();
 
         if (!organizations || organizations.length === 0) {
             console.error('User has no organizations (after fetch).');
@@ -44,8 +47,8 @@ orgsRouter.get('/fetch/user/', authenticateToken(), verifyRole('admin'), async (
                 message: 'User has no organizations.',
             });
         }
- 
-        const membersStored = [ ...new Set(organizations.flatMap(org => org.members)) ];
+
+        const membersStored = [...new Set(organizations.flatMap((org) => org.members))];
 
         const verifiedMembers: IStoredMember[] = [];
         const unverifiedMembers: IStoredMember[] = [];
@@ -60,23 +63,29 @@ orgsRouter.get('/fetch/user/', authenticateToken(), verifyRole('admin'), async (
 
         const membersProject = { name: 1, email: 1, role: 1 };
 
-        const fetchedVerifiedMembers = await req.db.collection<IReturnMember>('users').find({ _id: { $in: verifiedMembers.map(m => m._id) } }).project(membersProject).toArray();
-        const fetchedUnverifiedMembers = await req.db.collection<IReturnMember>('unverifiedUsers').find({ _id: { $in: unverifiedMembers.map(m => m._id) } }).project(membersProject).toArray();
+        const fetchedVerifiedMembers = await req.db
+            .collection<IReturnMember>('users')
+            .find({ _id: { $in: verifiedMembers.map((m) => m._id) } })
+            .project(membersProject)
+            .toArray();
+        const fetchedUnverifiedMembers = await req.db
+            .collection<IReturnMember>('unverifiedUsers')
+            .find({ _id: { $in: unverifiedMembers.map((m) => m._id) } })
+            .project(membersProject)
+            .toArray();
 
-        const fetchedMembers = [ ...fetchedVerifiedMembers, ...fetchedUnverifiedMembers ];
+        const fetchedMembers = [...fetchedVerifiedMembers, ...fetchedUnverifiedMembers];
 
         console.log(fetchedMembers);
 
-        const memberMap = new Map(fetchedMembers.map(m => [m._id.toString(), m]));
+        const memberMap = new Map(fetchedMembers.map((m) => [m._id.toString(), m]));
 
         const organizationsToReturn: IReturnOrg[] = [];
 
         organizations.forEach((organization, index) => {
             const { members, ...oldOrganization } = organization;
 
-            const mappedMembers = organization.members
-                .map(m => memberMap.get(m._id.toString()))
-                .filter((member): member is IReturnMember => !!member);
+            const mappedMembers = organization.members.map((m) => memberMap.get(m._id.toString())).filter((member): member is IReturnMember => !!member);
 
             organizationsToReturn[index] = {
                 ...oldOrganization,

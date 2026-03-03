@@ -1,5 +1,5 @@
-import type { ObjectId } from "mongodb";
-import type { IUser } from "./User.js";
+import type { ObjectId } from 'mongodb';
+import type { IUser } from './User.js';
 
 export interface IStoredMember {
     _id: ObjectId;

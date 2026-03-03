@@ -1,4 +1,4 @@
-import type { StateObject } from "@/interfaces/SnackBar";
+import type { StateObject } from '@/interfaces/SnackBar';
 
 export function showSnackBar(duration: number, stateObject: StateObject) {
     stateObject.visible = true;

@@ -21,4 +21,4 @@ export type IUpdateOrg = Omit<IOrg, 'members' | 'domains'> & {
     uploadedMembers?: string;
     members: IMemberWithEmail[];
     domains: IEditDomain[];
-}
+};

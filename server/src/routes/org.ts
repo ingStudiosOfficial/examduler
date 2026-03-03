@@ -46,7 +46,6 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
             });
         }
 
-
         const orgToCreate: IOrg = { ...tempOrg, members: parsedMembers, _id: orgId };
 
         for (const [index, domain] of orgToCreate.domains.entries()) {
@@ -56,7 +55,7 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
                     message: 'Domain object missing.',
                 });
             }
-            
+
             orgToCreate.domains[index].domain = addDomainPrefix(domain.domain);
 
             if (!checkValidDomain(domain.domain)) {
@@ -76,16 +75,14 @@ orgRouter.post('/create/', authenticateToken(), verifyRole('admin'), validateCre
         const conflict = await req.db.collection<IOrg>('organizations').findOne({
             domains: {
                 $elemMatch: {
-                    domain: { $in: orgToCreate.domains.map(d => d.domain) },
-                    verified: true
-                }
-            }
+                    domain: { $in: orgToCreate.domains.map((d) => d.domain) },
+                    verified: true,
+                },
+            },
         });
 
         if (conflict) {
-            const matchedDomain = conflict.domains.find(d => 
-                orgToCreate.domains.map(d => d.domain).includes(d.domain) && d.verified
-            )?.domain;
+            const matchedDomain = conflict.domains.find((d) => orgToCreate.domains.map((d) => d.domain).includes(d.domain) && d.verified)?.domain;
 
             return res.status(409).json({
                 message: `Organization with domain '${matchedDomain}' already exists.`,
@@ -165,9 +162,9 @@ orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (
             domains: {
                 $elemMatch: {
                     domain: fetchedDomain.domain,
-                    verified: true
-                }
-            }
+                    verified: true,
+                },
+            },
         });
 
         if (existingVerifiedOrg && existingVerifiedOrg._id.toString() !== orgId.toString()) {
@@ -194,10 +191,15 @@ orgRouter.post('/verify/txt/', authenticateToken(), verifyRole('admin'), async (
             });
         }
 
-        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify, adminId);
-        
+        await verifyUsers(
+            req.db,
+            organization.members.filter((m) => m.verified === false).map((m) => m._id),
+            domainToVerify,
+            adminId,
+        );
+
         console.log('Successfully verified domain.');
-        
+
         return res.status(200).json({
             message: 'Successfully verified domain.',
         });
@@ -261,9 +263,9 @@ orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async 
             domains: {
                 $elemMatch: {
                     domain: fetchedDomain.domain,
-                    verified: true
-                }
-            }
+                    verified: true,
+                },
+            },
         });
 
         if (existingVerifiedOrg && existingVerifiedOrg._id.toString() !== orgId.toString()) {
@@ -290,10 +292,15 @@ orgRouter.post('/verify/http/', authenticateToken(), verifyRole('admin'), async 
             });
         }
 
-        await verifyUsers(req.db, organization.members.filter(m => m.verified === false).map(m => m._id), domainToVerify, adminId);
+        await verifyUsers(
+            req.db,
+            organization.members.filter((m) => m.verified === false).map((m) => m._id),
+            domainToVerify,
+            adminId,
+        );
 
         console.log('Successfully verified domain.');
-        
+
         return res.status(200).json({
             message: 'Successfully verified domain.',
         });
@@ -331,7 +338,7 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
             });
         }
 
-        if (!fetchedOrganization.members.map(m => m._id).includes(new ObjectId(req.user.id))) {
+        if (!fetchedOrganization.members.map((m) => m._id).includes(new ObjectId(req.user.id))) {
             return res.status(403).json({
                 message: 'User is forbidden from updating the organization.',
             });
@@ -410,7 +417,10 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         }
 
         // Verify whether user can edit organization
-        const adminAuthorized = organization.members.filter(m => m.verified).map(m => m._id.toString()).includes(adminId.toString());
+        const adminAuthorized = organization.members
+            .filter((m) => m.verified)
+            .map((m) => m._id.toString())
+            .includes(adminId.toString());
         if (!adminAuthorized) {
             console.error('User forbidden from updating organization.');
             return res.status(403).json({
@@ -419,52 +429,54 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         }
 
         // Fetch all member details from organization
-        const verifiedMembersBeforeFetch = organization.members.filter(m => m.verified);
-        const unverifiedMembersBeforeFetch = organization.members.filter(m => !m.verified);
+        const verifiedMembersBeforeFetch = organization.members.filter((m) => m.verified);
+        const unverifiedMembersBeforeFetch = organization.members.filter((m) => !m.verified);
 
-        const verifiedMembersToFetch = verifiedMembersBeforeFetch.map(m => m._id);
-        const unverifiedMembersToFetch = unverifiedMembersBeforeFetch.map(m => m._id);
+        const verifiedMembersToFetch = verifiedMembersBeforeFetch.map((m) => m._id);
+        const unverifiedMembersToFetch = unverifiedMembersBeforeFetch.map((m) => m._id);
 
-        const verifiedMembersEmails = await req.db.collection<IUser>('users').find({ _id: { $in: verifiedMembersToFetch } }).project({ email: 1 }).toArray();
-        const unverifiedMembersEmails = await req.db.collection<IUser>('unverifiedUsers').find({ _id: { $in: unverifiedMembersToFetch } }).project({ email: 1 }).toArray();
+        const verifiedMembersEmails = await req.db
+            .collection<IUser>('users')
+            .find({ _id: { $in: verifiedMembersToFetch } })
+            .project({ email: 1 })
+            .toArray();
+        const unverifiedMembersEmails = await req.db
+            .collection<IUser>('unverifiedUsers')
+            .find({ _id: { $in: unverifiedMembersToFetch } })
+            .project({ email: 1 })
+            .toArray();
 
-        const verifiedMembers = verifiedMembersBeforeFetch.reduce<IMemberWithEmail[]>(
-            (acc, m, i) => {
-                const emailEntry = verifiedMembersEmails[i];
-                if (!emailEntry) {
-                    console.error(`Verified member with index ${i} not found.`);
-                    return acc;
-                }
-
-                acc.push({
-                    _id: m._id,
-                    verified: m.verified,
-                    email: emailEntry.email,
-                });
-
+        const verifiedMembers = verifiedMembersBeforeFetch.reduce<IMemberWithEmail[]>((acc, m, i) => {
+            const emailEntry = verifiedMembersEmails[i];
+            if (!emailEntry) {
+                console.error(`Verified member with index ${i} not found.`);
                 return acc;
-            },
-            [],
-        );
+            }
 
-        const unverifiedMembers = unverifiedMembersBeforeFetch.reduce<IMemberWithEmail[]>(
-            (acc, m, i) => {
-                const emailEntry = unverifiedMembersEmails[i];
-                if (!emailEntry) {
-                    console.error(`Unverified member with index ${i} not found.`);
-                    return acc;
-                }
+            acc.push({
+                _id: m._id,
+                verified: m.verified,
+                email: emailEntry.email,
+            });
 
-                acc.push({
-                    _id: m._id,
-                    verified: m.verified,
-                    email: emailEntry.email,
-                });
+            return acc;
+        }, []);
 
+        const unverifiedMembers = unverifiedMembersBeforeFetch.reduce<IMemberWithEmail[]>((acc, m, i) => {
+            const emailEntry = unverifiedMembersEmails[i];
+            if (!emailEntry) {
+                console.error(`Unverified member with index ${i} not found.`);
                 return acc;
-            },
-            [],
-        );
+            }
+
+            acc.push({
+                _id: m._id,
+                verified: m.verified,
+                email: emailEntry.email,
+            });
+
+            return acc;
+        }, []);
 
         // Update members
         console.log('Member uploaded:', memberUploaded);
@@ -473,13 +485,13 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             const { membersToDelete: verifiedMembersToDelete, newMembers: newVerifiedMembers } = getNewMembers(req.body.uploadedMembers, verifiedMembers, adminId);
             const { membersToDelete: unverifiedMembersToDelete, newMembers: newUnverifiedMembers } = getNewMembers(req.body.uploadedMembers, unverifiedMembers, adminId);
 
-            const verifiedDomains = organization.domains.filter(d => d.verified).map(d => d.domain);
+            const verifiedDomains = organization.domains.filter((d) => d.verified).map((d) => d.domain);
 
             const newByEmail = new Map<string, IStoredMember>();
             const newVerified = new Map<string, IUser>();
             const newUnverified = new Map<string, IUser>();
 
-            for (const member of [ ...newVerifiedMembers, ...newUnverifiedMembers ]) {
+            for (const member of [...newVerifiedMembers, ...newUnverifiedMembers]) {
                 if (!member._id) {
                     console.error('Member ID not found.');
                     continue;
@@ -498,22 +510,28 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
                 newByEmail.set(member.email, memberToAdd);
             }
 
-            const newMembers = [ ...newByEmail.values() ];
-            const newMemberToInsertVerified = [ ...newVerified.values() ];
-            const newMemberToInsertUnverified = [ ...newUnverified.values() ];
+            const newMembers = [...newByEmail.values()];
+            const newMemberToInsertVerified = [...newVerified.values()];
+            const newMemberToInsertUnverified = [...newUnverified.values()];
 
             if (newMembers.length !== 0) {
-                const newMembersToInsertVerifiedTemplate = newMemberToInsertVerified.map(m => ({
-                    insertOne: {
-                        document: m,
-                    },
-                } as AnyBulkWriteOperation<IUser>));
+                const newMembersToInsertVerifiedTemplate = newMemberToInsertVerified.map(
+                    (m) =>
+                        ({
+                            insertOne: {
+                                document: m,
+                            },
+                        }) as AnyBulkWriteOperation<IUser>,
+                );
 
-                const newMembersToInsertUnverifiedTemplate = newMemberToInsertUnverified.map(m => ({
-                    insertOne: {
-                        document: m,
-                    },
-                } as AnyBulkWriteOperation<IUser>));
+                const newMembersToInsertUnverifiedTemplate = newMemberToInsertUnverified.map(
+                    (m) =>
+                        ({
+                            insertOne: {
+                                document: m,
+                            },
+                        }) as AnyBulkWriteOperation<IUser>,
+                );
 
                 verifiedUserOps.push(...newMembersToInsertVerifiedTemplate);
                 unverifiedUserOps.push(...newMembersToInsertUnverifiedTemplate);
@@ -534,11 +552,11 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
             const deleteByEmail = new Map<string, ObjectId>();
 
-            for (const member of [ ...verifiedMembersToDelete, ...unverifiedMembersToDelete ]) {
+            for (const member of [...verifiedMembersToDelete, ...unverifiedMembersToDelete]) {
                 deleteByEmail.set(member.toString(), member);
             }
 
-            const membersToDelete = [ ...deleteByEmail.values() ];
+            const membersToDelete = [...deleteByEmail.values()];
 
             // Add new and delete old
             orgOps.push({
@@ -559,17 +577,17 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         // Domain verification
         const currentDomains = organization.domains;
 
-        orgBody.domains = orgBody.domains.map(d => ({ domain: addDomainPrefix(d.domain), verificationToken: d.verificationToken, verified: d.verified } as IEditDomain));
+        orgBody.domains = orgBody.domains.map((d) => ({ domain: addDomainPrefix(d.domain), verificationToken: d.verificationToken, verified: d.verified }) as IEditDomain);
 
         const newDomains = new Map<string, IDomain>();
         const domainsToDelete = new Map<string, IEditDomain>();
 
-        for (const domain of [ ...currentDomains, ...orgBody.domains ]) {
+        for (const domain of [...currentDomains, ...orgBody.domains]) {
             // Check if domain exists
-            if (currentDomains.map(d => d.domain).includes(domain.domain)) continue;
+            if (currentDomains.map((d) => d.domain).includes(domain.domain)) continue;
 
             // Check for domain to delete
-            if (!orgBody.domains.map(d => d.domain).includes(domain.domain)) {
+            if (!orgBody.domains.map((d) => d.domain).includes(domain.domain)) {
                 domainsToDelete.set(domain.domain, domain);
                 continue;
             }
@@ -586,8 +604,8 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             newDomains.set(domain.domain, domain as IDomain);
         }
 
-        const newDomainsArray = [ ...newDomains.values() ];
-        const domainsToDeleteArray = [ ...domainsToDelete.values() ];
+        const newDomainsArray = [...newDomains.values()];
+        const domainsToDeleteArray = [...domainsToDelete.values()];
 
         orgOps.push({
             updateOne: {
@@ -602,8 +620,8 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             updateOne: {
                 filter: { _id: orgId },
                 update: {
-                    $pull: { domains: { domain: { $in: domainsToDeleteArray.map(d => d.domain) } } }, // Remove old domains
-                }
+                    $pull: { domains: { domain: { $in: domainsToDeleteArray.map((d) => d.domain) } } }, // Remove old domains
+                },
             },
         });
 
@@ -622,7 +640,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
             updateOne: {
                 filter: { _id: orgId },
                 update: { $set: { name: orgBody.name } },
-            }
+            },
         });
 
         await session.withTransaction(async () => {
@@ -634,7 +652,7 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         });
 
         console.log('Successfully updated organization.');
-        
+
         return res.status(200).json({
             message: 'Successfully updated organization.',
         });
@@ -690,7 +708,10 @@ orgRouter.delete('/delete/:id/', authenticateToken(), verifyRole('admin'), async
         }
 
         // Check admin authorized
-        const adminAuthorized = organization.members.filter(m => m.verified).map(m => m._id.toString()).includes(adminId.toString());
+        const adminAuthorized = organization.members
+            .filter((m) => m.verified)
+            .map((m) => m._id.toString())
+            .includes(adminId.toString());
         if (!adminAuthorized) {
             console.error('User forbidden from updating organization.');
             return res.status(403).json({
@@ -699,8 +720,8 @@ orgRouter.delete('/delete/:id/', authenticateToken(), verifyRole('admin'), async
         }
 
         // Delete members
-        const verifiedOrgMembers = organization.members.filter(m => (m.verified && m._id.toString() !== adminId.toString())).map(m => m._id);
-        const unverifiedOrgMembers = organization.members.filter(m => !m.verified).map(m => m._id);
+        const verifiedOrgMembers = organization.members.filter((m) => m.verified && m._id.toString() !== adminId.toString()).map((m) => m._id);
+        const unverifiedOrgMembers = organization.members.filter((m) => !m.verified).map((m) => m._id);
 
         verifiedUserOps.push({
             deleteMany: {

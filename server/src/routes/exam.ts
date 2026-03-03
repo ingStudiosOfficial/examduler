@@ -76,7 +76,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
         }
 
         console.log('Exam:', exam);
-        console.log('Type of date:', (typeof exam.date));
+        console.log('Type of date:', typeof exam.date);
 
         const result = await req.db.collection<IExam>('exams').insertOne(exam);
 
@@ -127,9 +127,9 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
         console.log('User exams:', user?.exams);
         console.log('Exam ID:', examId);
         console.log('Exam to update:', examToUpdate);
-        console.log('Type of date:', (typeof examToUpdate.date));
+        console.log('Type of date:', typeof examToUpdate.date);
 
-        if (!user?.exams.map(e => e.toString()).includes(examId.toString())) {
+        if (!user?.exams.map((e) => e.toString()).includes(examId.toString())) {
             return res.status(403).json({
                 message: 'User is forbidden from updating the exam.',
             });
@@ -148,7 +148,7 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
 
         const fieldsToSet: Partial<IExam> = {};
 
-        keys.forEach(key => {
+        keys.forEach((key) => {
             if (examToUpdate[key] !== examination[key]) {
                 (fieldsToSet[key] as unknown) = examToUpdate[key];
             }
@@ -168,15 +168,14 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
             const parsedSeating = await parseExamSeating(examToUpdate.uploadedSeating, req);
 
             const existingEmails = await req.db.collection<IUser>('users').find({ exams: examId }).project<Pick<IUser, 'email'>>({ email: 1 }).toArray();
-            
-            const oldSet = new Set<string>(existingEmails.map(u => u.email));
-            const newSet = new Set<string>(parsedSeating.flat().map(s => s.email));
 
+            const oldSet = new Set<string>(existingEmails.map((u) => u.email));
+            const newSet = new Set<string>(parsedSeating.flat().map((s) => s.email));
 
-            const toAdd = [ ...newSet ].filter(email => !oldSet.has(email));
-            const toDelete = [ ...oldSet ].filter(email => !newSet.has(email));
+            const toAdd = [...newSet].filter((email) => !oldSet.has(email));
+            const toDelete = [...oldSet].filter((email) => !newSet.has(email));
 
-            toAdd.forEach(email => {
+            toAdd.forEach((email) => {
                 userOps.push({
                     updateOne: {
                         filter: { email: email },
@@ -185,7 +184,7 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
                 });
             });
 
-            toDelete.forEach(email => {
+            toDelete.forEach((email) => {
                 userOps.push({
                     updateOne: {
                         filter: { email: email },
@@ -243,7 +242,7 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
         console.log('User exams:', user?.exams);
         console.log('Exam ID:', examId);
 
-        if (!user?.exams.map(e => e.toString()).includes(examId.toString())) {
+        if (!user?.exams.map((e) => e.toString()).includes(examId.toString())) {
             return res.status(403).json({
                 message: 'User is forbidden from deleting the exam.',
             });
@@ -257,10 +256,7 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
             });
         }
 
-        await req.db.collection<IUser>('users').updateMany(
-            { exams: examId },
-            { $pull: { exams: examId } },
-        );
+        await req.db.collection<IUser>('users').updateMany({ exams: examId }, { $pull: { exams: examId } });
 
         return res.status(200).json({
             message: 'Exam deleted successfully.',

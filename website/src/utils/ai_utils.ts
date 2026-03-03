@@ -1,6 +1,6 @@
-import type { Exam } from "@/interfaces/Exam";
-import type { User } from "@/interfaces/User";
-import { getUserSeat } from "./exam_utils";
+import type { Exam } from '@/interfaces/Exam';
+import type { User } from '@/interfaces/User';
+import { getUserSeat } from './exam_utils';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,7 +53,7 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
 
     const summarizer = await Summarizer.create({
         ...summarizerOptions,
-        sharedContext: 'A summary of the user\'s upcoming examinations. Make it tailored to the user. Use words like \'you\', referring to the user. An example seat would be B5, so say \'Your seat is B5 for {exam name}.\'.',
+        sharedContext: "A summary of the user's upcoming examinations. Make it tailored to the user. Use words like 'you', referring to the user. An example seat would be B5, so say 'Your seat is B5 for {exam name}.'.",
         monitor: (m) => {
             m.addEventListener('downloadprogress', (e) => {
                 const percentageComplete = e.loaded / e.total;
@@ -63,14 +63,14 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
         },
     });
 
-    const userSeats: { seat: string, exam: Exam }[] = [];
+    const userSeats: { seat: string; exam: Exam }[] = [];
     const examsWithoutSeat: Exam[] = [];
 
     try {
         for (const exam of exams) {
             if (exam.seating) {
                 const userSeat = { seat: getUserSeat(exam.seating, user.email).seat, exam: exam };
-                userSeats.push(userSeat);   
+                userSeats.push(userSeat);
             } else {
                 examsWithoutSeat.push(exam);
             }
@@ -87,9 +87,9 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
             console.log('Removed seating:', _id, seating);
             return {
                 seat: examWithSeat.seat,
-                exam: examWithoutSeating
+                exam: examWithoutSeating,
             };
-        })
+        }),
     )}, Examinations (without seating): ${JSON.stringify(
         examsWithoutSeat.map((exam) => {
             const { _id, seating, ...examWithoutId } = exam;
@@ -97,7 +97,7 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
             return {
                 exam: examWithoutId,
             };
-        })
+        }),
     )}, User: ${JSON.stringify(user)}`;
     console.log('Prompt:', prompt);
 

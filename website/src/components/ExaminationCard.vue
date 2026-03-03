@@ -23,7 +23,7 @@ const emit = defineEmits(['examClick']);
 
 const userSeat = ref<Seating | null>(null);
 const timeTillExam = ref<string>(getTimeTillExam(new Date(props.exam.date)));
-const examIsFuture = ref<boolean>(isFuture(props.exam.date))
+const examIsFuture = ref<boolean>(isFuture(props.exam.date));
 
 function showExamDialog(examInfo: Exam) {
     emit('examClick', examInfo);
@@ -42,7 +42,9 @@ function tryGetUserSeat() {
     }
 }
 
-watch(() => (props.exam.seating || []), (newSeating: Seating[][]) => {
+watch(
+    () => props.exam.seating || [],
+    (newSeating: Seating[][]) => {
         if (newSeating && newSeating.length > 0) {
             tryGetUserSeat();
         }
@@ -52,10 +54,14 @@ watch(() => (props.exam.seating || []), (newSeating: Seating[][]) => {
 </script>
 
 <template>
-    <button class="card" @click="showExamDialog(props.exam)" :style="{
-        backgroundColor: examIsFuture ? 'var(--md-sys-color-primary-container)' : 'var(--md-sys-color-secondary-container)',
-        color: examIsFuture ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-on-secondary-container)',
-    }">
+    <button
+        class="card"
+        @click="showExamDialog(props.exam)"
+        :style="{
+            backgroundColor: examIsFuture ? 'var(--md-sys-color-primary-container)' : 'var(--md-sys-color-secondary-container)',
+            color: examIsFuture ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-on-secondary-container)',
+        }"
+    >
         <md-ripple></md-ripple>
         <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
         <h1 class="exam-name">{{ props.exam.name }}</h1>

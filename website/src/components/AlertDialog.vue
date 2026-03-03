@@ -66,5 +66,4 @@ onMounted(() => {
     </md-dialog>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

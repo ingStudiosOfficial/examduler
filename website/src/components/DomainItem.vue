@@ -18,7 +18,7 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
-const emit = defineEmits(['domainChange', 'displaySnackBar', 'deleteDomain'])
+const emit = defineEmits(['domainChange', 'displaySnackBar', 'deleteDomain']);
 
 const domainToDisplay = ref<Domain>();
 
@@ -63,9 +63,13 @@ async function triggerVerifyDomain(method: DomainVerificationMethod) {
     emit('displaySnackBar', 'Successfully verified domain');
 }
 
-watch(domainToDisplay, (newDomainValue) => {
-    emit('domainChange', newDomainValue, props.index);
-}, { deep: true });
+watch(
+    domainToDisplay,
+    (newDomainValue) => {
+        emit('domainChange', newDomainValue, props.index);
+    },
+    { deep: true },
+);
 
 onMounted(() => {
     domainToDisplay.value = props.domain;

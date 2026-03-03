@@ -1,10 +1,10 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type Request, type Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 
 interface TrustedTesterPayload extends JwtPayload {
     iss: string;
     app: string;
-    scope: string[];   
+    scope: string[];
 }
 
 export const trustedTesterRouter = Router();
@@ -25,7 +25,7 @@ trustedTesterRouter.post('/set/', async (req: Request, res: Response) => {
     res.cookie('trusted_tester_session', token, {
         httpOnly: true,
         secure: true,
-        sameSite:'lax',
+        sameSite: 'lax',
         path: '/',
     });
 

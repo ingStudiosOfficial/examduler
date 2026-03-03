@@ -171,12 +171,12 @@ watch(dates, (newValue) => {
 
 .header-title {
     font-size: 2em;
-    color: var(--md-sys-color-primary)
+    color: var(--md-sys-color-primary);
 }
 
 .subheader {
     font-size: 1.7em;
-    color: var(--md-sys-color-primary)
+    color: var(--md-sys-color-primary);
 }
 
 .date-picker {

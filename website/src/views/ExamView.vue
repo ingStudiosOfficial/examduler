@@ -29,11 +29,11 @@ async function tryFetchExam() {
 
     try {
         const exam = await fetchPublicExam(examId.value);
-        
+
         console.log('Fetched exam:', exam);
 
         examDetails.value = exam;
-        document.title = `Examination ${exam.name} | Examduler`
+        document.title = `Examination ${exam.name} | Examduler`;
     } catch (error) {
         console.error('Error while fetching exams:', error);
     }
@@ -95,7 +95,7 @@ onMounted(async () => {
             <h1 class="exam-name">{{ examDetails.name }}</h1>
             <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
             <div class="description-wrapper">
-                 <p class="exam-description">{{ examDetails.description }}</p>
+                <p class="exam-description">{{ examDetails.description }}</p>
             </div>
             <md-outlined-button v-vibrate id="download-button" class="download-button" @click="toggleMenu()">Add event</md-outlined-button>
             <md-menu anchor="download-button" id="download-menu" positioning="popover">

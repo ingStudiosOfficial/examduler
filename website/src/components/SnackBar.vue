@@ -48,11 +48,13 @@ function executeAction() {
     margin: 0;
 }
 
-.sb-fade-enter-active, .sb-fade-leave-active {
+.sb-fade-enter-active,
+.sb-fade-leave-active {
     transition: opacity 0.3s ease;
 }
 
-.sb-fade-enter-from, .sb-fade-leave-to {
+.sb-fade-enter-from,
+.sb-fade-leave-to {
     opacity: 0;
 }
 </style>

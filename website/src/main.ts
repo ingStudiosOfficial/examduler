@@ -12,18 +12,22 @@ app.use(router);
 app.directive('vibrate', {
     mounted(el, binding) {
         el.addEventListener('click', vibrateDirective(el, binding));
-    }
+    },
 });
 
 app.mount('#app');
 
-window.addEventListener('click', (event) => {
-    if (!event.target) return;
+window.addEventListener(
+    'click',
+    (event) => {
+        if (!event.target) return;
 
-    const btn = (event.target as HTMLElement).closest('button');
+        const btn = (event.target as HTMLElement).closest('button');
 
-    if (btn) {
-        console.log('Vibrating with element:', btn);
-        vibrate([6]);
-    }
-}, true);
+        if (btn) {
+            console.log('Vibrating with element:', btn);
+            vibrate([6]);
+        }
+    },
+    true,
+);

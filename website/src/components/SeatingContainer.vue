@@ -51,7 +51,7 @@ const props = defineProps<SeatingProp>();
 .seating-seat {
     border: 2px solid var(--md-sys-color-on-primary-container);
     border-radius: 10px;
-    aspect-ratio: 1 / 1; 
+    aspect-ratio: 1 / 1;
     min-width: 120px;
     vertical-align: middle;
 }

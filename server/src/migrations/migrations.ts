@@ -1,8 +1,8 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db } from 'mongodb';
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import path from "path";
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,7 +27,6 @@ async function connectToMongo() {
         process.exit(1);
     }
 }
-
 
 connectToMongo().then(() => {
     database.collection('users').createIndex({ email: 1 }, { unique: true });

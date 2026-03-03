@@ -1,6 +1,4 @@
-1. Enusre can upload empty members
-2. Edit exam
-3. Delete org
-4. Add table for editing members
-5. Add CLI (Go)
-6. Use console.info instead of error when nothing is found
+1. Assign exam to creator
+2. Bulk upload exam with Gemma Magic Paste and allow table editing
+3. Add table for editing members
+4. Add CLI (Go)

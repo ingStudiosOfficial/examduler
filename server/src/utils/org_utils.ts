@@ -59,14 +59,14 @@ export function createVerificationToken(): string {
 }
 
 export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedDomains: string[], organization: ObjectId, adminId: ObjectId, adminEmail: string): Promise<IMemberWithEmail[]> {
-    const membersArray = unparsedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
+    const membersArray = unparsedMembers.split(/\r?\n/).filter((line) => line.trim() !== '');
     const operations = [];
     const unverifiedOperations = [];
     const emails = [];
     const unverifiedEmails = [];
 
     for (const member of membersArray) {
-        const [name, email, role] = member.split(',').map(p => p.trim());
+        const [name, email, role] = member.split(',').map((p) => p.trim());
 
         if (!name || !email || !role) {
             console.error('Invalid row skipping:', member);
@@ -101,7 +101,7 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
                 updateOne: {
                     filter: { email: email },
                     update: { $set: userToUpsert },
-                    upsert: true
+                    upsert: true,
                 } as UpdateOneModel,
             });
         } else {
@@ -113,47 +113,60 @@ export async function parseOrgMembers(unparsedMembers: string, db: Db, verifiedD
                     update: { $set: userToUpsert },
                     upsert: true,
                 } as UpdateOneModel,
-            })
+            });
         }
     }
 
     try {
         // Get admin
-        const admin = await db.collection<IUser>('users').updateOne(
-            { _id: adminId },
-            { $addToSet: { organizations: organization } },
-        );
+        const admin = await db.collection<IUser>('users').updateOne({ _id: adminId }, { $addToSet: { organizations: organization } });
 
         if (admin.matchedCount === 0) {
             throw new Error('Admin could not be found.');
         }
 
-        let finalIds: IMemberWithEmail[] = [ {
-            _id: adminId,
-            verified: true,
-            email: adminEmail,
-        } ];
+        let finalIds: IMemberWithEmail[] = [
+            {
+                _id: adminId,
+                verified: true,
+                email: adminEmail,
+            },
+        ];
 
         // Verified users
         if (operations.length > 0) {
             await db.collection<IUser>('users').bulkWrite(operations);
-            const found = await db.collection<IUser>('users').find({ email: { $in: emails } }).project({ _id: 1, email: 1 }).toArray();
-            finalIds = [...finalIds, ...found.map(u => ({
-                _id: u._id as ObjectId,
-                verified: true,
-                email: u.email,
-            }))];
+            const found = await db
+                .collection<IUser>('users')
+                .find({ email: { $in: emails } })
+                .project({ _id: 1, email: 1 })
+                .toArray();
+            finalIds = [
+                ...finalIds,
+                ...found.map((u) => ({
+                    _id: u._id as ObjectId,
+                    verified: true,
+                    email: u.email,
+                })),
+            ];
         }
 
         // Unverified users
         if (unverifiedOperations.length > 0) {
             await db.collection<IUser>('unverifiedUsers').bulkWrite(unverifiedOperations);
-            const found = await db.collection<IUser>('unverifiedUsers').find({ email: { $in: unverifiedEmails } }).project({ _id: 1, email: 1 }).toArray();
-            finalIds = [...finalIds, ...found.map(u => ({
-                _id: u._id as ObjectId,
-                verified: false,
-                email: u.email,
-            }))];
+            const found = await db
+                .collection<IUser>('unverifiedUsers')
+                .find({ email: { $in: unverifiedEmails } })
+                .project({ _id: 1, email: 1 })
+                .toArray();
+            finalIds = [
+                ...finalIds,
+                ...found.map((u) => ({
+                    _id: u._id as ObjectId,
+                    verified: false,
+                    email: u.email,
+                })),
+            ];
         }
 
         return finalIds;
@@ -193,17 +206,17 @@ export function removeDomainPrefix(domain: string): string {
 
 export function getNewMembers(uploadedMembers: string, existingMembers: IMemberWithEmail[], adminId: ObjectId): IMemberDiff {
     if (!uploadedMembers || uploadedMembers.length === 0) {
-        const membersToDelete = existingMembers.filter(m => m._id.toString() !== adminId.toString()).map(m => m._id);
+        const membersToDelete = existingMembers.filter((m) => m._id.toString() !== adminId.toString()).map((m) => m._id);
         return { membersToDelete: membersToDelete, newMembers: [] };
     }
 
     console.log('Uploaded members:', uploadedMembers);
 
-    const membersArray = uploadedMembers.split(/\r?\n/).filter(line => line.trim() !== '');
+    const membersArray = uploadedMembers.split(/\r?\n/).filter((line) => line.trim() !== '');
     const parsedUploadedMembers: IUser[] = [];
 
     for (const member of membersArray) {
-        const [name, email, role] = member.split(',').map(p => p.trim());
+        const [name, email, role] = member.split(',').map((p) => p.trim());
 
         if (!name || !email || !role) {
             console.error('Invalid row skipping:', member);
@@ -224,14 +237,14 @@ export function getNewMembers(uploadedMembers: string, existingMembers: IMemberW
         parsedUploadedMembers.push({ name, email, role, domain: getDomain(email), exams: [], organizations: [], tokenVersion: 0, _id: new ObjectId() });
     }
 
-    const uploadedIds = new Set(parsedUploadedMembers.map(m => m.email));
-    const existingIds = new Set(existingMembers.map(m => m.email));
+    const uploadedIds = new Set(parsedUploadedMembers.map((m) => m.email));
+    const existingIds = new Set(existingMembers.map((m) => m.email));
 
     // New members
-    const newMembers = parsedUploadedMembers.filter(m => !existingIds.has(m.email));
+    const newMembers = parsedUploadedMembers.filter((m) => !existingIds.has(m.email));
 
     // Members to delete
-    const membersToDelete = existingMembers.filter(m => (!uploadedIds.has(m.email.toString()) && m._id.toString() !== adminId.toString())).map(m => m._id);
+    const membersToDelete = existingMembers.filter((m) => !uploadedIds.has(m.email.toString()) && m._id.toString() !== adminId.toString()).map((m) => m._id);
 
     console.log('New members:', newMembers);
     console.log('Members to delete:', membersToDelete);

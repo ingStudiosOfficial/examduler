@@ -1,5 +1,5 @@
-import type { Domain } from "./Domain";
-import type { Member } from "./Member";
+import type { Domain } from './Domain';
+import type { Member } from './Member';
 
 export interface Organization {
     _id?: string;
