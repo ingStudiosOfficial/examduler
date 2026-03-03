@@ -73,7 +73,7 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
         document.addEventListener('keydown', handleEscape);
     }
 
-    return () => document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
 });
 </script>
 

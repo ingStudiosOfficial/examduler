@@ -14,8 +14,12 @@ import '@vuepic/vue-datepicker/dist/main.css';
 import type { ExamCreate } from '@/interfaces/Exam';
 
 import { createExam } from '@/utils/exam_utils';
+import { useCheckMobile } from '@/composables/screen_width_composables';
 
 const emit = defineEmits(['close', 'success']);
+
+
+const { isMobile } = useCheckMobile();
 
 const dates = ref();
 const examToCreate = ref<ExamCreate>({
@@ -113,15 +117,22 @@ watch(dates, (newValue) => {
     <div class="backdrop">
         <form class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
-                <md-icon-button type="button" v-vibrate @click="closeDialog()">
-                    <md-icon>close</md-icon>
-                </md-icon-button>
+                <div class="left-buttons">
+                    <md-icon-button type="button" v-vibrate>
+                        <md-icon>file_copy</md-icon>
+                    </md-icon-button>
+                </div>
+                <div class="right-buttons">
+                    <md-icon-button type="button" v-vibrate @click="closeDialog()">
+                        <md-icon>close</md-icon>
+                    </md-icon-button>
+                </div>
             </div>
             <h1 class="header-title">Create Examination</h1>
             <h2 class="subheader">Details</h2>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
             <p>Examination date</p>
-            <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
+            <VueDatePicker v-model="dates" :multi-calendars="!isMobile" class="date-picker"></VueDatePicker>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
             <h2 class="subheader">Seating</h2>
             <div class="file-input">
@@ -153,7 +164,7 @@ watch(dates, (newValue) => {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 10px;
     box-sizing: border-box;
     width: 100%;
@@ -171,8 +182,6 @@ watch(dates, (newValue) => {
     font-size: 1.7em;
     color: var(--md-sys-color-primary)
 }
-
-
 
 .date-picker {
     width: 40%;
@@ -193,5 +202,19 @@ watch(dates, (newValue) => {
 
 .hidden-submit {
     display: none;
+}
+
+.right-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.left-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 }
 </style>

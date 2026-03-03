@@ -74,6 +74,7 @@ onMounted(async () => {
     justify-content: center;
     box-sizing: border-box;
     padding: 20px;
+    text-align: center;
 }
 
 .summary-header {
