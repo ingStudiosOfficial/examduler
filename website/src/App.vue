@@ -62,6 +62,7 @@ main {
     .navbar {
         display: flex;
         height: 10svh;
+        min-height: fit-content;
         width: 100%;
         flex-shrink: 0;
     }

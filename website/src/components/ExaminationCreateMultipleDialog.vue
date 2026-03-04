@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/ripple/ripple.js';
@@ -8,25 +8,17 @@ import '@material/web/fab/fab.js';
 import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
 
-import { VueDatePicker } from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-
 import type { ExamCreate } from '@/interfaces/Exam';
-
-import { createExam } from '@/utils/exam_utils';
 
 const emit = defineEmits(['close', 'success']);
 
-const dates = ref();
 const examToCreate = ref<ExamCreate>({
     name: '',
     date: '',
     description: '',
     seating: '',
 });
-const seatingPicker = ref();
 const submitButton = ref();
-const uploadedSeatName = ref<string>();
 const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
 
@@ -41,81 +33,18 @@ function closeDialog() {
     emit('close');
 }
 
-function openFilePicker() {
-    seatingPicker.value.click();
-}
-
-function handleFileUpload(e: Event) {
-    const target = e.target as HTMLInputElement;
-
-    if (!target.files || target.files?.length === 0) {
-        console.error('No uploaded files found.');
-        return;
-    }
-
-    const uploadedFile = target.files[0];
-
-    if (!uploadedFile) {
-        console.error('File missing.');
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = (ef) => {
-        if (!ef.target?.result) {
-            console.error('Failed to read file.');
-            return;
-        }
-
-        if (typeof ef.target.result !== 'string') {
-            console.error('File content is not a string.');
-            return;
-        }
-
-        console.log('Read result:', ef.target.result);
-
-        examToCreate.value.seating = ef.target.result;
-    };
-
-    reader.readAsText(uploadedFile);
-
-    uploadedSeatName.value = uploadedFile.name;
-}
-
-async function examFormSubmit() {
-    const examDateObject = new Date(dates.value);
-
-    examToCreate.value.date = examDateObject.getTime().toString();
-
-    const { message, success } = await createExam(examToCreate.value);
-    console.log(message);
-
-    examCreationMessage.value = message;
-    examCreationSuccess.value = success;
-
-    if (success) {
-        closeDialog();
-        emit('success');
-    }
-}
-
 function pressExamSubmit() {
     submitButton.value.click();
 }
-
-watch(dates, (newValue) => {
-    console.log(newValue);
-});
 </script>
 
 <template>
     <div class="backdrop">
-        <form class="dialog" @submit.prevent="examFormSubmit()">
+        <form class="dialog">
             <div class="top-panel">
                 <div class="left-buttons">
                     <md-icon-button type="button" v-vibrate>
-                        <md-icon>file_copy</md-icon>
+                        <md-icon>draft</md-icon>
                     </md-icon-button>
                 </div>
                 <div class="right-buttons">
@@ -124,23 +53,7 @@ watch(dates, (newValue) => {
                     </md-icon-button>
                 </div>
             </div>
-            <h1 class="header-title">Create Examination</h1>
-            <h2 class="subheader">Details</h2>
-            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.name" label="Examination name" required no-asterisk="true" supporting-text="The name of the examination." maxlength="50"></md-outlined-text-field>
-            <p>Examination date</p>
-            <VueDatePicker teleport="body" v-model="dates" multi-calendars class="date-picker"></VueDatePicker>
-            <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
-            <h2 class="subheader">Seating</h2>
-            <div class="file-input">
-                <p>Your seating</p>
-                <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
-                    <md-ripple></md-ripple>
-                    <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-                    <md-icon>upload</md-icon>
-                </label>
-                <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
-                <p class="file-chosen">{{ uploadedSeatName }}</p>
-            </div>
+            <h1 class="header-title">Bulk Create Examinations</h1>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressExamSubmit()">
@@ -160,7 +73,7 @@ watch(dates, (newValue) => {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 10px;
     box-sizing: border-box;
     width: 100%;

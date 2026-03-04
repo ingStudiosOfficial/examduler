@@ -17,7 +17,7 @@ import type { ExamCreate } from '@/interfaces/Exam';
 import { createExam } from '@/utils/exam_utils';
 import { useCheckMobile } from '@/composables/screen_width_composables';
 
-const emit = defineEmits(['close', 'success']);
+const emit = defineEmits(['close', 'success', 'multiple']);
 
 const { isMobile } = useCheckMobile();
 
@@ -108,6 +108,11 @@ function pressExamSubmit() {
     submitButton.value.click();
 }
 
+function triggerCreateMultiple() {
+    emit('multiple');
+    closeDialog();
+}
+
 watch(dates, (newValue) => {
     console.log(newValue);
 });
@@ -118,7 +123,7 @@ watch(dates, (newValue) => {
         <form class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button type="button" disabled v-vibrate>
+                    <md-icon-button type="button" disabled v-vibrate @click="triggerCreateMultiple()">
                         <md-icon>file_copy</md-icon>
                     </md-icon-button>
                 </div>

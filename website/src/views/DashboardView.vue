@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import '@material/web/fab/fab.js';
 
@@ -18,9 +18,13 @@ import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
 import type { Exam } from '@/interfaces/Exam';
 import { router } from '../router/index';
+import ExaminationCreateMultipleDialog from '@/components/ExaminationCreateMultipleDialog.vue';
+import { useDialog } from '@/composables/dialog_composables';
+
+const { dialogOpened: examCreateDialogOpened, openDialog: openCreateExamDialog, closeDialog: closeCreateExamDialog } = useDialog();
+const { dialogOpened: examCreateMultipleDialogOpened, openDialog: openCreateMultipleExamDialog, closeDialog: closeCreateMultipleExamDialog } = useDialog();
 
 const userData = ref<User | null>(null);
-const examCreateDialogOpened = ref<boolean>(false);
 const refreshExams = ref<boolean>(false);
 const sbMessage = ref<string>();
 const sbOpened = ref<StateObject>({ visible: false });
@@ -47,15 +51,6 @@ function onSummaryError(message: string) {
     showSnackBar(4000, sbOpened.value);
 }
 
-function openCreateExamDialog() {
-    examCreateDialogOpened.value = true;
-}
-
-function closeCreateExamDialog() {
-    console.log('Exam create dialog closing...');
-    examCreateDialogOpened.value = false;
-}
-
 function alertRefreshExams() {
     refreshExams.value = true;
 }
@@ -63,18 +58,6 @@ function alertRefreshExams() {
 function onFetchExams(fetchedExams: Exam[]) {
     exams.value = fetchedExams;
 }
-
-watch(examCreateDialogOpened, (isOpen: boolean) => {
-    const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') closeCreateExamDialog();
-    };
-
-    if (isOpen) {
-        document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => document.removeEventListener('keydown', handleEscape);
-});
 </script>
 
 <template>
@@ -85,7 +68,8 @@ watch(examCreateDialogOpened, (isOpen: boolean) => {
 
         <OrganizationsContainer v-if="userData.role === 'admin'"></OrganizationsContainer>
 
-        <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()"></ExaminationCreateDialog>
+        <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()" @multiple="openCreateMultipleExamDialog()"></ExaminationCreateDialog>
+        <ExaminationCreateMultipleDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateMultipleDialogOpened" @close="closeCreateMultipleExamDialog()" @success="alertRefreshExams()"></ExaminationCreateMultipleDialog>
 
         <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" label="Create" size="medium" v-vibrate @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>

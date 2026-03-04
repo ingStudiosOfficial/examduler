@@ -18,6 +18,7 @@ import SnackBar from './SnackBar.vue';
 import type { StateObject } from '@/interfaces/SnackBar';
 import { showSnackBar } from '@/utils/snackbar';
 import { fetchCachedExams } from '@/utils/cache_utils';
+import { useDialog } from '@/composables/dialog_composables';
 
 interface ComponentProps {
     user: User;
@@ -28,30 +29,14 @@ const props = defineProps<ComponentProps>();
 
 const emit = defineEmits(['fetchedExams']);
 
+const { dialogOpened: examOpened, openDialog: displayExamDialog, closeDialog: closeExamDialog } = useDialog();
+const { dialogOpened: editDialogOpened, openDialog: showEditDialog, closeDialog: closeEditDialog } = useDialog();
+
 const exams = ref<Exam[]>();
-const examOpened = ref<boolean>(false);
 const examDetails = ref<Exam | null>(null);
 const sbMessage = ref<string>();
 const sbOpened = ref<StateObject>({ visible: false });
-const editDialogOpened = ref<boolean>(false);
 const examToEdit = ref<Exam | null>();
-
-function displayExamDialog(examInfo: Exam) {
-    examDetails.value = examInfo;
-    examOpened.value = true;
-}
-
-function closeExamDialog() {
-    console.log('Exam dialog closing...');
-    examOpened.value = false;
-    examDetails.value = null;
-}
-
-function closeEditDialog() {
-    console.log('Edit dialog closing...');
-    editDialogOpened.value = false;
-    examToEdit.value = null;
-}
 
 async function refreshExams() {
     try {
@@ -73,34 +58,15 @@ function displaySb(message: string) {
     showSnackBar(4000, sbOpened.value);
 }
 
-function showEditDialog(exam: Exam) {
-    examToEdit.value = exam;
-    editDialogOpened.value = true;
+function handleDisplayExam(exam: Exam) {
+    examDetails.value = exam;
+    displayExamDialog();
 }
 
-watch(examOpened, (isOpen: boolean) => {
-    const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') closeExamDialog();
-    };
-
-    if (isOpen) {
-        document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => document.addEventListener('keydown', handleEscape);
-});
-
-watch(editDialogOpened, (isOpen: boolean) => {
-    const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') closeEditDialog();
-    };
-
-    if (isOpen) {
-        document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => document.addEventListener('keydown', handleEscape);
-});
+function handleShowEdit(exam: Exam) {
+    examToEdit.value = exam;
+    showEditDialog();
+}
 
 watch(
     () => props.refresh,
@@ -128,14 +94,14 @@ onMounted(async () => {
         <h1 class="examinations-header">Your Examinations</h1>
         <div class="exams-loaded" v-if="exams">
             <div class="examinations" v-if="exams.length > 0">
-                <ExaminationCard v-for="exam in exams" :key="exam._id" :exam="exam" :user="props.user" @exam-click="displayExamDialog"></ExaminationCard>
+                <ExaminationCard v-for="exam in exams" :key="exam._id" :exam="exam" :user="props.user" @exam-click="handleDisplayExam"></ExaminationCard>
             </div>
 
             <p v-else class="no-exams">Time to relax! No scheduled examinations at the moment.</p>
         </div>
         <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your examinations..."></LoaderContainer>
 
-        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()" @edit="showEditDialog"></ExaminationDialog>
+        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()" @edit="handleShowEdit"></ExaminationDialog>
         <ExaminationEditDialog v-if="editDialogOpened && examToEdit" :_id="examToEdit._id" :name="examToEdit.name" :date="examToEdit.date" :description="examToEdit.description" :seating="examToEdit.seating" @show-sb="displaySb" @refresh="refreshExams()" @close="closeEditDialog()" @success="refreshExams()"></ExaminationEditDialog>
 
         <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
