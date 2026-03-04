@@ -52,6 +52,8 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
         });
     }
 
+    const session = req.client.startSession();
+
     try {
         const userId = new ObjectId(req.user.id);
 
@@ -75,17 +77,24 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
             exam = tempExam;
         }
 
+        exam._id = new ObjectId();
+
         console.log('Exam:', exam);
         console.log('Type of date:', typeof exam.date);
 
-        const result = await req.db.collection<IExam>('exams').insertOne(exam);
-
-        if (!result.insertedId) {
-            console.error('Failed to insert exam.');
-            return res.status(500).json({
-                message: 'Failed to insert exam.',
-            });
-        }
+        await session.withTransaction(async () => {
+            const result = await req.db.collection<IExam>('exams').insertOne(exam);
+            if (!result.insertedId) {
+                console.error('Failed to insert exam.');
+                return res.status(500).json({
+                    message: 'Failed to insert exam.',
+                });
+            }
+            if (exam._id) await req.db.collection<IUser>('users').updateOne(
+                { _id: userId },
+                { $addToSet: { exams: exam._id } }
+            );
+        });
 
         if (exam.seating) assignExamToUsers(exam, req, res, user.email);
 
@@ -113,14 +122,14 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
         });
     }
 
+    const session = req.client.startSession();
+
     try {
         const userId = new ObjectId(req.user.id);
         const examId = new ObjectId(req.params.id);
         const examToUpdate: IEXamUpdate = req.body;
         const examOps: AnyBulkWriteOperation<IExam>[] = [];
         const userOps: AnyBulkWriteOperation<IUser>[] = [];
-
-        const session = req.client.startSession();
 
         const user = await req.db.collection<IUser>('users').findOne({ _id: userId });
 

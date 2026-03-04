@@ -135,7 +135,7 @@ onMounted(async () => {
         </div>
         <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your examinations..."></LoaderContainer>
 
-        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description && examDetails.seating" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()" @edit="showEditDialog"></ExaminationDialog>
+        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()" @edit="showEditDialog"></ExaminationDialog>
         <ExaminationEditDialog v-if="editDialogOpened && examToEdit" :_id="examToEdit._id" :name="examToEdit.name" :date="examToEdit.date" :description="examToEdit.description" :seating="examToEdit.seating" @show-sb="displaySb" @refresh="refreshExams()" @close="closeEditDialog()" @success="refreshExams()"></ExaminationEditDialog>
 
         <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>

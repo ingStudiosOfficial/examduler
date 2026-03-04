@@ -735,7 +735,7 @@ orgRouter.delete('/delete/:id/', authenticateToken(), verifyRole('admin'), async
             },
         });
 
-        // In the future, maybe delete exams
+        // In the future, maybe delete exams - probably bad idea?
 
         // Final bulk write
         await session.withTransaction(async () => {
