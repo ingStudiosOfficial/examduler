@@ -130,7 +130,7 @@ watch(dates, (newValue) => {
             </div>
             <div class="file-input">
                 <p>Your seating</p>
-                <label class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
+                <label class="file-upload-button" tabindex="0" v-vibrate @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>upload</md-icon>
