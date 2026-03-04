@@ -128,7 +128,7 @@ async function orgFormSubmit() {
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>upload</md-icon>
                 </label>
-                <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
+                <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" @change="handleFileUpload" />
                 <p class="file-chosen">{{ uploadedMembersName }}</p>
             </div>
             <p :style="{ color: orgCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ orgCreationMessage }}</p>
@@ -191,15 +191,6 @@ async function orgFormSubmit() {
 
 .file-chosen {
     word-wrap: break-word;
-}
-
-.submit-button {
-    position: sticky;
-    bottom: 25px;
-    right: 25px;
-    z-index: 1001;
-    display: block;
-    margin-left: auto;
 }
 
 .hidden-submit {

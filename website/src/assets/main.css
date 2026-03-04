@@ -113,6 +113,16 @@ body {
     width: 100% !important;
 }
 
+.submit-button {
+    position: sticky;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1001;
+    display: block;
+    margin-left: auto;
+    margin-top: auto;
+}
+
 @media (max-width: 768px) {
     .dialog {
         width: 100%;

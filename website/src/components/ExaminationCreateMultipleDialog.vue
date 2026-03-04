@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/ripple/ripple.js';
@@ -10,7 +10,7 @@ import '@material/web/iconbutton/icon-button.js';
 
 import type { ExamCreate } from '@/interfaces/Exam';
 
-const emit = defineEmits(['close', 'success']);
+const emit = defineEmits(['close', 'success', 'single']);
 
 const examToCreate = ref<ExamCreate>({
     name: '',
@@ -21,6 +21,8 @@ const examToCreate = ref<ExamCreate>({
 const submitButton = ref();
 const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
+const uploadedExaminationsName = ref<string>();
+const examinationsPicker = useTemplateRef<HTMLInputElement>('examinationsPicker');
 
 function closeDialog() {
     examToCreate.value = {
@@ -36,6 +38,17 @@ function closeDialog() {
 function pressExamSubmit() {
     submitButton.value.click();
 }
+
+function triggerCreateSingle() {
+    emit('single');
+    closeDialog();
+}
+
+function openFilePicker() {
+    if (!examinationsPicker.value) return;
+
+    examinationsPicker.value.click();
+}
 </script>
 
 <template>
@@ -43,7 +56,7 @@ function pressExamSubmit() {
         <form class="dialog">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button type="button" v-vibrate>
+                    <md-icon-button type="button" v-vibrate @click="triggerCreateSingle()">
                         <md-icon>draft</md-icon>
                     </md-icon-button>
                 </div>
@@ -54,6 +67,17 @@ function pressExamSubmit() {
                 </div>
             </div>
             <h1 class="header-title">Bulk Create Examinations</h1>
+            <h2 class="subheader">Examinations</h2>
+            <div class="file-input">
+                <p>Your examinations</p>
+                <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
+                    <md-ripple></md-ripple>
+                    <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
+                    <md-icon>upload</md-icon>
+                </label>
+                <input type="file" ref="examinationsPicker" name="members-csv" accept=".csv" style="display: none" />
+                <p class="file-chosen">{{ uploadedExaminationsName }}</p>
+            </div>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressExamSubmit()">
@@ -98,15 +122,6 @@ function pressExamSubmit() {
 
 .file-chosen {
     word-wrap: break-word;
-}
-
-.submit-button {
-    position: sticky;
-    bottom: 25px;
-    right: 25px;
-    z-index: 1001;
-    display: block;
-    margin-left: auto;
 }
 
 .hidden-submit {

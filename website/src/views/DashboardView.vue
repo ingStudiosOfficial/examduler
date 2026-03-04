@@ -69,7 +69,7 @@ function onFetchExams(fetchedExams: Exam[]) {
         <OrganizationsContainer v-if="userData.role === 'admin'"></OrganizationsContainer>
 
         <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()" @multiple="openCreateMultipleExamDialog()"></ExaminationCreateDialog>
-        <ExaminationCreateMultipleDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateMultipleDialogOpened" @close="closeCreateMultipleExamDialog()" @success="alertRefreshExams()"></ExaminationCreateMultipleDialog>
+        <ExaminationCreateMultipleDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateMultipleDialogOpened" @close="closeCreateMultipleExamDialog()" @success="alertRefreshExams()" @single="openCreateExamDialog()"></ExaminationCreateMultipleDialog>
 
         <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" label="Create" size="medium" v-vibrate @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>

@@ -150,7 +150,7 @@ watch(dates, (newValue) => {
                             <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                             <md-icon>upload</md-icon>
                         </label>
-                        <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" multiple @change="handleFileUpload" />
+                        <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" @change="handleFileUpload" />
                         <p class="file-chosen">{{ uploadedSeatName }}</p>
                     </div>
                 </div>
@@ -199,15 +199,6 @@ watch(dates, (newValue) => {
 
 .file-chosen {
     word-wrap: break-word;
-}
-
-.submit-button {
-    position: sticky;
-    bottom: 25px;
-    right: 25px;
-    z-index: 1001;
-    display: block;
-    margin-left: auto;
 }
 
 .hidden-submit {
