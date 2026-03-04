@@ -139,7 +139,7 @@ watch(dates, (newValue) => {
             <p>Examination date</p>
             <VueDatePicker v-model="dates" teleport="body" :multi-calendars="!isMobile" class="date-picker"></VueDatePicker>
             <md-outlined-text-field class="dialog-settings-field" v-model="examToCreate.description" label="Examination description" required no-asterisk="true" supporting-text="The description of the examination." type="textarea" maxlength="1000"></md-outlined-text-field>
-            <m3e-expansion-panel toggle-position="before" toggle-direction="horizontal" class="advanced-expansion">
+            <m3e-expansion-panel toggle-position="before" toggle-direction="horizontal" class="advanced-expansion" v-vibrate>
                 <span slot="header">Advanced</span>
                 <div class="advanced-content">
                     <h2 class="subheader">Seating</h2>
