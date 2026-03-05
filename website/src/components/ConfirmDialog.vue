@@ -3,7 +3,6 @@ import '@material/web/dialog/dialog.js';
 import '@material/web/button/text-button.js';
 import '@material/web/button/filled-tonal-button.js';
 import { nextTick, onMounted, ref } from 'vue';
-import { vibrate } from '@/utils/vibrate';
 
 interface ComponentProps {
     title: string;
@@ -42,7 +41,6 @@ async function setElementZIndex() {
 }
 
 function sendResult(confirmed: boolean) {
-    vibrate([6]);
     confirmedResult = confirmed;
     isVisible.value = false;
 }
@@ -65,8 +63,8 @@ onMounted(() => {
             {{ props.message }}
         </div>
         <div slot="actions">
-            <md-filled-tonal-button @click="sendResult(false)">Cancel</md-filled-tonal-button>
-            <md-filled-button @click="sendResult(true)">OK</md-filled-button>
+            <md-filled-tonal-button v-vibrate @click="sendResult(false)">Cancel</md-filled-tonal-button>
+            <md-filled-button v-vibrate @click="sendResult(true)">OK</md-filled-button>
         </div>
     </md-dialog>
 </template>
