@@ -394,6 +394,8 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
         const orgBody: IUpdateOrg = req.body;
         const memberUploaded: boolean = req.body.memberUploaded;
 
+        console.log('Org body:', orgBody);
+
         if (memberUploaded) {
             delete (orgBody as IUpdateOrg & { memberUploaded?: boolean }).memberUploaded;
         }
@@ -579,18 +581,22 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
         orgBody.domains = orgBody.domains.map((d) => ({ domain: addDomainPrefix(d.domain), verificationToken: d.verificationToken, verified: d.verified }) as IEditDomain);
 
+        console.log('Org body domains - line 584:', orgBody.domains);
+
         const newDomains = new Map<string, IDomain>();
         const domainsToDelete = new Map<string, IEditDomain>();
 
-        for (const domain of [...currentDomains, ...orgBody.domains]) {
-            // Check if domain exists
-            if (currentDomains.map((d) => d.domain).includes(domain.domain)) continue;
+        const currentDomainsString = currentDomains.map((d) => d.domain);
+        const orgBodyDomainsString = orgBody.domains.map((d) => d.domain);
 
-            // Check for domain to delete
-            if (!orgBody.domains.map((d) => d.domain).includes(domain.domain)) {
-                domainsToDelete.set(domain.domain, domain);
-                continue;
-            }
+        // Run through domains from database
+        for (const domain of currentDomains) {
+            if (!orgBodyDomainsString.includes(domain.domain)) domainsToDelete.set(domain.domain, domain);
+        }
+
+        // Run through domains from body
+        for (const domain of orgBody.domains) {
+            if (currentDomainsString.includes(domain.domain)) continue;
 
             // Note: client side sends ONLY the domains, not the verification tokens and verified status
             // However, ONLY the NEW domains are here at this point, as filtered earlier
@@ -603,6 +609,9 @@ orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), valida
 
             newDomains.set(domain.domain, domain as IDomain);
         }
+
+        console.log('New domains:', newDomains);
+        console.log('Domains to delete:', domainsToDelete);
 
         const newDomainsArray = [...newDomains.values()];
         const domainsToDeleteArray = [...domainsToDelete.values()];

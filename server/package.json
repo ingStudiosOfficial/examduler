@@ -23,6 +23,7 @@
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^7.0.0",
+    "ollama": "^0.6.3",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-google-oidc": "^0.1.0",

@@ -34,10 +34,10 @@ function closeDialog() {
 }
 
 function deleteDomain(index: number) {
-    console.log('Index:', index);
-    console.log('Org before splice:', loadedOrganization.value?.domains);
+    console.log('Deletion index:', index);
+    console.log('Org before splice:', JSON.stringify(loadedOrganization.value?.domains));
     loadedOrganization.value?.domains.splice(index, 1);
-    console.log('Org after splice:', loadedOrganization.value?.domains);
+    console.log('Org after splice:', JSON.stringify(loadedOrganization.value?.domains));
 }
 
 function openFilePicker() {
