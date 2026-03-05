@@ -14,11 +14,9 @@ import type { User } from '@/interfaces/User';
 
 // Utils
 import { fetchAllExams, sortExams } from '@/utils/exam_utils';
-import SnackBar from './SnackBar.vue';
-import type { StateObject } from '@/interfaces/SnackBar';
-import { showSnackBar } from '@/utils/snackbar';
 import { fetchCachedExams } from '@/utils/cache_utils';
 import { useDialog } from '@/composables/dialog_composables';
+import { showSnackbar } from '@/utils/snackbar';
 
 interface ComponentProps {
     user: User;
@@ -34,8 +32,6 @@ const { dialogOpened: editDialogOpened, openDialog: showEditDialog, closeDialog:
 
 const exams = ref<Exam[]>();
 const examDetails = ref<Exam | null>(null);
-const sbMessage = ref<string>();
-const sbOpened = ref<StateObject>({ visible: false });
 const examToEdit = ref<Exam | null>();
 
 async function refreshExams() {
@@ -54,8 +50,7 @@ async function refreshExams() {
 }
 
 function displaySb(message: string) {
-    sbMessage.value = message;
-    showSnackBar(4000, sbOpened.value);
+    showSnackbar(message, 4000);
 }
 
 function handleDisplayExam(exam: Exam) {
@@ -103,8 +98,6 @@ onMounted(async () => {
 
         <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()" @edit="handleShowEdit"></ExaminationDialog>
         <ExaminationEditDialog v-if="editDialogOpened && examToEdit" :_id="examToEdit._id" :name="examToEdit.name" :date="examToEdit.date" :description="examToEdit.description" :seating="examToEdit.seating" @show-sb="displaySb" @refresh="refreshExams()" @close="closeEditDialog()" @success="refreshExams()"></ExaminationEditDialog>
-
-        <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
     </div>
 </template>
 

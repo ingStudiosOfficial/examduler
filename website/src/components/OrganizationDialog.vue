@@ -11,14 +11,12 @@ import '@material/web/menu/menu-item.js';
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
 import { deleteOrganization, downloadMembersJson, editOrganization } from '@/utils/org_utils';
 
-import SnackBar from './SnackBar.vue';
 import DomainItem from './DomainItem.vue';
 
-import { showSnackBar } from '@/utils/snackbar';
-import type { StateObject } from '@/interfaces/SnackBar';
 import type { Member } from '@/interfaces/Member';
 import type { Domain } from '@/interfaces/Domain';
 import { DialogUtils } from '@/utils/dialog_utils';
+import { showSnackbar } from '@/utils/snackbar';
 
 const props = defineProps<Organization>();
 
@@ -27,8 +25,6 @@ const emit = defineEmits<{ (e: 'close'): void; (e: 'success', message: string): 
 const loadedOrganization = ref<OrganizationEdit>();
 const membersPicker = ref();
 const uploadedMembersName = ref<string>();
-const snackBarText = ref<string>();
-const snackBarDisplayed = ref<StateObject>({ visible: false });
 const submitButton = ref();
 const orgEditMessage = ref<string>();
 const orgEditSuccess = ref<boolean>(false);
@@ -95,8 +91,7 @@ function handleFileUpload(e: Event) {
 async function triggerDownloadMembers(members: Member[]) {
     const { message } = await downloadMembersJson(members);
 
-    snackBarText.value = message;
-    showSnackBar(4000, snackBarDisplayed.value);
+    showSnackbar(message, 4000);
 }
 
 function updateDomainState(domain: Domain, index: number) {
@@ -106,8 +101,7 @@ function updateDomainState(domain: Domain, index: number) {
 }
 
 function triggerShowSnackBar(sbText: string) {
-    snackBarText.value = sbText;
-    showSnackBar(4000, snackBarDisplayed.value);
+    showSnackbar(sbText, 4000);
 }
 
 function addDomain() {
@@ -135,8 +129,8 @@ async function orgFormSubmit() {
     orgEditSuccess.value = success;
 
     if (success) {
-        closeDialog();
         emit('success', orgEditMessage.value);
+        closeDialog();
     }
 }
 
@@ -221,8 +215,6 @@ onMounted(() => {
                 <md-icon slot="icon">check</md-icon>
             </md-fab>
         </form>
-
-        <SnackBar :message="snackBarText || 'Unknown message'" :displayed="snackBarDisplayed.visible"></SnackBar>
     </div>
 </template>
 

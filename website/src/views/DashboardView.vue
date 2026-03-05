@@ -13,21 +13,17 @@ import type { User } from '@/interfaces/User';
 
 import { fetchUserData } from '@/utils/user_utils';
 import { fetchCachedUserData } from '@/utils/cache_utils';
-import SnackBar from '@/components/SnackBar.vue';
-import type { StateObject } from '@/interfaces/SnackBar';
-import { showSnackBar } from '@/utils/snackbar';
 import type { Exam } from '@/interfaces/Exam';
 import { router } from '../router/index';
 import ExaminationCreateMultipleDialog from '@/components/ExaminationCreateMultipleDialog.vue';
 import { useDialog } from '@/composables/dialog_composables';
+import { showSnackbar } from '@/utils/snackbar';
 
 const { dialogOpened: examCreateDialogOpened, openDialog: openCreateExamDialog, closeDialog: closeCreateExamDialog } = useDialog();
 const { dialogOpened: examCreateMultipleDialogOpened, openDialog: openCreateMultipleExamDialog, closeDialog: closeCreateMultipleExamDialog } = useDialog();
 
 const userData = ref<User | null>(null);
 const refreshExams = ref<boolean>(false);
-const sbMessage = ref<string>();
-const sbOpened = ref<StateObject>({ visible: false });
 const aiSummarySupported = ref<boolean>('Summarizer' in window);
 const exams = ref<Exam[]>();
 
@@ -41,14 +37,12 @@ onMounted(async () => {
         if (!cachedUserData) router.push({ name: 'login' });
         else userData.value = cachedUserData;
 
-        sbMessage.value = 'You are currently offline. Viewing read-only cached data.';
-        showSnackBar(4000, sbOpened.value);
+        showSnackbar('You are currently offline. Viewing read-only cached data.', 4000);
     }
 });
 
 function onSummaryError(message: string) {
-    sbMessage.value = message;
-    showSnackBar(4000, sbOpened.value);
+    showSnackbar(message, 4000);
 }
 
 function alertRefreshExams() {
@@ -80,8 +74,6 @@ function onFetchExams(fetchedExams: Exam[]) {
     </div>
 
     <LoaderContainer v-else class="loader-container" loading-text="Hang on while we load the neccessary data..." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
-
-    <SnackBar :message="sbMessage" :displayed="sbOpened.visible"></SnackBar>
 </template>
 
 <style scoped>

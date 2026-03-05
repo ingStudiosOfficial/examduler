@@ -7,17 +7,12 @@ import '@material/web/focus/md-focus-ring.js';
 import '@material/web/fab/fab.js';
 import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
-
-import type { ExamCreate } from '@/interfaces/Exam';
+//import type { ExamCreate } from '@/interfaces/Exam';
+//import { handleFileUpload } from '@/utils/file_utils';
 
 const emit = defineEmits(['close', 'success', 'single']);
 
-const examToCreate = ref<ExamCreate>({
-    name: '',
-    date: '',
-    description: '',
-    seating: '',
-});
+//const uploadedExaminations = ref<ExamCreate[] | object>({});
 const submitButton = ref();
 const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
@@ -26,13 +21,6 @@ const examinationsPicker = useTemplateRef<HTMLInputElement>('examinationsPicker'
 const magicPasteInput = ref<string>('');
 
 function closeDialog() {
-    examToCreate.value = {
-        name: '',
-        date: '',
-        description: '',
-        seating: '',
-    };
-
     emit('close');
 }
 
@@ -51,23 +39,17 @@ function openFilePicker() {
     examinationsPicker.value.click();
 }
 
-function handleFileUpload(e: Event) {
-    const target = e.target as HTMLInputElement;
+/*
+function fileUploadWrapper(e: Event) {
+    const uploaded = handleFileUpload(e);
 
-    if (!target.files || target.files.length === 0) {
-        console.error('No uploaded files found.');
-        return;
+    try {
+        uploadedExaminations.value = JSON.parse(uploaded)
+    } catch (error) {
+
     }
-
-    const uploadedFile = target.files[0];
-
-    if (!uploadedFile) {
-        console.error('File missing.');
-        return;
-    }
-
-    
 }
+*/
 </script>
 
 <template>

@@ -16,6 +16,7 @@ import type { ExamCreate } from '@/interfaces/Exam';
 
 import { createExam } from '@/utils/exam_utils';
 import { useCheckMobile } from '@/composables/screen_width_composables';
+import { showSnackbar } from '@/utils/snackbar';
 
 const emit = defineEmits(['close', 'success', 'multiple']);
 
@@ -99,8 +100,9 @@ async function examFormSubmit() {
     examCreationSuccess.value = success;
 
     if (success) {
-        closeDialog();
         emit('success');
+        showSnackbar('Successfully created examination', 4000);
+        closeDialog();
     }
 }
 

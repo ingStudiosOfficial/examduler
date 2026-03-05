@@ -7,16 +7,12 @@ import '@material/web/button/outlined-button.js';
 import '@material/web/menu/menu.js';
 import '@material/web/menu/menu-item.js';
 import '@material/web/icon/icon.js';
-import type { StateObject } from '@/interfaces/SnackBar';
-import { showSnackBar } from '@/utils/snackbar';
-import SnackBar from '@/components/SnackBar.vue';
 import type { MdMenuItem } from '@/interfaces/MdMenuItem';
+import { showSnackbar } from '@/utils/snackbar';
 
 const examDetails = ref<PublicExam>();
 const examId = ref<string | null>();
 const isLoading = ref<boolean>(true);
-const examDownloadMessage = ref<string>();
-const displaySb = ref<StateObject>({ visible: false });
 
 async function tryFetchExam() {
     examId.value = getExamId();
@@ -44,8 +40,7 @@ async function tryFetchExam() {
 async function triggerDownloadExam() {
     if (!examDetails.value) {
         console.error('Exam details is missing.');
-        examDownloadMessage.value = 'No examination details found';
-        showSnackBar(4000, displaySb.value);
+        showSnackbar('No examination details found', 4000);
         return;
     }
 
@@ -53,22 +48,19 @@ async function triggerDownloadExam() {
 
     if (!success) {
         console.error('Failed to downloaded exam:', message);
-        examDownloadMessage.value = message;
-        showSnackBar(4000, displaySb.value);
+        showSnackbar(message);
         return;
     }
 
     console.log('Successfully downloaded exam');
 
-    examDownloadMessage.value = 'Successfully downloaded examination';
-    showSnackBar(4000, displaySb.value);
+    showSnackbar('Successfully downloaded examination', 4000);
 }
 
 function triggerAddExamToGoogleCalendar() {
     if (!examDetails.value) {
         console.error('Exam details is missing.');
-        examDownloadMessage.value = 'No examination details found';
-        showSnackBar(4000, displaySb.value);
+        showSnackbar('No examination details found', 4000);
         return;
     }
 
@@ -116,7 +108,6 @@ onMounted(async () => {
         <div v-else-if="!isLoading" class="exam-card not-found">
             <p>No exam ID provided.</p>
         </div>
-        <SnackBar :message="examDownloadMessage" :displayed="displaySb.visible"></SnackBar>
     </div>
 </template>
 

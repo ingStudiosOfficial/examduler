@@ -16,6 +16,7 @@ import type { ExamEdit } from '@/interfaces/Exam';
 import SeatingContainer from './SeatingContainer.vue';
 import { editExam } from '@/utils/exam_utils';
 import { useCheckMobile } from '@/composables/screen_width_composables';
+import { showSnackbar } from '@/utils/snackbar';
 
 const emit = defineEmits(['close', 'success']);
 
@@ -96,8 +97,9 @@ async function examFormSubmit() {
     examCreationSuccess.value = success;
 
     if (success) {
-        closeDialog();
         emit('success');
+        showSnackbar('Successfully edited examination', 4000);
+        closeDialog();
     }
 }
 
