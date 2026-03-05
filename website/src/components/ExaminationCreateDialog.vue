@@ -52,7 +52,7 @@ function openFilePicker() {
 function handleFileUpload(e: Event) {
     const target = e.target as HTMLInputElement;
 
-    if (!target.files || target.files?.length === 0) {
+    if (!target.files || target.files.length === 0) {
         console.error('No uploaded files found.');
         return;
     }
@@ -123,7 +123,7 @@ watch(dates, (newValue) => {
         <form class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button type="button" disabled v-vibrate @click="triggerCreateMultiple()">
+                    <md-icon-button type="button" v-vibrate @click="triggerCreateMultiple()">
                         <md-icon>file_copy</md-icon>
                     </md-icon-button>
                 </div>

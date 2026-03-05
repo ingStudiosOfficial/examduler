@@ -23,6 +23,7 @@ const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
 const uploadedExaminationsName = ref<string>();
 const examinationsPicker = useTemplateRef<HTMLInputElement>('examinationsPicker');
+const magicPasteInput = ref<string>('');
 
 function closeDialog() {
     examToCreate.value = {
@@ -48,6 +49,24 @@ function openFilePicker() {
     if (!examinationsPicker.value) return;
 
     examinationsPicker.value.click();
+}
+
+function handleFileUpload(e: Event) {
+    const target = e.target as HTMLInputElement;
+
+    if (!target.files || target.files.length === 0) {
+        console.error('No uploaded files found.');
+        return;
+    }
+
+    const uploadedFile = target.files[0];
+
+    if (!uploadedFile) {
+        console.error('File missing.');
+        return;
+    }
+
+    
 }
 </script>
 
@@ -78,6 +97,8 @@ function openFilePicker() {
                 <input type="file" ref="examinationsPicker" name="members-csv" accept=".csv" style="display: none" />
                 <p class="file-chosen">{{ uploadedExaminationsName }}</p>
             </div>
+            <h2 class="subheader">Magic Paste</h2>
+            <md-outlined-text-field class="dialog-settings-field" v-model="magicPasteInput" label="Magic Paste" required no-asterisk="true" supporting-text="Paste the exams in any format and let AI create examinations for you." type="textarea"></md-outlined-text-field>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressExamSubmit()">
