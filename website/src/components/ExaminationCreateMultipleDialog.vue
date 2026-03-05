@@ -7,12 +7,13 @@ import '@material/web/focus/md-focus-ring.js';
 import '@material/web/fab/fab.js';
 import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
-//import type { ExamCreate } from '@/interfaces/Exam';
-//import { handleFileUpload } from '@/utils/file_utils';
+import type { ExamCreate } from '@/interfaces/Exam';
+import { handleFileUpload } from '@/utils/file_utils';
+import { showSnackbar } from '@/utils/snackbar';
 
 const emit = defineEmits(['close', 'success', 'single']);
 
-//const uploadedExaminations = ref<ExamCreate[] | object>({});
+const uploadedExaminations = ref<ExamCreate[] | object>({});
 const submitButton = ref();
 const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
@@ -39,17 +40,18 @@ function openFilePicker() {
     examinationsPicker.value.click();
 }
 
-/*
-function fileUploadWrapper(e: Event) {
-    const uploaded = handleFileUpload(e);
+async function fileUploadWrapper(e: Event) {
+    console.log('Inside file upload wrapper.');
 
     try {
-        uploadedExaminations.value = JSON.parse(uploaded)
+        const uploaded = await handleFileUpload(e);
+        uploadedExaminations.value = JSON.parse(uploaded.content);
+        uploadedExaminationsName.value = uploaded.filename;
+        console.log('Uploaded examinations:', uploadedExaminations.value);
     } catch (error) {
-
+        showSnackbar(`Error while uploading examinations: '${error}'`);
     }
 }
-*/
 </script>
 
 <template>
@@ -76,7 +78,7 @@ function fileUploadWrapper(e: Event) {
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                     <md-icon>upload</md-icon>
                 </label>
-                <input type="file" ref="examinationsPicker" name="members-csv" accept=".csv" style="display: none" />
+                <input type="file" ref="examinationsPicker" name="members-csv" accept=".json" style="display: none" @change="fileUploadWrapper" />
                 <p class="file-chosen">{{ uploadedExaminationsName }}</p>
             </div>
             <h2 class="subheader">Magic Paste</h2>

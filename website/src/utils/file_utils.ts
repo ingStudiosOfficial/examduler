@@ -1,4 +1,9 @@
-export function handleFileUpload(e: Event): string {
+interface FileUploadReturn {
+    content: string;
+    filename: string;
+}
+
+export async function handleFileUpload(e: Event): Promise<FileUploadReturn> {
     const target = e.target as HTMLInputElement;
 
     if (!target.files || target.files.length === 0) {
@@ -7,29 +12,11 @@ export function handleFileUpload(e: Event): string {
 
     const uploadedFile = target.files[0];
 
-    if (!uploadedFile) {
-        throw new Error('File missing');
+    const fileContent = await uploadedFile?.text();
+
+    if (!fileContent) {
+        throw new Error('Failed to get file content');
     }
 
-    const reader = new FileReader();
-
-    let result: string | null = null;
-
-    reader.onload = (ef) => {
-        if (!ef.target?.result) {
-            throw new Error('Failed to read file')
-        }
-
-        if (typeof ef.target.result !== 'string') {
-            throw new Error('File type is not a string');
-        }
-
-        result = ef.target.result;
-    };
-
-    if (!result) {
-        throw new Error('Failed to read file')
-    }
-
-    return result;
+    return { content: fileContent, filename: uploadedFile?.name || '' };
 }

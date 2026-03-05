@@ -17,6 +17,7 @@ import type { ExamCreate } from '@/interfaces/Exam';
 import { createExam } from '@/utils/exam_utils';
 import { useCheckMobile } from '@/composables/screen_width_composables';
 import { showSnackbar } from '@/utils/snackbar';
+import { handleFileUpload } from '@/utils/file_utils';
 
 const emit = defineEmits(['close', 'success', 'multiple']);
 
@@ -50,42 +51,14 @@ function openFilePicker() {
     seatingPicker.value.click();
 }
 
-function handleFileUpload(e: Event) {
-    const target = e.target as HTMLInputElement;
-
-    if (!target.files || target.files.length === 0) {
-        console.error('No uploaded files found.');
-        return;
+async function handleFileUploadWrapper(e: Event) {
+    try {
+        const uploaded = await handleFileUpload(e);
+        examToCreate.value.seating = uploaded.content;
+        uploadedSeatName.value = uploaded.filename;
+    } catch (error) {
+        showSnackbar(`Error while uploading seating: '${error}'`);
     }
-
-    const uploadedFile = target.files[0];
-
-    if (!uploadedFile) {
-        console.error('File missing.');
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = (ef) => {
-        if (!ef.target?.result) {
-            console.error('Failed to read file.');
-            return;
-        }
-
-        if (typeof ef.target.result !== 'string') {
-            console.error('File content is not a string.');
-            return;
-        }
-
-        console.log('Read result:', ef.target.result);
-
-        examToCreate.value.seating = ef.target.result;
-    };
-
-    reader.readAsText(uploadedFile);
-
-    uploadedSeatName.value = uploadedFile.name;
 }
 
 async function examFormSubmit() {
@@ -152,7 +125,7 @@ watch(dates, (newValue) => {
                             <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
                             <md-icon>upload</md-icon>
                         </label>
-                        <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" @change="handleFileUpload" />
+                        <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" @change="handleFileUploadWrapper" />
                         <p class="file-chosen">{{ uploadedSeatName }}</p>
                     </div>
                 </div>
