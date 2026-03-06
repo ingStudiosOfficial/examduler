@@ -11,13 +11,12 @@ export function verifyParsedResult(result: IExam[]) {
     const { error } = examBulkCreateSchema.validate(result, validationsOptions);
 
     if (error) {
-        const validationErrors = error.details.map((detail) => ({
-            field: detail.context?.key,
-            message: detail.message.replace(/['"]/g, ''),
-        }));
+        const errorMessage = error.details
+            .map((detail) => `${detail.path.join('.')}: ${detail.message}`)
+            .join(' | ');
 
-        console.error('Input validation failed:', validationErrors);
+        console.error('Input validation failed:', errorMessage);
 
-        throw new Error(validationErrors.join(','));
+        throw new Error(errorMessage);
     }
 }

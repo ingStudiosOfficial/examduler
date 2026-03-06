@@ -4,10 +4,12 @@ import ollama, { type Message } from 'ollama';
 import { verifyParsedResult } from "../utils/ai_utils";
 import type { IExam } from "../interfaces/Exam";
 
-const aiRouter = Router();
+export const aiRouter = Router();
 
 aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async (req: Request, res: Response) => {
-    if (!req.body || typeof req.body !== 'string') {
+    const rawText = req.body.text;
+
+    if (!rawText) {
         return res.status(400).json({
             message: 'Body content missing or invalid.',
         });
@@ -31,20 +33,43 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
         },
     ];
     const systemInstructions = `
-        You are a sepcialized data extraction AI.
-        Task: Convert unstructured examinations text about the examination details and seating into a valid JSON array.
+        You are a Data Extraction Assistant. 
+        Task: Extract EVERY examination mentioned in the text into a JSON array.
 
-        Critical Rules:
-        1. Output ONLY valid JSON.
-        2. Do NOT include introductory text, markdown code blocks (like \`\`\`json), or explanations.
-        3. Use the following schema as a template: '${JSON.stringify(sampleJson)}'.
-        4. If a seat is empty, set 'isBlank' to true, and leave name and email empty.
-        5. Not all examinations have a seating plan, so do not incude where unnecessary. If a seating plan IS provided, do include it in the JSON output.
-        6. The seating should be an array of arrays, do NOT flatten them.
+        ### INPUT EXAMPLE:
+        "Midterm on Oct 10th. Final on Dec 12th with seating: A1: John."
+
+        ### OUTPUT EXAMPLE (NO "exams": []):
+        [
+            {
+                "name": "Midterm",
+                "date": "2026-10-10",
+                "description": "Midterm examination"
+            },
+            {
+                "name": "Final",
+                "date": "2026-12-12",
+                "description": "Final examination",
+                "seating": [[{"seat": "A1", "name": "John", "email": "", "isBlank": false}]]
+            }
+        ]
+
+        ### STRICT RULES:
+        1. Output ONLY the JSON array.
+        2. Do NOT stop after the first exam; extract ALL of them.
+        3. Only include the "seating" key if specific seats/students are mentioned.
+        4. Use "YYYY-MM-DD" format for all dates.
+        5. The key is "seating" (singular), never "seatings".
+        6. Do not include a key for the exam output (e.g. DO NOT use "exams": [...], instead use just [...])
     `;
 
     const systemMessage: Message = { role: 'system', content: systemInstructions };
-    const message: Message = { role: 'user', content: `Parse this text: '${req.body}'` };
+    const message: Message = { role: 'user', content: `Parse this text: '${rawText}'` };
+
+    const messages: Message[] = [
+        systemMessage,
+        message,
+    ];
 
     const maxRetries = 2;
     let retryCount = 0;
@@ -52,18 +77,24 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
     while (retryCount <= maxRetries) {
         try {
             const response = await ollama.chat({
-                model: 'gemma3n:e4b',
-                messages: [
-                    systemMessage,
-                    message,
-                ],
+                model: 'gemma3n:e2b',
+                messages: messages,
                 options: {
-                    temperature: 0,
+                    temperature: retryCount * 0.2,
                 },
                 format: 'json',
             });
 
-            const parsedResult: IExam[] = JSON.parse(response.message.content);
+            console.log('AI Response:', response.message.content);
+
+            messages.push({ role: 'assistant', content: response.message.content });
+
+            let parsedResult: IExam[] = JSON.parse(response.message.content);
+
+            if (!Array.isArray(parsedResult)) {
+                parsedResult = [parsedResult];
+                console.log("AI did not include the brackets, added it in:", parsedResult);
+            }
 
             verifyParsedResult(parsedResult);
 
@@ -73,9 +104,10 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
             });
         } catch (error) {
             console.error('AI parsing error:', error);
+            messages.push({ role: 'system', content: `Error while parsing content: '${error}'` })
             retryCount++;
             if (retryCount > maxRetries) return res.status(500).json({
-                message: 'An internal server error occurred while parsing exam data.',
+                message: error,
             });
         }
     }

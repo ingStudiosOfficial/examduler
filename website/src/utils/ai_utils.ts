@@ -1,6 +1,7 @@
 import type { Exam } from '@/interfaces/Exam';
 import type { User } from '@/interfaces/User';
 import { getUserSeat } from './exam_utils';
+import type { ResponseJson } from '@/interfaces/ResponseJson';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -8,6 +9,8 @@ declare global {
         [Symbol.asyncIterator](): AsyncIterableIterator<R>;
     }
 }
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk: string) => void, onDownload: (progress: number) => void, onEvent: (message: string) => void, onComplete: () => void): Promise<string> {
     if (!('Summarizer' in window)) {
@@ -114,4 +117,35 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
     onComplete();
 
     return summary;
+}
+
+export async function magicPaste(examsString: string): Promise<Exam[]> {
+    console.log('Unformatted exams:', examsString);
+
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/ai/magic-paste/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: examsString,
+            }),
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('Error while using magic paste:', responseJson);
+            throw new Error(responseJson.message);
+        }
+
+        console.log('Successfully used magic paste:', responseJson.exams);
+
+        return responseJson.exams as Exam[];
+    } catch (error) {
+        console.error('An error occurred while using magic paste:', error);
+        throw new Error('An unexpected error occurred while using magic paste');
+    }
 }

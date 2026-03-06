@@ -83,6 +83,11 @@ examsRouter.post('/bulk-create/', authenticateToken(), verifyRole('teacher'), va
         }
 
         const examBody: IExam[] = req.body;
+        if (examBody.length === 0) {
+            return res.status(400).json({
+                message: 'No examinations provided.',
+            });
+        }
 
         const examIds: ObjectId[] = [];
 

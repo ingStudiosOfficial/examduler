@@ -7,10 +7,12 @@ import '@material/web/focus/md-focus-ring.js';
 import '@material/web/fab/fab.js';
 import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
+import '@material/web/button/outlined-button.js';
 import type { Exam } from '@/interfaces/Exam';
 import { handleFileUpload } from '@/utils/file_utils';
 import { showSnackbar } from '@/utils/snackbar';
 import { bulkCreateExam } from '@/utils/exam_utils';
+import { magicPaste } from '@/utils/ai_utils';
 
 const emit = defineEmits(['close', 'success', 'single']);
 
@@ -67,6 +69,20 @@ async function triggerBulkCreateExam() {
         closeDialog();
     }
 }
+
+async function triggerMagicPaste() {
+    if (!magicPasteInput.value) {
+        showSnackbar('Please paste your examinations into Magic Paste');
+        return;
+    }
+
+    try {
+        uploadedExaminations.value = await magicPaste(magicPasteInput.value);
+        showSnackbar('Examinations successfully formatted with Magic Paste');
+    } catch (error) {
+        showSnackbar(`An error occurred while using Magic Paste: '${error}'`);
+    }
+}
 </script>
 
 <template>
@@ -96,8 +112,9 @@ async function triggerBulkCreateExam() {
                 <input type="file" ref="examinationsPicker" name="members-csv" accept=".json" style="display: none" @change="fileUploadWrapper" />
                 <p class="file-chosen">{{ uploadedExaminationsName }}</p>
             </div>
-            <h2 class="subheader">Magic Paste (WIP)</h2>
+            <h2 class="subheader">Magic Paste (Beta)</h2>
             <md-outlined-text-field class="dialog-settings-field" v-model="magicPasteInput" label="Magic Paste" no-asterisk="true" supporting-text="Paste the exams in any format and let AI create examinations for you." type="textarea"></md-outlined-text-field>
+            <md-outlined-button type="button" @click="triggerMagicPaste()">Format with Magic Paste</md-outlined-button>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressExamSubmit()">
