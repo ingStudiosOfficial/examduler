@@ -10,10 +10,11 @@ import '@material/web/iconbutton/icon-button.js';
 import type { Exam } from '@/interfaces/Exam';
 import { handleFileUpload } from '@/utils/file_utils';
 import { showSnackbar } from '@/utils/snackbar';
+import { bulkCreateExam } from '@/utils/exam_utils';
 
 const emit = defineEmits(['close', 'success', 'single']);
 
-const uploadedExaminations = ref<Exam[] | object>({});
+const uploadedExaminations = ref<Exam[]>([]);
 const submitButton = ref();
 const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
@@ -52,11 +53,25 @@ async function fileUploadWrapper(e: Event) {
         showSnackbar(`Error while uploading examinations: '${error}'`);
     }
 }
+
+async function triggerBulkCreateExam() {
+    const { message, success } = await bulkCreateExam(uploadedExaminations.value);
+    console.log(message);
+
+    examCreationMessage.value = message;
+    examCreationSuccess.value = success;
+
+    if (success) {
+        emit('success');
+        showSnackbar('Successfully created examinations', 4000);
+        closeDialog();
+    }
+}
 </script>
 
 <template>
     <div class="backdrop">
-        <form class="dialog">
+        <form class="dialog" @submit.prevent="triggerBulkCreateExam()">
             <div class="top-panel">
                 <div class="left-buttons">
                     <md-icon-button type="button" v-vibrate @click="triggerCreateSingle()">
@@ -81,8 +96,8 @@ async function fileUploadWrapper(e: Event) {
                 <input type="file" ref="examinationsPicker" name="members-csv" accept=".json" style="display: none" @change="fileUploadWrapper" />
                 <p class="file-chosen">{{ uploadedExaminationsName }}</p>
             </div>
-            <h2 class="subheader">Magic Paste</h2>
-            <md-outlined-text-field class="dialog-settings-field" v-model="magicPasteInput" label="Magic Paste" required no-asterisk="true" supporting-text="Paste the exams in any format and let AI create examinations for you." type="textarea"></md-outlined-text-field>
+            <h2 class="subheader">Magic Paste (WIP)</h2>
+            <md-outlined-text-field class="dialog-settings-field" v-model="magicPasteInput" label="Magic Paste" no-asterisk="true" supporting-text="Paste the exams in any format and let AI create examinations for you." type="textarea" disabled></md-outlined-text-field>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressExamSubmit()">

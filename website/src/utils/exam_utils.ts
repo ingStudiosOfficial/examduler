@@ -106,6 +106,38 @@ export async function createExam(examDetails: ExamCreate): Promise<FunctionNotif
     }
 }
 
+export async function bulkCreateExam(exams: Exam[]): Promise<FunctionNotifier> {
+    console.log('Submitting:', exams);
+
+    try {
+        const body = JSON.stringify(exams);
+        console.log('Sending exams:', body);
+
+        const response = await fetch(`${apiBaseUrl}/api/exams/bulk-create/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: body,
+            credentials: 'include',
+        });
+
+        const responseJson: ResponseJson = await response.json();
+
+        if (!response.ok) {
+            console.error('Error while creating exams:', responseJson);
+            return { message: responseJson.message, success: false };
+        }
+
+        console.log('Successfully created exams:', responseJson);
+
+        return { message: 'Successfully created examinations', success: true };
+    } catch (error) {
+        console.error('Error while creating exams:', error);
+        return { message: 'An unexpected error occurred', success: false };
+    }
+}
+
 export async function editExam(examDetails: ExamEdit): Promise<FunctionNotifier> {
     console.log('Editing exam:', examDetails);
 
