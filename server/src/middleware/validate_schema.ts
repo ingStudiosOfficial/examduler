@@ -1,10 +1,10 @@
 import type { Request, Response, NextFunction } from 'express';
-import type { Err, ObjectSchema, ValidationError, ValidationOptions } from 'joi';
+import type { ArraySchema, Err, ObjectSchema, ValidationError, ValidationOptions } from 'joi';
 
-import { examCreateSchema, examUpdateSchema } from '../schemas/exam.js';
+import { examBulkCreateSchema, examCreateSchema, examUpdateSchema } from '../schemas/exam.js';
 import { orgCreateSchema, orgUpdateSchema } from '../schemas/org.js';
 
-function validateSchema(schema: ObjectSchema, body: object, options: ValidationOptions, req: Request, res: Response, next: NextFunction) {
+function validateSchema(schema: ObjectSchema | ArraySchema, body: object, options: ValidationOptions, req: Request, res: Response, next: NextFunction) {
     console.log('Body:', body);
 
     const { error, value } = schema.validate(body, options);
@@ -38,6 +38,16 @@ export function validateCreateExamSchema(req: Request, res: Response, next: Next
     };
 
     validateSchema(examCreateSchema, req.body, validationOptions, req, res, next);
+}
+
+export function validateCreateBulkExamSchema(req: Request, res: Response, next: NextFunction) {
+    const validationOptions: ValidationOptions = {
+        abortEarly: false,
+        allowUnknown: false,
+        stripUnknown: true,
+    };
+
+    validateSchema(examBulkCreateSchema, req.body, validationOptions, req, res, next);
 }
 
 export function validateUpdateExamSchema(req: Request, res: Response, next: NextFunction) {

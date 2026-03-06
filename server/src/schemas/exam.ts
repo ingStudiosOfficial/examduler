@@ -7,6 +7,8 @@ export const examCreateSchema = Joi.object({
     seating: Joi.string().optional().allow(''),
 });
 
+export const examBulkCreateSchema = Joi.array().items(examCreateSchema);
+
 export const examUpdateSchema = Joi.object({
     name: Joi.string().max(50).required(),
     date: Joi.date().required(),

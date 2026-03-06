@@ -7,13 +7,13 @@ import '@material/web/focus/md-focus-ring.js';
 import '@material/web/fab/fab.js';
 import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
-import type { ExamCreate } from '@/interfaces/Exam';
+import type { Exam } from '@/interfaces/Exam';
 import { handleFileUpload } from '@/utils/file_utils';
 import { showSnackbar } from '@/utils/snackbar';
 
 const emit = defineEmits(['close', 'success', 'single']);
 
-const uploadedExaminations = ref<ExamCreate[] | object>({});
+const uploadedExaminations = ref<Exam[] | object>({});
 const submitButton = ref();
 const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
