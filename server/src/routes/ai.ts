@@ -73,7 +73,7 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
     while (retryCount <= maxRetries) {
         try {
             const response = await ollama.chat({
-                model: 'gemma3n:e2b',
+                model: 'gemma3:1b',
                 messages: messages,
                 options: {
                     temperature: retryCount * 0.2,
