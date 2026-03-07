@@ -1,10 +1,10 @@
 import { Router, type Request, type Response } from "express";
-import { authenticateToken, verifyRole } from "../middleware/auth";
+import { authenticateToken, verifyRole } from "../middleware/auth.js";
 import ollama, { type Message } from 'ollama';
-import { verifyParsedResult } from "../utils/ai_utils";
-import type { IExam } from "../interfaces/Exam";
+import { verifyParsedResult } from "../utils/ai_utils.js";
+import type { IExam } from "../interfaces/Exam.js";
 import format from 'joi-to-json';
-import { aiExamBulkCreateSchema } from "../schemas/exam";
+import { aiExamBulkCreateSchema } from "../schemas/exam.js";
 
 export const aiRouter = Router();
 
