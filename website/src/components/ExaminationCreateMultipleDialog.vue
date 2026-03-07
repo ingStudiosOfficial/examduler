@@ -77,7 +77,9 @@ async function triggerMagicPaste() {
     }
 
     try {
-        uploadedExaminations.value = await magicPaste(magicPasteInput.value);
+        const pasteResult = await magicPaste(magicPasteInput.value);
+        uploadedExaminations.value = pasteResult;
+        magicPasteInput.value = '';
         showSnackbar('Examinations successfully formatted with Magic Paste');
     } catch (error) {
         showSnackbar(`An error occurred while using Magic Paste: '${error}'`);

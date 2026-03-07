@@ -107,7 +107,7 @@ export default defineConfig({
         ],
         start_url: '/',
         display: 'standalone',
-        theme_color: '#126682',
+        theme_color: '#f6fafd',
         background_color: '#F6FAFD',
       },
       srcDir: 'src/',

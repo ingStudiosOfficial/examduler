@@ -3,6 +3,8 @@ import { authenticateToken, verifyRole } from "../middleware/auth";
 import ollama, { type Message } from 'ollama';
 import { verifyParsedResult } from "../utils/ai_utils";
 import type { IExam } from "../interfaces/Exam";
+import format from 'joi-to-json';
+import { aiExamBulkCreateSchema } from "../schemas/exam";
 
 export const aiRouter = Router();
 
@@ -15,31 +17,23 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
         });
     }
 
-    const sampleJson = [
-        {
-            "name": "Mid Term Examinations",
-            "date": "2027-12-06",
-            "description": "Please prepare for your mid-terms.",
-            "seating": [
-                [
-                    { "seat": "A1", "name": "Ethan Lee", "email": "ingstudiosofficial@gmail.com" },
-                    { "seat": "A2", "name": "Person 1", "email": "unique.email.01@example.com" },
-                ],
-                [
-                    { "seat": "B1", "name": "", "email": "", "isBlank": true },
-                    { "seat": "B2", "name": "Person 2", "email": "unique.email.02@example.com" },
-                ],
-            ],
-        },
-    ];
+    const now = new Date();
+    const dateContext = `
+        Today's Date: ${now.toDateString()}
+        Current Year: ${now.getFullYear()}
+        Current Millisecond Timestamp: ${now.getTime()}
+        Remember to calculate the timestamp (YYYY-MM-DD) based on the FUTURE date mentioned.
+    `;
+
     const systemInstructions = `
         You are a Data Extraction Assistant. 
         Task: Extract EVERY examination mentioned in the text into a JSON array.
+        Date Context: ${dateContext}
 
         ### INPUT EXAMPLE:
         "Midterm on Oct 10th. Final on Dec 12th with seating: A1: John."
 
-        ### OUTPUT EXAMPLE (NO "exams": []):
+        ### OUTPUT EXAMPLE:
         [
             {
                 "name": "Midterm",
@@ -58,9 +52,9 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
         1. Output ONLY the JSON array.
         2. Do NOT stop after the first exam; extract ALL of them.
         3. Only include the "seating" key if specific seats/students are mentioned.
-        4. Use "YYYY-MM-DD" format for all dates.
+        4. Use unix millisecond epoch format for all dates.
         5. The key is "seating" (singular), never "seatings".
-        6. Do not include a key for the exam output (e.g. DO NOT use "exams": [...], instead use just [...])
+        6. Only extract actual academic examinations, tests, or quizzes. If no exams are found, return an empty array [].
     `;
 
     const systemMessage: Message = { role: 'system', content: systemInstructions };
@@ -74,6 +68,9 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
     const maxRetries = 2;
     let retryCount = 0;
 
+    const joiSchemaJson = format(aiExamBulkCreateSchema);
+    console.log('JSON schema:', joiSchemaJson);
+
     while (retryCount <= maxRetries) {
         try {
             const response = await ollama.chat({
@@ -82,7 +79,7 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
                 options: {
                     temperature: retryCount * 0.2,
                 },
-                format: 'json',
+                format: joiSchemaJson,
             });
 
             console.log('AI Response:', response.message.content);
@@ -90,11 +87,6 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
             messages.push({ role: 'assistant', content: response.message.content });
 
             let parsedResult: IExam[] = JSON.parse(response.message.content);
-
-            if (!Array.isArray(parsedResult)) {
-                parsedResult = [parsedResult];
-                console.log("AI did not include the brackets, added it in:", parsedResult);
-            }
 
             verifyParsedResult(parsedResult);
 

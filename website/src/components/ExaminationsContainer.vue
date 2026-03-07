@@ -20,7 +20,7 @@ import { showSnackbar } from '@/utils/snackbar';
 
 interface ComponentProps {
     user: User;
-    refresh: boolean;
+    refresh: number | boolean;
 }
 
 const props = defineProps<ComponentProps>();

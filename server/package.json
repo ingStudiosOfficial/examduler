@@ -21,6 +21,7 @@
     "express": "^5.2.1",
     "express-session": "^1.18.2",
     "joi": "^18.0.2",
+    "joi-to-json": "^5.0.1",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^7.0.0",
     "ollama": "^0.6.3",

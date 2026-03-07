@@ -23,7 +23,7 @@ const { dialogOpened: examCreateDialogOpened, openDialog: openCreateExamDialog, 
 const { dialogOpened: examCreateMultipleDialogOpened, openDialog: openCreateMultipleExamDialog, closeDialog: closeCreateMultipleExamDialog } = useDialog();
 
 const userData = ref<User | null>(null);
-const refreshExams = ref<boolean>(false);
+const refreshExams = ref<number | boolean>(false);
 const aiSummarySupported = ref<boolean>('Summarizer' in window);
 const exams = ref<Exam[]>();
 
@@ -46,7 +46,7 @@ function onSummaryError(message: string) {
 }
 
 function alertRefreshExams() {
-    refreshExams.value = true;
+    refreshExams.value = Date.now();
 }
 
 function onFetchExams(fetchedExams: Exam[]) {

@@ -33,7 +33,7 @@ main {
 }
 
 .nav-menu {
-    height: 100%;
+    height: 100svh;
     overflow-y: auto;
 }
 

@@ -15,14 +15,16 @@ function navigateToPage(page: string) {
 </script>
 
 <template>
-    <div class="menu">
-        <p class="title">Examduler</p>
-        <m3e-nav-menu>
-            <m3e-nav-menu-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" v-vibrate @click="navigateToPage('dashboard')">
-                <m3e-icon slot="icon" name="dashboard"></m3e-icon>
-                <span slot="label">Dashboard</span>
-            </m3e-nav-menu-item>
-        </m3e-nav-menu>
+    <div class="menu-wrapper">
+        <div class="menu">
+            <p class="title">Examduler</p>
+            <m3e-nav-menu>
+                <m3e-nav-menu-item :selected="props.pageTitle.toLowerCase() === 'dashboard'" v-vibrate @click="navigateToPage('dashboard')">
+                    <m3e-icon slot="icon" name="dashboard"></m3e-icon>
+                    <span slot="label">Dashboard</span>
+                </m3e-nav-menu-item>
+            </m3e-nav-menu>
+        </div>
     </div>
 </template>
 
@@ -31,6 +33,14 @@ function navigateToPage(page: string) {
     font-size: 1.2rem;
     color: var(--md-sys-color-primary);
     font-weight: 600;
+}
+
+.menu-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .menu {
@@ -42,5 +52,7 @@ function navigateToPage(page: string) {
     padding: 10px;
     box-sizing: border-box;
     background-color: var(--md-sys-color-surface-container);
+    border-radius: 0 25px 25px 0;
+    margin: 20px 0;
 }
 </style>

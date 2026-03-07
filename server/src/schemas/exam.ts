@@ -14,6 +14,13 @@ export const examBulkCreateSchema = Joi.array().items(Joi.object({
     seating: Joi.array().optional(),
 }));
 
+export const aiExamBulkCreateSchema = Joi.array().items(Joi.object({
+    name: Joi.string().max(50).required(),
+    date: Joi.string().required(),
+    description: Joi.string().max(1000).required(),
+    seating: Joi.array().optional(),
+}));
+
 export const examUpdateSchema = Joi.object({
     name: Joi.string().max(50).required(),
     date: Joi.date().required(),

@@ -41,5 +41,6 @@ function navigateToPage(page: string) {
     padding: 10px;
     box-sizing: border-box;
     background-color: var(--md-sys-color-surface-container);
+    border-radius: 25px 25px 0 0;
 }
 </style>

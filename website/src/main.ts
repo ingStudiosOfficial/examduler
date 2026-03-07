@@ -31,3 +31,6 @@ window.addEventListener(
     },
     true,
 );
+
+document.querySelector('meta[name="theme-color"]')?.setAttribute('content', 'var(--md-sys-color-background');
+document.querySelector('meta[name="background-color"]')?.setAttribute('content', 'var(--md-sys-color-background');
