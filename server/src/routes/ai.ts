@@ -53,7 +53,6 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
         2. Do NOT stop after the first exam; extract ALL of them.
         3. Only include the "seating" key if specific seats/students are mentioned.
         4. The key is "seating" (singular), never "seatings".
-        5. Only extract actual academic examinations, tests, or quizzes. If no exams are found, return an empty array [].
     `;
 
     const systemMessage: Message = { role: 'system', content: systemInstructions };
