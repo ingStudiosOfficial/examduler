@@ -12,6 +12,8 @@
             "./node_modules/@types",
             "./src/types"
         ],
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
     }
 }
