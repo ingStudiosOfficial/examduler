@@ -3,7 +3,7 @@ import { authenticateToken, verifyRole } from "../middleware/auth.js";
 import ollama, { type Message } from 'ollama';
 import { verifyParsedResult } from "../utils/ai_utils.js";
 import type { IExam } from "../interfaces/Exam.js";
-import format from 'joi-to-json';
+import parse from 'joi-to-json';
 import { aiExamBulkCreateSchema } from "../schemas/exam.js";
 
 export const aiRouter = Router();
@@ -52,9 +52,8 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
         1. Output ONLY the JSON array.
         2. Do NOT stop after the first exam; extract ALL of them.
         3. Only include the "seating" key if specific seats/students are mentioned.
-        4. Use unix millisecond epoch format for all dates.
-        5. The key is "seating" (singular), never "seatings".
-        6. Only extract actual academic examinations, tests, or quizzes. If no exams are found, return an empty array [].
+        4. The key is "seating" (singular), never "seatings".
+        5. Only extract actual academic examinations, tests, or quizzes. If no exams are found, return an empty array [].
     `;
 
     const systemMessage: Message = { role: 'system', content: systemInstructions };
@@ -68,7 +67,7 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
     const maxRetries = 2;
     let retryCount = 0;
 
-    const joiSchemaJson = format(aiExamBulkCreateSchema);
+    const joiSchemaJson = (parse as any)(aiExamBulkCreateSchema);
     console.log('JSON schema:', joiSchemaJson);
 
     while (retryCount <= maxRetries) {
