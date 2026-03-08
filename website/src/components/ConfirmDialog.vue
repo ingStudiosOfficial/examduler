@@ -3,6 +3,7 @@ import '@material/web/dialog/dialog.js';
 import '@material/web/button/text-button.js';
 import '@material/web/button/filled-tonal-button.js';
 import { nextTick, onMounted, ref } from 'vue';
+import { vibrate } from '@/utils/vibrate';
 
 interface ComponentProps {
     title: string;
@@ -41,6 +42,7 @@ async function setElementZIndex() {
 }
 
 function sendResult(confirmed: boolean) {
+    vibrate([6]);
     confirmedResult = confirmed;
     isVisible.value = false;
 }

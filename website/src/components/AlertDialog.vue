@@ -2,6 +2,7 @@
 import '@material/web/dialog/dialog.js';
 import '@material/web/button/filled-button.js';
 import { onMounted, ref, nextTick } from 'vue';
+import { vibrate } from '@/utils/vibrate';
 
 interface ComponentProps {
     title: string;
@@ -38,6 +39,7 @@ async function setElementZIndex() {
 }
 
 function acknowledge() {
+    vibrate([6]);
     isVisible.value = false;
 }
 
@@ -59,7 +61,7 @@ onMounted(() => {
             {{ props.message }}
         </div>
         <div slot="actions">
-            <md-filled-button v-vibrate @click="acknowledge()">OK</md-filled-button>
+            <md-filled-button @click="acknowledge()">OK</md-filled-button>
         </div>
     </md-dialog>
 </template>

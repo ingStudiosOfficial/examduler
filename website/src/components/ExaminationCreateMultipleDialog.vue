@@ -13,6 +13,7 @@ import { handleFileUpload } from '@/utils/file_utils';
 import { showSnackbar } from '@/utils/snackbar';
 import { bulkCreateExam } from '@/utils/exam_utils';
 import { magicPaste } from '@/utils/ai_utils';
+import { vibrate } from '@/utils/vibrate';
 
 const emit = defineEmits(['close', 'success', 'single']);
 
@@ -80,8 +81,10 @@ async function triggerMagicPaste() {
         const pasteResult = await magicPaste(magicPasteInput.value);
         uploadedExaminations.value = pasteResult;
         magicPasteInput.value = '';
+        vibrate([6, 10, 6]);
         showSnackbar('Examinations successfully formatted with Magic Paste');
     } catch (error) {
+        vibrate([6, 10, 6, 10, 6]);
         showSnackbar(`An error occurred while using Magic Paste: '${error}'`);
     }
 }
