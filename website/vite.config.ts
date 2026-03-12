@@ -157,6 +157,21 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
+    dedupe: [
+        'lit',
+        'lit-html',
+        '@lit/reactive-element',
+        'lit-element'
+    ]
+  },
+  optimizeDeps: {
+    include: [
+      '@m3e/web/progress-indicator',
+      '@material/web/textfield/outlined-text-field',
+      'lit',
+      'lit/directive.js',
+    ],
+    exclude: []
   },
   server: {
     port: 3002,

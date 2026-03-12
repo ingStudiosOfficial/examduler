@@ -8,6 +8,7 @@ import '@material/web/fab/fab.js';
 import '@material/web/icon/icon.js';
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/button/outlined-button.js';
+import '@m3e/web/progress-indicator';
 import type { Exam } from '@/interfaces/Exam';
 import { handleFileUpload } from '@/utils/file_utils';
 import { showSnackbar } from '@/utils/snackbar';
@@ -24,6 +25,7 @@ const examCreationSuccess = ref<boolean>(false);
 const uploadedExaminationsName = ref<string>();
 const examinationsPicker = useTemplateRef<HTMLInputElement>('examinationsPicker');
 const magicPasteInput = ref<string>('');
+const loadingMagicPaste = ref<boolean>(false);
 
 function closeDialog() {
     emit('close');
@@ -77,6 +79,8 @@ async function triggerMagicPaste() {
         return;
     }
 
+    loadingMagicPaste.value = true;
+
     try {
         const pasteResult = await magicPaste(magicPasteInput.value);
         uploadedExaminations.value = pasteResult;
@@ -86,6 +90,8 @@ async function triggerMagicPaste() {
     } catch (error) {
         vibrate([6, 10, 6, 10, 6]);
         showSnackbar(`An error occurred while using Magic Paste: '${error}'`);
+    } finally {
+        loadingMagicPaste.value = false;
     }
 }
 </script>
@@ -119,7 +125,10 @@ async function triggerMagicPaste() {
             </div>
             <h2 class="subheader">Magic Paste (Beta)</h2>
             <md-outlined-text-field class="dialog-settings-field" v-model="magicPasteInput" label="Magic Paste" no-asterisk="true" supporting-text="Paste the exams in any format and let AI create examinations for you." type="textarea"></md-outlined-text-field>
-            <md-outlined-button type="button" v-vibrate @click="triggerMagicPaste()">Format with Magic Paste</md-outlined-button>
+            <div class="magic-paste-actions">
+                <md-outlined-button v-if="!loadingMagicPaste" type="button" v-vibrate @click="triggerMagicPaste()">Format with Magic Paste</md-outlined-button>
+                <m3e-linear-progress-indicator v-else class="p-indicator" variant="wavy" mode="indeterminate"></m3e-linear-progress-indicator>
+            </div>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
             <md-fab class="submit-button" @click="pressExamSubmit()">
@@ -182,5 +191,23 @@ async function triggerMagicPaste() {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+}
+
+.magic-paste-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.p-indicator {
+    width: 40%;
+}
+
+@media (max-width: 80%) {
+    .p-indicator {
+        width: 80%;
+    }
 }
 </style>
