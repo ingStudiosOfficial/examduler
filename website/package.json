@@ -19,6 +19,7 @@
     "@m3e/web": "^2.0.0",
     "@material/web": "^2.4.1",
     "@vuepic/vue-datepicker": "^12.1.0",
+    "active-table": "^1.1.8",
     "crypto": "^1.0.1",
     "date-fns": "^4.1.0",
     "ics": "^3.8.1",

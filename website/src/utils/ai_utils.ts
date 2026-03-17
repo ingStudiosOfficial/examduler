@@ -1,4 +1,4 @@
-import type { Exam } from '@/interfaces/Exam';
+import type { Exam, ExamCreate } from '@/interfaces/Exam';
 import type { User } from '@/interfaces/User';
 import { getUserSeat } from './exam_utils';
 import type { ResponseJson } from '@/interfaces/ResponseJson';
@@ -119,7 +119,7 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
     return summary;
 }
 
-export async function magicPaste(examsString: string): Promise<Exam[]> {
+export async function magicPaste(examsString: string): Promise<ExamCreate[]> {
     console.log('Unformatted exams:', examsString);
 
     try {
@@ -143,7 +143,7 @@ export async function magicPaste(examsString: string): Promise<Exam[]> {
 
         console.log('Successfully used magic paste:', responseJson.exams);
 
-        return responseJson.exams as Exam[];
+        return responseJson.exams as ExamCreate[];
     } catch (error) {
         console.error('An error occurred while using magic paste:', error);
         throw new Error('An unexpected error occurred while using magic paste');

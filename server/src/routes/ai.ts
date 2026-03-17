@@ -22,7 +22,7 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
         Today's Date: ${now.toDateString()}
         Current Year: ${now.getFullYear()}
         Current Millisecond Timestamp: ${now.getTime()}
-        Remember to calculate the timestamp (YYYY-MM-DD) based on the FUTURE date mentioned.
+        Remember to calculate the ISO 8601 timestamp (YYYY-MM-DDTHH:MM:SSZ) based on the FUTURE date mentioned.
     `;
 
     const systemInstructions = `
@@ -37,12 +37,12 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
         [
             {
                 "name": "Midterm",
-                "date": "2026-10-10",
+                "date": "2026-03-21T08:00:00Z",
                 "description": "Midterm examination"
             },
             {
                 "name": "Final",
-                "date": "2026-12-12",
+                "date": "2026-12-02T12:00:00Z",
                 "description": "Final examination",
                 "seating": [[{"seat": "A1", "name": "John", "email": "", "isBlank": false}]]
             }

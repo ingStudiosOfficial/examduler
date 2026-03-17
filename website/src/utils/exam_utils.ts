@@ -106,7 +106,7 @@ export async function createExam(examDetails: ExamCreate): Promise<FunctionNotif
     }
 }
 
-export async function bulkCreateExam(exams: Exam[]): Promise<FunctionNotifier> {
+export async function bulkCreateExam(exams: ExamCreate[]): Promise<FunctionNotifier> {
     console.log('Submitting:', exams);
 
     try {

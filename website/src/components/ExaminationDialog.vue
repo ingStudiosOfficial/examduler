@@ -110,12 +110,12 @@ const userData = props.user;
             </div>
             <h1 class="section-header">Description</h1>
             <p class="exam-description">{{ props.exam.description }}</p>
-            <h1 v-if="props.exam.seating" class="section-header">Seating</h1>
-            <p v-if="props.exam.seating">
+            <h1 v-if="props.exam.seating && props.exam.seating.length !== 0" class="section-header">Seating</h1>
+            <p v-if="props.exam.seating && tryGetUserSeat(props.exam.seating, props.user.email)">
                 Your seat:
                 <b>{{ tryGetUserSeat(props.exam.seating, props.user.email)?.seat }}</b>
             </p>
-            <div v-if="props.exam.seating" class="seating-wrapper">
+            <div v-if="props.exam.seating && props.exam.seating.length !== 0" class="seating-wrapper">
                 <SeatingContainer :seating="props.exam.seating" :user-seat="tryGetUserSeat(props.exam.seating, props.user.email)" class="seating"></SeatingContainer>
             </div>
         </div>
