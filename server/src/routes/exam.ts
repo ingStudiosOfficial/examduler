@@ -90,10 +90,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
                     message: 'Failed to insert exam.',
                 });
             }
-            if (exam._id) await req.db.collection<IUser>('users').updateOne(
-                { _id: userId },
-                { $addToSet: { exams: exam._id } }
-            );
+            if (exam._id) await req.db.collection<IUser>('users').updateOne({ _id: userId }, { $addToSet: { exams: exam._id } });
         });
 
         if (exam.seating) assignExamToUsers(exam, req, res, user.email);

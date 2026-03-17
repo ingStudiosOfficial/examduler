@@ -1,10 +1,10 @@
-import { Router, type Request, type Response } from "express";
-import { authenticateToken, verifyRole } from "../middleware/auth.js";
+import { Router, type Request, type Response } from 'express';
+import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import ollama, { type Message } from 'ollama';
-import { verifyParsedResult } from "../utils/ai_utils.js";
-import type { IExam } from "../interfaces/Exam.js";
+import { verifyParsedResult } from '../utils/ai_utils.js';
+import type { IExam } from '../interfaces/Exam.js';
 import parse from 'joi-to-json';
-import { aiExamBulkCreateSchema } from "../schemas/exam.js";
+import { aiExamBulkCreateSchema } from '../schemas/exam.js';
 
 export const aiRouter = Router();
 
@@ -58,10 +58,7 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
     const systemMessage: Message = { role: 'system', content: systemInstructions };
     const message: Message = { role: 'user', content: `Parse this text: '${rawText}'` };
 
-    const messages: Message[] = [
-        systemMessage,
-        message,
-    ];
+    const messages: Message[] = [systemMessage, message];
 
     const maxRetries = 2;
     let retryCount = 0;
@@ -94,11 +91,12 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
             });
         } catch (error) {
             console.error('AI parsing error:', error);
-            messages.push({ role: 'system', content: `Error while parsing content: '${error}'` })
+            messages.push({ role: 'system', content: `Error while parsing content: '${error}'` });
             retryCount++;
-            if (retryCount > maxRetries) return res.status(500).json({
-                message: error,
-            });
+            if (retryCount > maxRetries)
+                return res.status(500).json({
+                    message: error,
+                });
         }
     }
 });

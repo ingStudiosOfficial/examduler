@@ -7,7 +7,7 @@ export async function handleFileUpload(e: Event): Promise<FileUploadReturn> {
     const target = e.target as HTMLInputElement;
 
     if (!target.files || target.files.length === 0) {
-        throw new Error('No uploaded files found')
+        throw new Error('No uploaded files found');
     }
 
     const uploadedFile = target.files[0];

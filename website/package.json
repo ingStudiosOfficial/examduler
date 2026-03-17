@@ -15,7 +15,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "lit": "^3.2.1",
+    "@lit/reactive-element": "^2.1.2",
     "@m3e/web": "^2.0.0",
     "@material/web": "^2.4.1",
     "@vuepic/vue-datepicker": "^12.1.0",
@@ -23,6 +23,9 @@
     "date-fns": "^4.1.0",
     "ics": "^3.8.1",
     "idb": "^8.0.3",
+    "lit": "^3.2.1",
+    "lit-html": "^3.3.2",
+    "pinia": "^3.0.4",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
   },

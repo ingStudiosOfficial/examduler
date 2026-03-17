@@ -13,11 +13,14 @@ import type { User } from '@/interfaces/User';
 
 import { fetchUserData } from '@/utils/user_utils';
 import { fetchCachedUserData } from '@/utils/cache_utils';
-import type { Exam } from '@/interfaces/Exam';
 import { router } from '../router/index';
 import ExaminationCreateMultipleDialog from '@/components/ExaminationCreateMultipleDialog.vue';
 import { useDialog } from '@/composables/dialog_composables';
 import { showSnackbar } from '@/utils/snackbar';
+import { useExamStore } from '@/stores/exam_store';
+import { storeToRefs } from 'pinia';
+
+const examStore = useExamStore();
 
 const { dialogOpened: examCreateDialogOpened, openDialog: openCreateExamDialog, closeDialog: closeCreateExamDialog } = useDialog();
 const { dialogOpened: examCreateMultipleDialogOpened, openDialog: openCreateMultipleExamDialog, closeDialog: closeCreateMultipleExamDialog } = useDialog();
@@ -25,7 +28,7 @@ const { dialogOpened: examCreateMultipleDialogOpened, openDialog: openCreateMult
 const userData = ref<User | null>(null);
 const refreshExams = ref<number | boolean>(false);
 const aiSummarySupported = ref<boolean>('Summarizer' in window);
-const exams = ref<Exam[]>();
+const { exams } = storeToRefs(examStore);
 
 onMounted(async () => {
     try {
@@ -39,18 +42,12 @@ onMounted(async () => {
 
         showSnackbar('You are currently offline. Viewing read-only cached data.', 4000);
     }
+
+    examStore.refreshExams();
 });
 
 function onSummaryError(message: string) {
     showSnackbar(message, 4000);
-}
-
-function alertRefreshExams() {
-    refreshExams.value = Date.now();
-}
-
-function onFetchExams(fetchedExams: Exam[]) {
-    exams.value = fetchedExams;
 }
 </script>
 
@@ -58,12 +55,12 @@ function onFetchExams(fetchedExams: Exam[]) {
     <div v-if="userData" class="dashboard-wrapper">
         <SummaryContainer v-if="aiSummarySupported && exams" :exams="exams" :user="userData" @error="onSummaryError"></SummaryContainer>
 
-        <ExaminationsContainer :user="userData" :refresh="refreshExams" @fetched-exams="onFetchExams"></ExaminationsContainer>
+        <ExaminationsContainer :user="userData" :refresh="refreshExams"></ExaminationsContainer>
 
         <OrganizationsContainer v-if="userData.role === 'admin'"></OrganizationsContainer>
 
-        <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="alertRefreshExams()" @multiple="openCreateMultipleExamDialog()"></ExaminationCreateDialog>
-        <ExaminationCreateMultipleDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateMultipleDialogOpened" @close="closeCreateMultipleExamDialog()" @success="alertRefreshExams()" @single="openCreateExamDialog()"></ExaminationCreateMultipleDialog>
+        <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="examStore.refreshExams()" @multiple="openCreateMultipleExamDialog()"></ExaminationCreateDialog>
+        <ExaminationCreateMultipleDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateMultipleDialogOpened" @close="closeCreateMultipleExamDialog()" @success="examStore.refreshExams()" @single="openCreateExamDialog()"></ExaminationCreateMultipleDialog>
 
         <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" label="Create" size="medium" v-vibrate @click="openCreateExamDialog()">
             <md-icon slot="icon">add</md-icon>

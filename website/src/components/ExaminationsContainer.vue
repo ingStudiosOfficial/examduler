@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Vue utils
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 // Views
 import ExaminationCard from './ExaminationCard.vue';
@@ -14,9 +14,10 @@ import type { User } from '@/interfaces/User';
 
 // Utils
 import { fetchAllExams, sortExams } from '@/utils/exam_utils';
-import { fetchCachedExams } from '@/utils/cache_utils';
 import { useDialog } from '@/composables/dialog_composables';
 import { showSnackbar } from '@/utils/snackbar';
+import { useExamStore } from '@/stores/exam_store';
+import { storeToRefs } from 'pinia';
 
 interface ComponentProps {
     user: User;
@@ -25,29 +26,14 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
-const emit = defineEmits(['fetchedExams']);
+const examStore = useExamStore();
 
 const { dialogOpened: examOpened, openDialog: displayExamDialog, closeDialog: closeExamDialog } = useDialog();
 const { dialogOpened: editDialogOpened, openDialog: showEditDialog, closeDialog: closeEditDialog } = useDialog();
 
-const exams = ref<Exam[]>();
+const { exams } = storeToRefs(examStore);
 const examDetails = ref<Exam | null>(null);
 const examToEdit = ref<Exam | null>();
-
-async function refreshExams() {
-    try {
-        const fetchedExams = await fetchAllExams();
-        exams.value = sortExams(fetchedExams);
-    } catch (error) {
-        console.error('Error while fetching exams:', error);
-
-        const cachedExams = await fetchCachedExams();
-        console.log('Cached exams:', cachedExams);
-        exams.value = sortExams(cachedExams);
-    } finally {
-        emit('fetchedExams', exams.value);
-    }
-}
 
 function displaySb(message: string) {
     showSnackbar(message, 4000);
@@ -78,10 +64,6 @@ watch(
         }
     },
 );
-
-onMounted(async () => {
-    await refreshExams();
-});
 </script>
 
 <template>
@@ -96,8 +78,8 @@ onMounted(async () => {
         </div>
         <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your examinations..."></LoaderContainer>
 
-        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="refreshExams()" @edit="handleShowEdit"></ExaminationDialog>
-        <ExaminationEditDialog v-if="editDialogOpened && examToEdit" :_id="examToEdit._id" :name="examToEdit.name" :date="examToEdit.date" :description="examToEdit.description" :seating="examToEdit.seating" @show-sb="displaySb" @refresh="refreshExams()" @close="closeEditDialog()" @success="refreshExams()"></ExaminationEditDialog>
+        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="examStore.refreshExams()" @edit="handleShowEdit"></ExaminationDialog>
+        <ExaminationEditDialog v-if="editDialogOpened && examToEdit" :_id="examToEdit._id" :name="examToEdit.name" :date="examToEdit.date" :description="examToEdit.description" :seating="examToEdit.seating" @show-sb="displaySb" @refresh="examStore.refreshExams()" @close="closeEditDialog()" @success="examStore.refreshExams()"></ExaminationEditDialog>
     </div>
 </template>
 

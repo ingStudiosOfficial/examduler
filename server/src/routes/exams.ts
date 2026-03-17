@@ -104,7 +104,7 @@ examsRouter.post('/bulk-create/', authenticateToken(), verifyRole('teacher'), va
 
             if (!exam.seating || exam.seating.length === 0) continue;
 
-            exam.seating.flat().forEach(s => {
+            exam.seating.flat().forEach((s) => {
                 userOps.push({
                     updateOne: {
                         filter: { email: s.email },
@@ -116,16 +116,18 @@ examsRouter.post('/bulk-create/', authenticateToken(), verifyRole('teacher'), va
                     },
                 });
             });
-        };
+        }
 
         userOps.push({
             updateOne: {
                 filter: { _id: userId },
-                update: { $addToSet: {
-                    exams: {
-                        $each: examIds,
+                update: {
+                    $addToSet: {
+                        exams: {
+                            $each: examIds,
+                        },
                     },
-                }},
+                },
             },
         });
 
