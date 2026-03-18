@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { Exam } from '@/interfaces/Exam';
 import { summarizeExams } from '@/utils/ai_utils';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import '@material/web/progress/circular-progress.js';
 import type { User } from '@/interfaces/User';
+import { useExamStore } from '@/stores/exam_store';
 
 interface ComponentProps {
     exams: Exam[];
@@ -13,6 +14,8 @@ interface ComponentProps {
 const props = defineProps<ComponentProps>();
 
 const emit = defineEmits(['error']);
+
+const examStore = useExamStore();
 
 const summary = ref<string>('');
 const message = ref<string>('');
@@ -36,14 +39,22 @@ function onComplete() {
     isComplete.value = true;
 }
 
-onMounted(async () => {
-    try {
-        await summarizeExams(props.exams, props.user, onChunk, onDownload, onEvent, onComplete);
-    } catch (error) {
-        hasError.value = true;
-        if (error instanceof Error) message.value = error.message;
-        emit('error', error);
+const unwatch = watch(() => examStore.loaded, async (loaded) => {
+    if (loaded) {
+        try {
+            await summarizeExams(props.exams, props.user, onChunk, onDownload, onEvent, onComplete);
+        } catch (error) {
+            hasError.value = true;
+            if (error instanceof Error) message.value = error.message;
+            emit('error', error);
+        }
+
+        unwatch();
     }
+}, { immediate: true });
+
+onMounted(async () => {
+    
 });
 </script>
 

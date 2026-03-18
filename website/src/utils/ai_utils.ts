@@ -18,6 +18,8 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
         throw new Error('Summarizer API not supported by browser');
     }
 
+    console.log('Exams:', exams);
+
     const summarizerOptions: SummarizerCreateCoreOptions = {
         type: 'tldr',
         length: 'short',
@@ -71,6 +73,8 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
 
     try {
         for (const exam of exams) {
+            console.log('Exam:', exam);
+
             if (exam.seating) {
                 const userSeat = { seat: getUserSeat(exam.seating, user.email).seat, exam: exam };
                 userSeats.push(userSeat);
@@ -101,7 +105,7 @@ export async function summarizeExams(exams: Exam[], user: User, onChunk: (chunk:
                 exam: examWithoutId,
             };
         }),
-    )}, User: ${JSON.stringify(user)}`;
+    )}, User: ${JSON.stringify(user.name)}`;
     console.log('Prompt:', prompt);
 
     const stream = summarizer.summarizeStreaming(prompt);
