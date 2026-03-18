@@ -136,7 +136,7 @@ function onTableEdit(tableData: ExamCreate[]) {
             <div class="magic-paste-actions">
                 <md-outlined-button v-if="!loadingMagicPaste" type="button" v-vibrate @click="triggerMagicPaste()">Format with Magic Paste</md-outlined-button>
                 <div v-else class="p-indicator-wrapper">
-                    <md-linear-progress class="p-indicator" indeterminate></md-linear-progress>
+                    <md-linear-progress class="p-indicator" indeterminate four-color></md-linear-progress>
                     <p>Generating...</p>
                 </div>
             </div>
