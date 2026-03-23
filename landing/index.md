@@ -21,10 +21,10 @@ features:
     details: Easily create examinations and share them with your students
   - title: Manage staff and students hassle-free
     details: Create organizations to assign members roles and link multiple domains
+  - title: AI capabilities
+    details: Let AI summarize your examination schedule and format your examinations
   - title: Quickly view examinations (Coming soon!)
     details: View examinations at a glance and get notified with our mobile app available for Android
-  - title: Get AI summaries (Coming soon!)
-    details: Let AI summarize your examination schedule
 ---
 
 <script setup lang="ts">
