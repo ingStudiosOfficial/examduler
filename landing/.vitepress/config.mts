@@ -11,6 +11,8 @@ export default defineConfig({
 
     nav: [
       { text: 'Documentation Hub', link: 'https://docs.examduler.ingstudios.dev' },
+      { text: 'Terms of Service', link: '/legal/terms' },
+      { text: 'Privacy Policy', link: '/legal/privacy' },
     ],
 
     socialLinks: [

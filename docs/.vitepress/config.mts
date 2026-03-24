@@ -27,13 +27,6 @@ export default defineConfig({
           { text: 'Organization Docs', link: '/org' },
         ],
       },
-      {
-        text: 'Legal',
-        items: [
-          { text: 'Terms of Service', link: '/legal/terms' },
-          { text: 'Privacy Policy', link: '/legal/privacy' },
-        ],
-      },
     ],
 
     socialLinks: [
