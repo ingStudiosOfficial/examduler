@@ -46,8 +46,10 @@ We use Artificial Intelligence (AI) to enhance your experience on this platform.
 * **Privacy guarantee:** All processing of these summarization happens locally on your device and no data is sent to our or Google's servers.
 
 **B. Server-Side AI Capabilities**
+* **How it works:** For core AI capabilities, we use Gemma 3 as the AI model via the local Ollama API on our servers.
+* **Privacy guarantee:** This ensures that all data remains within your control and are not sent to third-party providers.
 
-## 6. Your Rights
+## 7. Your Rights
 
 You may have the following rights:
 * The right to access, update, and delete the information we collect on you.
@@ -58,10 +60,10 @@ You may have the following rights:
 We are working hard to implement a system for you to export, edit, and delete your personal data. For now, please email us at [contact@ingstudios.dev](mailto:contact@ingstudios.dev?subject=Examduler%20Personal%20Data%20Queries) if you have any queries on your personal data.
 :::
 
-## 7. Changes to This Policy
+## 8. Changes to This Policy
 
-We may update our Privacy Policy from time to time.
+We may update our Privacy Policy from time to time. Please check this Privacy Policy for any changes.
 
-## 8. Contact Us
+## 9. Contact Us
 
 Please feel free to contact use at [contact@ingstudios.dev](mailto:contact@ingstudios.dev?subject=Examduler%20Queries) if you have any queries.
