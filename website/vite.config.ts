@@ -109,6 +109,7 @@ export default defineConfig({
         display: 'standalone',
         theme_color: '#f6fafd',
         background_color: '#F6FAFD',
+        categories: ['education', 'productivity'],
       },
       srcDir: 'src/',
       includeAssets: ['public/*'],
