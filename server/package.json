@@ -28,7 +28,8 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-google-oidc": "^0.1.0",
-    "passport-oauth2": "^1.8.0"
+    "passport-oauth2": "^1.8.0",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",

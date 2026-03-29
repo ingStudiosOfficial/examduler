@@ -15,6 +15,9 @@ hero:
     - theme: alt
       text: Documentation
       link: https://docs.examduler.ingstudios.dev
+  image:
+    src: /homepage.png
+    alt: Examduler dashboard
 
 features:
   - title: Create and manage examinations
