@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     final examinations = <Exam>[
       Exam(
         name: 'Gay Exam',
-        date: '21st May 2026',
+        date: '2026-08-10T08:32:05Z',
         description: 'erik is gay...',
       ),
     ];

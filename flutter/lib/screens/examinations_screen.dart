@@ -1,5 +1,7 @@
 import 'package:examduler/models/exam.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ExaminationsScreen extends StatelessWidget {
   final List<Exam> examinations;
@@ -19,15 +21,15 @@ class ExaminationsScreen extends StatelessWidget {
   }
 
   Widget _buildExamsGrid(BuildContext context) {
-    return GridView.builder(
+    final bool isMobile = MediaQuery.of(context).size.width < 768;
+
+    return AlignedGridView.count(
+      padding: EdgeInsets.all(20),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.8,
-      ),
+      crossAxisCount: isMobile ? 1 : 3,
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
       itemCount: examinations.length,
       itemBuilder: (context, index) => _ExaminationCard(examinations[index]),
     );
@@ -43,14 +45,41 @@ class _ExaminationCard extends Card {
   Widget build(BuildContext context) {
     return Card(
       color: Theme.of(context).colorScheme.primaryContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[Text(examDetails.name)],
+          spacing: 10,
+          children: <Widget>[
+            Text(
+              examDetails.name,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              _calculateTimeFromExam(),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  String _calculateTimeFromExam() {
+    final DateTime examDate = DateTime.parse(examDetails.date);
+    final String formatted = timeago.format(examDate, allowFromNow: true);
+    return formatted;
   }
 }
