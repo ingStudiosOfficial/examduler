@@ -2,6 +2,7 @@ import 'package:examduler/models/exam.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:intl/intl.dart';
 
 class ExaminationsScreen extends StatelessWidget {
   final List<Exam> examinations;
@@ -66,7 +67,7 @@ class _ExaminationCard extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               Text(
-                _calculateTimeFromExam(),
+                _calculateTimeFromExam(examDetails.date),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   fontSize: 15,
@@ -80,7 +81,7 @@ class _ExaminationCard extends StatelessWidget {
                 spacing: 10,
                 children: <Widget>[
                   Text(
-                    examDetails.date,
+                    _formatExamDate(examDetails.date),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                       fontSize: 15,
@@ -97,11 +98,15 @@ class _ExaminationCard extends StatelessWidget {
     );
   }
 
-  String _calculateTimeFromExam() {
-    final DateTime examDate = DateTime.parse(examDetails.date);
+  String _calculateTimeFromExam(String unparsedDate) {
+    final DateTime examDate = DateTime.parse(unparsedDate);
     final String formatted = timeago.format(examDate, allowFromNow: true);
     return formatted;
   }
 
-  String _formatExamDate() {}
+  String _formatExamDate(String unparsedDate) {
+    final DateTime examDate = DateTime.parse(unparsedDate);
+    final String formatted = DateFormat('d MMMM yyyy').format(examDate);
+    return formatted;
+  }
 }
