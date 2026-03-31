@@ -1,5 +1,6 @@
 import 'package:examduler/models/seating.dart';
 import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
 
 class Exam {
   final String? id;
@@ -20,5 +21,11 @@ class Exam {
     return seating
         ?.expand((list) => list)
         .firstWhereOrNull((s) => s.email == email);
+  }
+
+  String getFormattedDate() {
+    final DateTime examDate = DateTime.parse(date);
+    final String formatted = DateFormat('d MMMM yyyy').format(examDate);
+    return formatted;
   }
 }

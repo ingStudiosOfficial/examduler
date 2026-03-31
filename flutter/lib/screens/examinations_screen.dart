@@ -1,10 +1,10 @@
 import 'package:examduler/models/exam.dart';
 import 'package:examduler/models/seating.dart';
 import 'package:examduler/providers/exams_providers.dart';
+import 'package:examduler/screens/examination_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExaminationsScreen extends ConsumerWidget {
@@ -53,7 +53,7 @@ class _ExaminationCard extends StatelessWidget {
       color: Theme.of(context).colorScheme.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       child: InkWell(
-        onTap: () => print('Exam clicked.'),
+        onTap: () => _openExamViewPage(context),
         borderRadius: BorderRadius.circular(25),
         child: Padding(
           padding: EdgeInsets.all(20),
@@ -86,7 +86,7 @@ class _ExaminationCard extends StatelessWidget {
                 spacing: 10,
                 children: <Widget>[
                   Text(
-                    _formatExamDate(examDetails.date),
+                    examDetails.getFormattedDate(),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                       fontSize: 15,
@@ -119,9 +119,12 @@ class _ExaminationCard extends StatelessWidget {
     return formatted;
   }
 
-  String _formatExamDate(String unparsedDate) {
-    final DateTime examDate = DateTime.parse(unparsedDate);
-    final String formatted = DateFormat('d MMMM yyyy').format(examDate);
-    return formatted;
+  void _openExamViewPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExaminationViewScreen(examDetails: examDetails),
+      ),
+    );
   }
 }
