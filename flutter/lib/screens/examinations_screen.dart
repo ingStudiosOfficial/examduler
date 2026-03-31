@@ -1,27 +1,30 @@
 import 'package:examduler/models/exam.dart';
+import 'package:examduler/models/seating.dart';
+import 'package:examduler/providers/exams_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExaminationsScreen extends StatelessWidget {
-  final List<Exam> examinations;
-
-  const ExaminationsScreen({super.key, required this.examinations});
+class ExaminationsScreen extends ConsumerWidget {
+  const ExaminationsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final examinations = ref.watch(examsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Examinations'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: _buildExamsGrid(context),
+      body: _buildExamsGrid(context, examinations),
       backgroundColor: Theme.of(context).colorScheme.surface,
     );
   }
 
-  Widget _buildExamsGrid(BuildContext context) {
+  Widget _buildExamsGrid(BuildContext context, List<Exam> examinations) {
     final bool isMobile = MediaQuery.of(context).size.width < 768;
 
     return AlignedGridView.count(
@@ -44,6 +47,8 @@ class _ExaminationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Seating? userSeat = examDetails.getUserSeat('contact@ingstudios.dev');
+
     return Card(
       color: Theme.of(context).colorScheme.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
@@ -89,6 +94,16 @@ class _ExaminationCard extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  if (userSeat != null)
+                    Text(
+                      'Seat ${userSeat.seat}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                 ],
               ),
             ],
