@@ -24,7 +24,7 @@ class ExaminationsScreen extends StatelessWidget {
     final bool isMobile = MediaQuery.of(context).size.width < 768;
 
     return AlignedGridView.count(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(10),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: isMobile ? 1 : 3,
@@ -36,7 +36,7 @@ class ExaminationsScreen extends StatelessWidget {
   }
 }
 
-class _ExaminationCard extends Card {
+class _ExaminationCard extends StatelessWidget {
   final Exam examDetails;
 
   const _ExaminationCard(this.examDetails);
@@ -46,32 +46,52 @@ class _ExaminationCard extends Card {
     return Card(
       color: Theme.of(context).colorScheme.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 10,
-          children: <Widget>[
-            Text(
-              examDetails.name,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
+      child: InkWell(
+        onTap: () => print('Exam clicked.'),
+        borderRadius: BorderRadius.circular(25),
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 10,
+            children: <Widget>[
+              Text(
+                examDetails.name,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              _calculateTimeFromExam(),
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
+              Text(
+                _calculateTimeFromExam(),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                spacing: 10,
+                children: <Widget>[
+                  Text(
+                    examDetails.date,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -82,4 +102,6 @@ class _ExaminationCard extends Card {
     final String formatted = timeago.format(examDate, allowFromNow: true);
     return formatted;
   }
+
+  String _formatExamDate() {}
 }
