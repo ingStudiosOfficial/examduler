@@ -6,9 +6,9 @@ class ExamsNotifier extends Notifier<List<Exam>> {
   @override
   List<Exam> build() => [
     Exam(
-      name: 'Gay Exam',
+      name: 'MY Exam',
       date: '2026-08-10T08:32:05Z',
-      description: 'erik is gay...',
+      description: 'Pls prepare kids...',
       seating: [
         [
           Seating(

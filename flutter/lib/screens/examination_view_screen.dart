@@ -1,4 +1,5 @@
 import 'package:examduler/models/exam.dart';
+import 'package:examduler/models/seating.dart';
 import 'package:flutter/material.dart';
 
 class ExaminationViewScreen extends StatelessWidget {
@@ -8,37 +9,64 @@ class ExaminationViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Seating? userSeat = examDetails.getUserSeat('contact@ingstudios.dev');
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Examination ${examDetails.name}'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 10,
-        children: <Widget>[
-          Text(
-            examDetails.name,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 10,
+          children: <Widget>[
+            _ExaminationDetailsWidget(
+              detail: examDetails.getFormattedDate(),
+              icon: Icons.event_outlined,
             ),
-            textAlign: TextAlign.center,
-          ),
-          Text(
-            examDetails.getFormattedDate(),
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
+            _ExaminationDetailsWidget(
+              detail: examDetails.description,
+              icon: Icons.description_outlined,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            if (userSeat != null)
+              _ExaminationDetailsWidget(
+                detail: 'Seat ${userSeat.seat}',
+                icon: Icons.info_outline,
+              ),
+          ],
+        ),
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
+    );
+  }
+}
+
+class _ExaminationDetailsWidget extends StatelessWidget {
+  final String detail;
+  final IconData icon;
+
+  const _ExaminationDetailsWidget({required this.detail, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: 10,
+      children: [
+        Icon(icon),
+        Text(
+          detail,
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 17,
+          ),
+        ),
+      ],
     );
   }
 }

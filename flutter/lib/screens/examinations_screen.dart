@@ -28,7 +28,7 @@ class ExaminationsScreen extends ConsumerWidget {
     final bool isMobile = MediaQuery.of(context).size.width < 768;
 
     return AlignedGridView.count(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(20),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: isMobile ? 1 : 3,
