@@ -4,5 +4,6 @@ export interface User {
     domain: string;
     name: string;
     exams: string[];
+    // TODO: put organizations in the future
     role: 'student' | 'teacher' | 'admin';
 }

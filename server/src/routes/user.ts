@@ -1,14 +1,14 @@
 import { Router, type Request, type Response } from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import { ObjectId } from 'mongodb';
-import type { UsersCollection } from '../types/mongodb.js';
+import type { IUser } from '../interfaces/User.js';
 
 export const userRouter = Router();
 
 userRouter.get('/fetch/', authenticateToken(), async (req: Request, res: Response) => {
     console.log('Fetching user data...');
 
-    const usersCollection = req.db.collection<UsersCollection>('users');
+    const usersCollection = req.db.collection<IUser>('users');
 
     if (!req.user?.id || !ObjectId.isValid(req.user?.id)) {
         return res.status(400).json({
@@ -19,7 +19,7 @@ userRouter.get('/fetch/', authenticateToken(), async (req: Request, res: Respons
     try {
         const userId = new ObjectId(req.user.id);
 
-        const user = await usersCollection.findOne({ _id: userId });
+        const user = await usersCollection.findOne({ _id: userId }, { projection: { tokenVersion: 0 } });
 
         if (!user) {
             return res.status(404).json({

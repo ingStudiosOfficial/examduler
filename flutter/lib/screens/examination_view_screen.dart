@@ -14,7 +14,9 @@ class ExaminationViewScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Examination ${examDetails.name}'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Theme.of(context).colorScheme.surfaceContainer,
+        titleSpacing: 0,
       ),
       body: Padding(
         padding: EdgeInsets.all(20),

@@ -17,7 +17,9 @@ class ExaminationsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Examinations'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Theme.of(context).colorScheme.surfaceContainer,
+        titleSpacing: 20,
       ),
       body: _buildExamsGrid(context, examinations),
       backgroundColor: Theme.of(context).colorScheme.surface,
