@@ -23,14 +23,12 @@ dotenv.config({
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const googleCallbackUrl = process.env.GOOGLE_CALLBACK_URL;
 
 export function createGoogleStrategy(usersCollection: UsersCollection, credsCollection: CredsCollection): GoogleOAuthStrategy {
     return new GoogleStrategy(
         {
             clientID: googleClientId,
             clientSecret: googleClientSecret,
-            callbackURL: googleCallbackUrl,
             scope: ['profile', 'email'],
         },
         async function verify(issuer: string, profile: Profile, cb: VerifyCallback) {
