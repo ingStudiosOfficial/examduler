@@ -1,20 +1,19 @@
 import { Router, type Request, type Response } from 'express';
 import passport from 'passport';
 
-const apiBaseUrl = process.env.API_BASE_URL;
-
 export const authRouter = Router();
 
-authRouter.get('/google/', passport.authenticate('google', { scope: ['profile', 'email'], callbackURL: `${apiBaseUrl}/oauth2/callback/google/` } as any));
+authRouter.get('/google/', passport.authenticate('google', { scope: ['profile', 'email'], callbackURL: '/api/oauth2/callback/google/' } as any));
 
-authRouter.get('/google/flutter/', passport.authenticate('google', { scope: ['profile', 'email'], callbackURL: `${apiBaseUrl}/oauth2/callback/google/flutter/` } as any));
+authRouter.get('/google/flutter/', passport.authenticate('google', { scope: ['profile', 'email'], callbackURL: '/api/oauth2/callback/google/flutter/' } as any));
 
 authRouter.get(
     '/callback/google/',
     passport.authenticate('google', {
         failureRedirect: `${process.env.CLIENT_URL}/login`,
         session: false,
-    }),
+        callbackURL: `/api/oauth2/callback/google/`,
+    } as any),
     (req: Request, res: Response) => {
         const token = req.user?.token;
 
@@ -36,7 +35,19 @@ authRouter.get(
 authRouter.get('/callback/google/flutter/', passport.authenticate('google', {
     failureRedirect: 'examduler://login/error',
     session: false,
-}), (req: Request, res: Response) => {
+    callbackURL:'/api/oauth2/callback/google/flutter/',
+} as any), (req: Request, res: Response) => {
     const token = req.user?.token;
-    return res.status(200).redirect(`examduler://login/success?token=${token}`);
+    return res.status(200).send(`
+        <!DOCTYPE html>
+        <html>
+            <head><title>Authenticating...</title></head>
+            <p>Authenticating...</p>
+            <body>
+                <script>
+                    window.location.href = 'examduler://auth?token=${token}';
+                </script>
+            </body>
+        </html>
+    `);
 });

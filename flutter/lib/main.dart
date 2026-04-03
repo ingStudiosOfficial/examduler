@@ -7,8 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final authNotifierProvider = AsyncNotifierProvider<AuthProviders, bool>(() {
-  return AuthProviders();
+final authNotifierProvider = AsyncNotifierProvider<AuthNotifier, bool>(() {
+  return AuthNotifier();
 });
 
 Future<void> main() async {
@@ -33,15 +33,10 @@ class MyApp extends ConsumerWidget {
       darkTheme: materialTheme.dark(),
       themeMode: ThemeMode.system,
       home: authState.when(
-        data: (authenticated) {
-          if (authenticated) {
-            return const ExaminationsScreen();
-          } else {
-            return const LoginScreen();
-          }
-        },
-        error: (err, stack) => const LoginScreen(),
-        loading: () => const LoginScreen(),
+        data: (isAuthenticated) =>
+            isAuthenticated ? const ExaminationsScreen() : const LoginScreen(),
+        error: (err, stack) => LoginScreen(),
+        loading: () => LoginScreen(),
       ),
     );
   }

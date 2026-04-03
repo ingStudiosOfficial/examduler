@@ -12,7 +12,7 @@ class ExaminationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final examinations = ref.watch(examsProvider);
+    final examinationsAsync = ref.watch(examsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -21,7 +21,15 @@ class ExaminationsScreen extends ConsumerWidget {
         surfaceTintColor: Theme.of(context).colorScheme.surfaceContainer,
         titleSpacing: 20,
       ),
-      body: _buildExamsGrid(context, examinations),
+      body: examinationsAsync.when(
+        data: (exams) => _buildExamsGrid(context, exams),
+        error: (err, stack) => SnackBar(
+          content: Text(err.toString()),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+      ),
       backgroundColor: Theme.of(context).colorScheme.surface,
     );
   }
@@ -61,7 +69,7 @@ class _ExaminationCard extends StatelessWidget {
           padding: EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
             children: <Widget>[
               Text(
@@ -71,7 +79,7 @@ class _ExaminationCard extends StatelessWidget {
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
               Text(
                 _calculateTimeFromExam(examDetails.date),
@@ -80,10 +88,10 @@ class _ExaminationCard extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 spacing: 10,
                 children: <Widget>[
@@ -94,7 +102,7 @@ class _ExaminationCard extends StatelessWidget {
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                   ),
                   if (userSeat != null)
                     Text(
@@ -104,7 +112,7 @@ class _ExaminationCard extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.left,
                     ),
                 ],
               ),

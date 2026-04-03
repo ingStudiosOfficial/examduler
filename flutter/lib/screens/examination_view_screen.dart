@@ -1,6 +1,8 @@
 import 'package:examduler/models/exam.dart';
 import 'package:examduler/models/seating.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ExaminationViewScreen extends StatelessWidget {
   final Exam examDetails;
@@ -17,6 +19,13 @@ class ExaminationViewScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Theme.of(context).colorScheme.surfaceContainer,
         titleSpacing: 0,
+        actions: [
+          IconButton(
+            onPressed: _shareExam,
+            icon: const Icon(Icons.share_outlined),
+            tooltip: 'Share',
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(20),
@@ -43,6 +52,18 @@ class ExaminationViewScreen extends StatelessWidget {
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
     );
+  }
+
+  void _shareExam() {
+    final clientUrl =
+        dotenv.env['API_BASE_URL'] ?? 'https://app.examduler.ingstudios.dev';
+
+    final shareData = ShareParams(
+      title: 'Examination ${examDetails.name} on Examduler',
+      uri: Uri.parse('$clientUrl/exam?examId=${examDetails.id}'),
+    );
+
+    SharePlus.instance.share(shareData);
   }
 }
 

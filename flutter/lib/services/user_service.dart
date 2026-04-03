@@ -18,7 +18,7 @@ class UserService {
 
       final Map<String, dynamic> userMap = jsonDecode(response.body);
 
-      User userData = User.fromJson(userMap);
+      final User userData = User.fromJson(userMap);
 
       return userData;
     } on SocketException {

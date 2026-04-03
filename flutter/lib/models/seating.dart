@@ -1,3 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'seating.g.dart';
+
+@JsonSerializable()
 class Seating {
   final String seat;
   final String name;
@@ -10,4 +15,9 @@ class Seating {
     required this.email,
     this.isBlank,
   });
+
+  factory Seating.fromJson(Map<String, dynamic> json) =>
+      _$SeatingFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeatingToJson(this);
 }
