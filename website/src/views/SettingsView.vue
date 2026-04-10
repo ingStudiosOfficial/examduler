@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import AccountSection from '@/components/settings_sections/AccountSection.vue';
 </script>
 
 <template>
     <div class="settings-wrapper">
         <h1 class="settings-header">Settings</h1>
-        <h2 id="account" class="settings-header">Account</h2>
+        <AccountSection id="account"></AccountSection>
     </div>
 </template>
 
