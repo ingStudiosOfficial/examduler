@@ -4,7 +4,7 @@ import { fetchAllExams, sortExams } from '@/utils/exam_utils';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-export const useExamStore = defineStore('exams', () => {
+export const useExams = defineStore('exams', () => {
     const exams = ref<Exam[]>([]);
     const loaded = ref<boolean>(false);
 

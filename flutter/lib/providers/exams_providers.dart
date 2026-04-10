@@ -7,8 +7,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExamsNotifier extends AsyncNotifier<List<Exam>> {
   @override
-  List<Exam> build() {
-    return [];
+  Future<List<Exam>> build() async {
+    return _fetchFromService();
+  }
+
+  Future<List<Exam>> _fetchFromService() async {
+    final service = ref.read(examsServiceProvider);
+    return await service.fetchAllExams();
   }
 
   Future<void> refreshExams() async {

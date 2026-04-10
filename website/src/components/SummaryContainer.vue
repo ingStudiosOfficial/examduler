@@ -4,7 +4,7 @@ import { summarizeExams } from '@/utils/ai_utils';
 import { onMounted, ref, watch } from 'vue';
 import '@material/web/progress/circular-progress.js';
 import type { User } from '@/interfaces/User';
-import { useExamStore } from '@/stores/exam_store';
+import { useExams } from '@/stores/exams_store';
 
 interface ComponentProps {
     exams: Exam[];
@@ -15,7 +15,7 @@ const props = defineProps<ComponentProps>();
 
 const emit = defineEmits(['error']);
 
-const examStore = useExamStore();
+const examStore = useExams();
 
 const summary = ref<string>('');
 const message = ref<string>('');

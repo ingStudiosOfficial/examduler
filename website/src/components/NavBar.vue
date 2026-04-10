@@ -21,6 +21,10 @@ function navigateToPage(page: string) {
                 <m3e-icon slot="icon" name="dashboard"></m3e-icon>
                 Dashboard
             </m3e-nav-item>
+            <m3e-nav-item :selected="props.pageTitle.toLowerCase() === 'settings'" v-vibrate @click="navigateToPage('settings')">
+                <m3e-icon slot="icon" name="settings"></m3e-icon>
+                Settings
+            </m3e-nav-item>
         </m3e-nav-bar>
     </div>
 </template>

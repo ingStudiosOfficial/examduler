@@ -16,7 +16,7 @@ import type { User } from '@/interfaces/User';
 import { fetchAllExams, sortExams } from '@/utils/exam_utils';
 import { useDialog } from '@/composables/dialog_composables';
 import { showSnackbar } from '@/utils/snackbar';
-import { useExamStore } from '@/stores/exam_store';
+import { useExams } from '@/stores/exams_store';
 import { storeToRefs } from 'pinia';
 
 interface ComponentProps {
@@ -26,7 +26,7 @@ interface ComponentProps {
 
 const props = defineProps<ComponentProps>();
 
-const examStore = useExamStore();
+const examStore = useExams();
 
 const { dialogOpened: examOpened, openDialog: displayExamDialog, closeDialog: closeExamDialog } = useDialog();
 const { dialogOpened: editDialogOpened, openDialog: showEditDialog, closeDialog: closeEditDialog } = useDialog();

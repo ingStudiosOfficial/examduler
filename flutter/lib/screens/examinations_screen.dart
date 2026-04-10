@@ -22,12 +22,10 @@ class ExaminationsScreen extends ConsumerWidget {
         titleSpacing: 20,
       ),
       body: examinationsAsync.when(
-        data: (exams) => _buildExamsGrid(context, exams),
-        error: (err, stack) => SnackBar(
-          content: Text(err.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-        ),
+        data: (exams) => exams.isEmpty
+            ? const Center(child: Text('No examinations to prepare for!'))
+            : _buildExamsGrid(context, exams),
+        error: (err, stack) => Center(child: Text('Error: $err')),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,

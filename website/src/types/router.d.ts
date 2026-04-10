@@ -1,6 +1,6 @@
 import 'vue-router';
 
-export type RouteTitle = 'Home' | 'Login' | 'Dashboard' | 'Examination';
+export type RouteTitle = 'Home' | 'Login' | 'Dashboard' | 'Examination' | 'Settings';
 
 declare module 'vue-router' {
     interface RouteMeta {
