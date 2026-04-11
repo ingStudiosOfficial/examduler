@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import AccountSection from '@/components/settings_sections/AccountSection.vue';
+import { logUserOut } from '@/utils/user_utils';
 </script>
 
 <template>
     <div class="settings-wrapper">
         <h1 class="settings-header">Settings</h1>
-        <AccountSection id="account"></AccountSection>
+        <AccountSection id="account" @click="logUserOut()"></AccountSection>
     </div>
 </template>
 

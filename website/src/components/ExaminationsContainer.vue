@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Vue utils
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 // Views
 import ExaminationCard from './ExaminationCard.vue';
@@ -48,6 +48,10 @@ function handleShowEdit(exam: Exam) {
     examToEdit.value = exam;
     showEditDialog();
 }
+
+onMounted(async () => {
+    await examStore.refreshExams();
+});
 
 watch(
     () => props.refresh,

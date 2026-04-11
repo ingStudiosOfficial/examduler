@@ -7,8 +7,10 @@ const props = defineProps<ComponentProps>();
 </script>
 
 <template>
-    <h2 class="settings-header">{{ props.title }}</h2>
-    <slot class="settings-content"></slot>
+    <div class="section-wrapper">
+        <h2 class="settings-header">{{ props.title }}</h2>
+        <slot class="settings-content"></slot>
+    </div>
 </template>
 
 <style scoped>

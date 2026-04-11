@@ -1,9 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import OAuthButton from '@/components/OAuthButton.vue';
+import { useRoute } from 'vue-router';
+
+import { M3eSnackbar } from '@m3e/web/snackbar';
 
 const API_BASE_URL = ref<string>(import.meta.env.VITE_API_BASE_URL);
+
+const route = useRoute();
+
+onMounted(() => {
+    if (route.query.logout) M3eSnackbar.open('Successfully logged out!', {
+        duration: 0.4,
+    });
+});
 </script>
 
 <template>

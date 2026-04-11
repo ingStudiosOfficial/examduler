@@ -19,14 +19,16 @@ sessionRouter.post('/logout/' , authenticateToken(), async (req: Request, res: R
         });
     }
 
+    const CLIENT_URL = process.env.CLIENT_URL;
+
     try {
         const userId = new ObjectId(req.user.id);
         
         await req.db.collection<IUser>('users').updateOne({ _id: userId }, { $set: { tokenVersion: req.user.tokenVersion + 1 } });
-
+        
         res.status(200).json({
-            message: 'Successfully logged user out.',
-        })
+            meassage: 'Successfully logged user out.'
+        });
     } catch (error) {
         return res.status(500).json({
             message: 'Failed to log user out.',

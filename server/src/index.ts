@@ -9,6 +9,12 @@ import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({
+    path: path.join(__dirname, '../.env'),
+});
+
 import { authRouter } from './routes/oauth.js';
 import { sessionRouter } from './routes/session.js';
 import { userRouter } from './routes/user.js';
@@ -22,12 +28,6 @@ import { aiRouter } from './routes/ai.js';
 
 import { setupPassport } from './utils/auth_utils.js';
 import { requiresTrustedTesterAuth } from './middleware/auth.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({
-    path: path.join(__dirname, '../.env'),
-});
 
 const mongoURI = process.env.MONGODB_URI;
 if (!mongoURI) {

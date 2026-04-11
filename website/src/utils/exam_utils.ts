@@ -67,11 +67,7 @@ export function formatExamDate(examDate: string): string {
 
     const parsedDate = new Date(examDate);
 
-    const day = parsedDate.getDate();
-    const month = parsedDate.toLocaleString('default', { month: 'long' });
-    const year = parsedDate.getFullYear();
-
-    return `${day} ${month} ${year}`;
+    return format(parsedDate, 'dd MMM yyyy, h:mm a');
 }
 
 export async function createExam(examDetails: ExamCreate): Promise<FunctionNotifier> {
