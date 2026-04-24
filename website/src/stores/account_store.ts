@@ -1,5 +1,6 @@
 import type { User } from "@/interfaces/User";
 import router from "@/router";
+import { fetchCachedUserData } from "@/utils/cache_utils";
 import { showSnackbar } from "@/utils/snackbar";
 import { fetchUserData } from "@/utils/user_utils";
 import { defineStore } from "pinia";
@@ -15,7 +16,7 @@ export const useAccount = defineStore('account', () => {
         } catch (error) {
             console.error('Error while fetching user data:', error);
 
-            const cachedUserData = await fetchUserData();
+            const cachedUserData = await fetchCachedUserData();
             if (!cachedUserData) router.replace('/login');
             else accountData.value = cachedUserData;
 

@@ -117,10 +117,12 @@ export default defineConfig({
         globPatterns: [
           '**/*.{html,css,js,png,svg,ico,json}',
         ],
+        globDirectory: 'dist',
         cacheId: 'v1.0.0',
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
+        navigateFallback: '/index.html',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

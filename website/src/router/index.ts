@@ -81,8 +81,7 @@ router.beforeEach(async (to: RouteLocationNormalized, _, next: NavigationGuardNe
             }
         } catch (error) {
             console.error('Failed to authenticate user:', error);
-            if (navigator.onLine) next('/login');
-            else if (!navigator.onLine && JSON.parse(localStorage.getItem('lastAuthenticated') || 'false') === true) next();
+            if (localStorage.getItem('lastAuthenticated') === 'true') next();
             else next('/login');
         }
     } else {
