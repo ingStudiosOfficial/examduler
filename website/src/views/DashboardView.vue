@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-import '@material/web/fab/fab.js';
+import '@m3e/web/fab-menu';
+import '@m3e/web/fab';
 
 import ExaminationsContainer from '@/components/ExaminationsContainer.vue';
 import OrganizationsContainer from '@/components/OrganizationsContainer.vue';
@@ -47,12 +48,21 @@ function onSummaryError(message: string) {
         <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="examsStore.refreshExams()" @multiple="openCreateMultipleExamDialog()"></ExaminationCreateDialog>
         <ExaminationCreateMultipleDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateMultipleDialogOpened" @close="closeCreateMultipleExamDialog()" @success="examsStore.refreshExams()" @single="openCreateExamDialog()"></ExaminationCreateMultipleDialog>
 
-        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" label="Create" size="medium" v-vibrate @click="openCreateExamDialog()">
-            <md-icon slot="icon">add</md-icon>
-        </md-fab>
-        <md-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="mobile-add-button" size="large" v-vibrate @click="openCreateExamDialog()">
-            <md-icon slot="icon">add</md-icon>
-        </md-fab>
+        <m3e-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" size="large" variant="surface">
+            <m3e-fab-menu-trigger for="create-fab-menu">
+                <m3e-icon name="add"></m3e-icon>
+            </m3e-fab-menu-trigger>
+        </m3e-fab>
+        <m3e-fab-menu id="create-fab-menu" variant="tertiary">
+            <m3e-fab-menu-item @click="examCreateDialogOpened = true">
+                <m3e-icon slot="icon" name="draft"></m3e-icon>
+                Single examination
+            </m3e-fab-menu-item>
+            <m3e-fab-menu-item @click="examCreateMultipleDialogOpened = true">
+                <m3e-icon slot="icon" name="file_copy"></m3e-icon>
+                Multiple examinations
+            </m3e-fab-menu-item>
+        </m3e-fab-menu>
     </div>
 
     <LoaderContainer v-else class="loader-container" loading-text="Hang on while we load the neccessary data..." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
@@ -82,20 +92,9 @@ function onSummaryError(message: string) {
     right: 25px;
 }
 
-.mobile-add-button {
-    display: none;
-}
-
 @media (max-width: 768px) {
     .add-button {
-        display: none;
-    }
-
-    .mobile-add-button {
-        display: block;
-        position: fixed;
         bottom: calc(10dvh + 25px);
-        right: 25px;
     }
 }
 </style>
