@@ -39,7 +39,7 @@ async function setElementZIndex() {
 }
 
 function acknowledge() {
-    vibrate([6]);
+    vibrate();
     isVisible.value = false;
 }
 

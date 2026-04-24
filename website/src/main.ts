@@ -14,8 +14,8 @@ app.use(router);
 app.use(pinia);
 
 app.directive('vibrate', {
-    mounted(el, binding) {
-        el.addEventListener('click', vibrateDirective(el, binding));
+    mounted(el) {
+        el.addEventListener('click', vibrateDirective);
     },
 });
 
@@ -30,7 +30,7 @@ window.addEventListener(
 
         if (btn) {
             console.log('Vibrating with element:', btn);
-            vibrate([6]);
+            vibrate();
         }
     },
     true,

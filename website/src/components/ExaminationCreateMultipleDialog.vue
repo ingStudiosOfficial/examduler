@@ -16,6 +16,7 @@ import { bulkCreateExam } from '@/utils/exam_utils';
 import { magicPaste } from '@/utils/ai_utils';
 import { vibrate } from '@/utils/vibrate';
 import ExaminationEditTable from './ExaminationEditTable.vue';
+import { defaultPatterns, WebHaptics } from 'web-haptics';
 
 const emit = defineEmits(['close', 'success', 'single']);
 
@@ -82,14 +83,16 @@ async function triggerMagicPaste() {
 
     loadingMagicPaste.value = true;
 
+    const haptics = new WebHaptics();
+
     try {
         const pasteResult = await magicPaste(magicPasteInput.value);
         uploadedExaminations.value = pasteResult;
         magicPasteInput.value = '';
-        vibrate([6, 10, 6]);
+        haptics.trigger(defaultPatterns.success);
         showSnackbar('Examinations successfully formatted with Magic Paste');
     } catch (error) {
-        vibrate([6, 10, 6, 10, 6]);
+        haptics.trigger(defaultPatterns.error);
         showSnackbar(`An error occurred while using Magic Paste: '${error}'`);
     } finally {
         loadingMagicPaste.value = false;

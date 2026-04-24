@@ -42,7 +42,7 @@ async function setElementZIndex() {
 }
 
 function sendResult(confirmed: boolean) {
-    vibrate([6]);
+    vibrate();
     confirmedResult = confirmed;
     isVisible.value = false;
 }
