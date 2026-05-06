@@ -18,6 +18,7 @@ import { createExam } from '@/utils/exam_utils';
 import { useCheckMobile } from '@/composables/screen_width_composables';
 import { showSnackbar } from '@/utils/snackbar';
 import { handleFileUpload } from '@/utils/file_utils';
+import { vibrate } from '@/utils/vibrate';
 
 const emit = defineEmits(['close', 'success', 'multiple']);
 
@@ -73,9 +74,12 @@ async function examFormSubmit() {
     examCreationSuccess.value = success;
 
     if (success) {
+        vibrate('success');
         emit('success');
         showSnackbar('Successfully created examination', 4000);
         closeDialog();
+    } else {
+        vibrate('error');
     }
 }
 

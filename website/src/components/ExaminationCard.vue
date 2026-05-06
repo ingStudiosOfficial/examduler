@@ -56,6 +56,7 @@ watch(
 <template>
     <button
         class="card"
+        v-vibrate
         @click="showExamDialog(props.exam)"
         :style="{
             backgroundColor: examIsFuture ? 'var(--md-sys-color-primary-container)' : 'var(--md-sys-color-secondary-container)',

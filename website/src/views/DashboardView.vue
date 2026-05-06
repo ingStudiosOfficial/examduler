@@ -48,17 +48,17 @@ function onSummaryError(message: string) {
         <ExaminationCreateDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateDialogOpened" @close="closeCreateExamDialog()" @success="examsStore.refreshExams()" @multiple="openCreateMultipleExamDialog()"></ExaminationCreateDialog>
         <ExaminationCreateMultipleDialog v-if="(userData.role === 'admin' || userData.role === 'teacher') && examCreateMultipleDialogOpened" @close="closeCreateMultipleExamDialog()" @success="examsStore.refreshExams()" @single="openCreateExamDialog()"></ExaminationCreateMultipleDialog>
 
-        <m3e-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" size="large" variant="surface">
+        <m3e-fab v-if="userData.role === 'teacher' || userData.role === 'admin'" class="add-button" size="large" variant="surface" v-vibrate="'medium'">
             <m3e-fab-menu-trigger for="create-fab-menu">
                 <m3e-icon name="add"></m3e-icon>
             </m3e-fab-menu-trigger>
         </m3e-fab>
         <m3e-fab-menu id="create-fab-menu" variant="tertiary">
-            <m3e-fab-menu-item @click="examCreateDialogOpened = true">
+            <m3e-fab-menu-item v-vibrate @click="examCreateDialogOpened = true">
                 <m3e-icon slot="icon" name="draft"></m3e-icon>
                 Single examination
             </m3e-fab-menu-item>
-            <m3e-fab-menu-item @click="examCreateMultipleDialogOpened = true">
+            <m3e-fab-menu-item v-vibrate @click="examCreateMultipleDialogOpened = true">
                 <m3e-icon slot="icon" name="file_copy"></m3e-icon>
                 Multiple examinations
             </m3e-fab-menu-item>

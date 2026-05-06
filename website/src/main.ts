@@ -4,6 +4,8 @@ import router from './router';
 import { createPinia } from 'pinia';
 import './assets/main.css';
 import { vibrate } from './utils/vibrate';
+import type { DirectiveBinding } from 'vue';
+import type { defaultPatterns } from 'web-haptics';
 
 const app = createApp(App);
 
@@ -13,33 +15,18 @@ app.use(router);
 app.use(pinia);
 
 app.directive('vibrate', {
-    mounted(el) {
+    mounted(el, binding: DirectiveBinding<keyof typeof defaultPatterns>) {
         el._vibrateHandler = () => {
-            vibrate();
+            vibrate(binding.value);
         };
-        el.addEventListener("click", el._vibrateHandler);
+        el.addEventListener("click", el._vibrateHandler, true);
     },
     unmounted(el) {
-        el.removeEventListener("click", el._vibrateHandler);
+        el.removeEventListener("click", el._vibrateHandler, true);
     }
 });
 
 app.mount('#app');
 
-window.addEventListener(
-    'click',
-    (event) => {
-        if (!event.target) return;
-
-        const btn = (event.target as HTMLElement).closest('button');
-
-        if (btn) {
-            console.log('Vibrating with element:', btn);
-            vibrate();
-        }
-    },
-    true,
-);
-
-document.querySelector('meta[name="theme-color"]')?.setAttribute('content', 'var(--md-sys-color-background');
-document.querySelector('meta[name="background-color"]')?.setAttribute('content', 'var(--md-sys-color-background');
+document.querySelector('meta[name="theme-color"]')?.setAttribute('content', 'var(--md-sys-color-background)');
+document.querySelector('meta[name="background-color"]')?.setAttribute('content', 'var(--md-sys-color-background)');

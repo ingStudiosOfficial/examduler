@@ -9,6 +9,7 @@ import '@material/web/fab/fab.js';
 import type { OrganizationCreate } from '@/interfaces/Org';
 
 import { createOrganization } from '@/utils/org_utils';
+import { vibrate } from '@/utils/vibrate';
 
 const emit = defineEmits<{ (e: 'close'): void; (e: 'success', message: string): void }>();
 
@@ -93,8 +94,11 @@ async function orgFormSubmit() {
     orgCreationSuccess.value = success;
 
     if (success) {
+        vibrate('success');
         emit('success', orgCreationMessage.value);
         closeDialog();
+    } else {
+        vibrate('error');
     }
 }
 </script>

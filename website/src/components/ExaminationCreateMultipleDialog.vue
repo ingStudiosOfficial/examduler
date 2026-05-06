@@ -69,9 +69,12 @@ async function triggerBulkCreateExam() {
     examCreationSuccess.value = success;
 
     if (success) {
+        vibrate('success');
         emit('success');
         showSnackbar('Successfully created examinations', 4000);
         closeDialog();
+    } else {
+        vibrate('error');
     }
 }
 

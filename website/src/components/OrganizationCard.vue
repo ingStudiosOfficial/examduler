@@ -11,7 +11,7 @@ const props = defineProps<Organization>();
 </script>
 
 <template>
-    <button class="card">
+    <button class="card" v-vibrate>
         <md-ripple></md-ripple>
         <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
         <h1>{{ props.name }}</h1>

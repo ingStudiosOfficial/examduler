@@ -39,7 +39,7 @@ async function setElementZIndex() {
 }
 
 function acknowledge() {
-    vibrate();
+    vibrate('medium');
     isVisible.value = false;
 }
 
@@ -53,7 +53,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <md-dialog :open="isVisible" @closed="handleClosed()">
+    <md-dialog :open="isVisible" @open="vibrate('warning')" @closed="handleClosed()">
         <div slot="headline">
             {{ props.title }}
         </div>
