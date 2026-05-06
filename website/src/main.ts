@@ -4,7 +4,6 @@ import router from './router';
 import { createPinia } from 'pinia';
 import './assets/main.css';
 import { vibrate } from './utils/vibrate';
-import { vibrateDirective } from './directives/vibrate';
 
 const app = createApp(App);
 
@@ -15,8 +14,14 @@ app.use(pinia);
 
 app.directive('vibrate', {
     mounted(el) {
-        el.addEventListener('click', vibrateDirective);
+        el._vibrateHandler = () => {
+            vibrate();
+        };
+        el.addEventListener("click", el._vibrateHandler);
     },
+    unmounted(el) {
+        el.removeEventListener("click", el._vibrateHandler);
+    }
 });
 
 app.mount('#app');

@@ -1,6 +1,7 @@
 import { defaultPatterns, WebHaptics } from "web-haptics";
 
+const haptics = new WebHaptics();
+
 export function vibrate() {
-    const haptics = new WebHaptics();
     haptics.trigger(defaultPatterns.light);
 }
