@@ -7,10 +7,10 @@ import '@m3e/web/icon';
 
 <template>
     <SettingsSection title="Account">
-        <md-button variant="outlined" @click="logUserOut()">
+        <m3e-button variant="outlined" @click="logUserOut()">
             <m3e-icon name="logout" slot="icon"></m3e-icon>
             Logout
-        </md-button>
+        </m3e-button>
     </SettingsSection>
 </template>
 
