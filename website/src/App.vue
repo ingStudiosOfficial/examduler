@@ -25,8 +25,8 @@ const routeTitle = computed(() => {
 main {
     display: flex;
     flex-direction: row;
-    width: 100dvw;
-    height: 100dvh;
+    width: 100svw;
+    height: 100svh;
     box-sizing: border-box;
     overflow: hidden;
     overscroll-behavior-y: none;
@@ -52,7 +52,7 @@ main {
     main {
         flex-direction: column;
         overflow: hidden;
-        height: 100dvh;
+        height: 100svh;
     }
 
     .nav-menu {

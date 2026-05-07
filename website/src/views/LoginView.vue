@@ -30,8 +30,8 @@ onMounted(() => {
 <style scoped>
 .content-wrapper {
     position: fixed;
-    top: 50dvh;
-    left: 50dvw;
+    top: 50svh;
+    left: 50svw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -70,7 +70,7 @@ onMounted(() => {
         top: unset;
         bottom: 0;
         width: 100%;
-        height: 40dvh;
+        height: 40svh;
         transform: translate(-50%, 0);
         border-radius: 25px 25px 0 0;
         justify-content: center;

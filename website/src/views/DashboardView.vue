@@ -81,8 +81,8 @@ function onSummaryError(message: string) {
 
 .loader-container {
     position: fixed;
-    top: 50dvh;
-    left: 50dvw;
+    top: 50svh;
+    left: 50svw;
     transform: translate(-50%, -50%);
 }
 
@@ -94,7 +94,7 @@ function onSummaryError(message: string) {
 
 @media (max-width: 768px) {
     .add-button {
-        bottom: calc(10dvh + 25px);
+        bottom: calc(10svh + 25px);
     }
 }
 </style>

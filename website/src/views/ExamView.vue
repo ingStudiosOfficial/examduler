@@ -126,8 +126,8 @@ onMounted(async () => {
     text-align: center;
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
-    width: 40dvw;
-    height: 80dvh;
+    width: 40svw;
+    height: 80svh;
     border-radius: 25px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -165,8 +165,8 @@ onMounted(async () => {
 
 .loader {
     position: fixed;
-    top: 50dvh;
-    left: 50dvw;
+    top: 50svh;
+    left: 50svw;
     transform: translate(-50%, -50%);
     z-index: 500;
     display: flex;
@@ -204,7 +204,7 @@ onMounted(async () => {
 
 @media (max-width: 768px) {
     .exam-card {
-        width: 90dvw;
+        width: 90svw;
     }
 
     .download-button {
