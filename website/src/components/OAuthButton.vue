@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <m3e-button variant="tonal" v-vibrate :href="props.href" class="login-button">Continue with {{ props.provider }}</m3e-button>
+    <m3e-button variant="filled" v-vibrate :href="props.href" class="login-button">Continue with {{ props.provider }}</m3e-button>
 </template>
 
 <style scoped></style>
