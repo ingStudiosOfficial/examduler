@@ -3,7 +3,7 @@ import type { ResponseJson } from '@/interfaces/ResponseJson';
 import type { Seating } from '@/interfaces/Seating';
 import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
 import { createEvent, type EventAttributes } from 'ics';
-import { addHours, format, formatDistance } from 'date-fns';
+import { addHours, format, formatDistance, isThisYear } from 'date-fns';
 import { cacheExams } from './cache_utils';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -67,7 +67,11 @@ export function formatExamDate(examDate: string): string {
 
     const parsedDate = new Date(examDate);
 
-    return format(parsedDate, 'dd MMM yyyy, h:mm a');
+    if (isThisYear(parsedDate)) {
+        return format(parsedDate, 'eeee, dd MMM \'at\' h:mm a');
+    } else {
+        return format(parsedDate, 'dd MMM yyyy');
+    }
 }
 
 export async function createExam(examDetails: ExamCreate): Promise<FunctionNotifier> {

@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { Domain, DomainVerificationMethod } from '@/interfaces/Domain';
-import '@material/web/menu/menu.js';
-import '@material/web/icon/icon.js';
+import '@m3e/web/menu';
+import '@m3e/web/icon';
 import '@material/web/textfield/outlined-text-field.js';
-import '@material/web/menu/menu-item.js';
-import '@material/web/iconbutton/icon-button.js';
+import '@m3e/web/icon-button';
 import { onMounted, ref, watch } from 'vue';
 import { copyVerificationToken, verifyDomain } from '@/utils/org_utils';
-import type { MdMenuItem } from '@/interfaces/MdMenuItem';
 
 interface ComponentProps {
     domain: Domain;
@@ -30,16 +28,6 @@ async function triggerCopyToken(token: string) {
 
 function deleteDomain() {
     emit('deleteDomain', props.index);
-}
-
-function toggleMenu() {
-    console.log('Toggling menu...');
-
-    const domainVerificationMenu = document.getElementById(`domain-verification-menu-${props.keyId}`);
-
-    if (!domainVerificationMenu) return;
-
-    (domainVerificationMenu as MdMenuItem).open = !(domainVerificationMenu as MdMenuItem).open;
 }
 
 async function triggerVerifyDomain(method: DomainVerificationMethod) {
@@ -80,25 +68,26 @@ onMounted(() => {
 <template>
     <div v-if="domainToDisplay && props.keyId" class="domain-group">
         <md-outlined-text-field class="domain-input" v-model="domainToDisplay.domain" :label="`Domain ${props.index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
-        <md-icon-button v-vibrate type="button" @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
-            <md-icon>content_copy</md-icon>
-        </md-icon-button>
-        <md-icon-button v-vibrate type="button" @click="toggleMenu()" :id="`domain-verification-btn-${props.keyId}`" :disabled="!domain.verificationToken || domain.verified">
-            <md-icon>domain_verification</md-icon>
-        </md-icon-button>
-        <md-icon-button v-vibrate type="button" @click="deleteDomain()">
-            <md-icon>delete</md-icon>
-        </md-icon-button>
-        <md-menu :anchor="`domain-verification-btn-${props.keyId}`" :id="`domain-verification-menu-${props.keyId}`" positioning="popover">
-            <md-menu-item v-vibrate type="button" @click="triggerVerifyDomain('txt')">
-                <div slot="headline">Verify using TXT record</div>
-                <md-icon slot="start">dns</md-icon>
-            </md-menu-item>
-            <md-menu-item v-vibrate type="button" @click="triggerVerifyDomain('http')">
-                <div slot="headline">Verify using HTTP</div>
-                <md-icon slot="start">http</md-icon>
-            </md-menu-item>
-        </md-menu>
+        <m3e-icon-button v-vibrate type="button" @click="triggerCopyToken(domainToDisplay.verificationToken)" :disabled="!domainToDisplay.verificationToken">
+            <m3e-icon name="content_copy"></m3e-icon>
+        </m3e-icon-button>
+        <m3e-icon-button v-vibrate type="button" :disabled="!domain.verificationToken || domain.verified">
+            <m3e-icon name="domain_verification"></m3e-icon>
+            <m3e-menu-trigger :for="`domain-verification-menu-${props.keyId}`"></m3e-menu-trigger>
+        </m3e-icon-button>
+        <m3e-icon-button v-vibrate type="button" @click="deleteDomain()">
+            <m3e-icon name="delete"></m3e-icon>
+        </m3e-icon-button>
+        <m3e-menu :id="`domain-verification-menu-${props.keyId}`">
+            <m3e-menu-item v-vibrate type="button" @click="triggerVerifyDomain('txt')">
+                Verify using TXT record
+                <m3e-icon name="dns" slot="icon"></m3e-icon>
+            </m3e-menu-item>
+            <m3e-menu-item v-vibrate type="button" @click="triggerVerifyDomain('http')">
+                Verify using HTTP
+                <m3e-icon name="http" slot="icon"></m3e-icon>
+            </m3e-menu-item>
+        </m3e-menu>
     </div>
 </template>
 

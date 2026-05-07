@@ -3,11 +3,9 @@ import LoaderContainer from '@/components/LoaderContainer.vue';
 import type { PublicExam } from '@/interfaces/Exam';
 import { fetchPublicExam, getExamId, formatExamDate, downloadExam, addExamToGoogleCalendar } from '@/utils/exam_utils';
 import { onMounted, ref } from 'vue';
-import '@material/web/button/outlined-button.js';
-import '@material/web/menu/menu.js';
-import '@material/web/menu/menu-item.js';
-import '@material/web/icon/icon.js';
-import type { MdMenuItem } from '@/interfaces/MdMenuItem';
+import '@m3e/web/button';
+import '@m3e/web/menu';
+import '@m3e/web/icon';
 import { showSnackbar } from '@/utils/snackbar';
 
 const examDetails = ref<PublicExam>();
@@ -67,12 +65,6 @@ function triggerAddExamToGoogleCalendar() {
     addExamToGoogleCalendar(examDetails.value);
 }
 
-function toggleMenu() {
-    const downloadMenu = document.getElementById('download-menu');
-    if (!downloadMenu) return;
-    (downloadMenu as MdMenuItem).open = !(downloadMenu as MdMenuItem).open;
-}
-
 onMounted(async () => {
     await tryFetchExam();
 });
@@ -89,17 +81,19 @@ onMounted(async () => {
             <div class="description-wrapper">
                 <p class="exam-description">{{ examDetails.description }}</p>
             </div>
-            <md-outlined-button v-vibrate id="download-button" class="download-button" @click="toggleMenu()">Add event</md-outlined-button>
-            <md-menu anchor="download-button" id="download-menu" positioning="popover">
-                <md-menu-item v-vibrate @click="triggerAddExamToGoogleCalendar()">
-                    <div slot="headline">Add to Google Calendar</div>
-                    <md-icon slot="start">calendar_add_on</md-icon>
-                </md-menu-item>
-                <md-menu-item v-vibrate @click="triggerDownloadExam()">
-                    <div slot="headline">Download as event</div>
-                    <md-icon slot="start">download</md-icon>
-                </md-menu-item>
-            </md-menu>
+            <m3e-button variant="outlined" v-vibrate id="download-button" class="download-button">
+                <m3e-menu-trigger for="download-menu">Add event</m3e-menu-trigger>
+            </m3e-button>
+            <m3e-menu id="download-menu" position-y="above">
+                <m3e-menu-item v-vibrate @click="triggerAddExamToGoogleCalendar()">
+                    Add to Google Calendar
+                    <m3e-icon name="calendar_add_on" slot="icon"></m3e-icon>
+                </m3e-menu-item>
+                <m3e-menu-item v-vibrate @click="triggerDownloadExam()">
+                    Download as event
+                    <m3e-icon name="download" slot="icon"></m3e-icon>
+                </m3e-menu-item>
+            </m3e-menu>
             <p class="examduler-footer">Powered by Examduler</p>
         </div>
         <div v-else-if="examId && !isLoading" class="exam-card not-found">

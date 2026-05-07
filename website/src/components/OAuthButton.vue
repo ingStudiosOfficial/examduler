@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import '@material/web/button/filled-button.js';
+import '@m3e/web/button';
 
 const props = defineProps({
     provider: {
@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <md-filled-button v-vibrate :href="props.href" class="login-button">Continue with {{ props.provider }}</md-filled-button>
+    <m3e-button variant="tonal" v-vibrate :href="props.href" class="login-button">Continue with {{ props.provider }}</m3e-button>
 </template>
 
 <style scoped></style>

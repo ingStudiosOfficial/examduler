@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import '@material/web/iconbutton/icon-button.js';
-import '@material/web/icon/icon.js';
+import '@m3e/web/icon-button';
+import '@m3e/web/icon';
 import '@material/web/textfield/outlined-text-field.js';
-import '@material/web/fab/fab.js';
+import '@m3e/web/fab';
 
 import type { OrganizationCreate } from '@/interfaces/Org';
 
@@ -107,9 +107,9 @@ async function orgFormSubmit() {
     <div class="backdrop">
         <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
-                <md-icon-button v-vibrate @click="closeDialog()">
-                    <md-icon>close</md-icon>
-                </md-icon-button>
+                <m3e-icon-button v-vibrate @click="closeDialog()">
+                    <m3e-icon name="close"></m3e-icon>
+                </m3e-icon-button>
             </div>
             <h1 class="header-title">Create Organization</h1>
             <h2 class="subheader">General</h2>
@@ -118,9 +118,9 @@ async function orgFormSubmit() {
             <div class="domains">
                 <div class="domain-group" v-for="(_, index) in organizationToCreate.domains" :key="'domain' + index">
                     <md-outlined-text-field class="domain-input" v-if="organizationToCreate.domains[index]" v-model="organizationToCreate.domains[index].domain" :label="`Domain ${index + 1}`" required no-asterisk="true" supporting-text="A domain linked to the organization."></md-outlined-text-field>
-                    <md-icon-button v-vibrate type="button" @click="deleteDomain(index)">
-                        <md-icon>delete</md-icon>
-                    </md-icon-button>
+                    <m3e-icon-button v-vibrate type="button" @click="deleteDomain(index)">
+                        <m3e-icon name="delete"></m3e-icon>
+                    </m3e-icon-button>
                 </div>
             </div>
             <md-filled-button v-vibrate type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
@@ -130,16 +130,16 @@ async function orgFormSubmit() {
                 <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-                    <md-icon>upload</md-icon>
+                    <m3e-icon name="upload"></m3e-icon>
                 </label>
                 <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" @change="handleFileUpload" />
                 <p class="file-chosen">{{ uploadedMembersName }}</p>
             </div>
             <p :style="{ color: orgCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ orgCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
-            <md-fab class="submit-button" @click="pressOrgSubmit()">
-                <md-icon slot="icon">check</md-icon>
-            </md-fab>
+            <m3e-fab size="small" class="submit-button" @click="pressOrgSubmit()">
+                <m3e-icon name="check"></m3e-icon>
+            </m3e-fab>
         </form>
     </div>
 </template>

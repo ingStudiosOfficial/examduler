@@ -4,9 +4,9 @@ import { onMounted, onUnmounted, ref, watch, watchEffect } from 'vue';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/ripple/ripple.js';
 import '@material/web/focus/md-focus-ring.js';
-import '@material/web/fab/fab.js';
-import '@material/web/icon/icon.js';
-import '@material/web/iconbutton/icon-button.js';
+import '@m3e/web/fab';
+import '@m3e/web/icon-button';
+import '@m3e/web/icon';
 
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -157,9 +157,9 @@ onUnmounted(() => {
     <div v-if="examToEdit" class="backdrop">
         <form class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
-                <md-icon-button type="button" v-vibrate @click="closeDialog()">
-                    <md-icon>close</md-icon>
-                </md-icon-button>
+                <m3e-icon-button type="button" v-vibrate @click="closeDialog()">
+                    <m3e-icon name="close"></m3e-icon>
+                </m3e-icon-button>
             </div>
             <h1 class="header-title">Edit Examination</h1>
             <h2 class="subheader">Details</h2>
@@ -176,16 +176,16 @@ onUnmounted(() => {
                 <label class="file-upload-button" tabindex="0" v-vibrate @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-                    <md-icon>upload</md-icon>
+                    <m3e-icon name="upload"></m3e-icon>
                 </label>
                 <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" @change="handleFileUpload" />
                 <p class="file-chosen">{{ uploadedSeatName }}</p>
             </div>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
-            <md-fab class="submit-button" @click="pressExamSubmit()">
-                <md-icon slot="icon">check</md-icon>
-            </md-fab>
+            <m3e-fab size="small" class="submit-button" @click="pressExamSubmit()">
+                <m3e-icon name="check"></m3e-icon>
+            </m3e-fab>
         </form>
     </div>
 </template>

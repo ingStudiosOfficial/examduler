@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-
-import '@material/web/button/filled-button.js';
+import '@m3e/web/button';
 
 import OrganizationCreateDialog from './OrganizationCreateDialog.vue';
 
@@ -40,7 +39,7 @@ watch(dialogOpened, (isOpen: boolean) => {
 
 <template>
     <p class="no-org-text" v-if="!props.hasOrganizations">You don't look like you have any organizations yet.</p>
-    <md-filled-button class="org-create-btn" v-vibrate @click="openCreateOrgDialog()">Create an organization</md-filled-button>
+    <m3e-button variant="filled" class="org-create-btn" v-vibrate @click="openCreateOrgDialog()">Create an organization</m3e-button>
     <OrganizationCreateDialog v-if="dialogOpened" @close="closeCreateOrgDialog()" @success="emitRefresh"></OrganizationCreateDialog>
 </template>
 

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import '@material/web/ripple/ripple.js';
-import '@material/web/focus/md-focus-ring.js';
+import '@m3e/web/card';
 
 import { isFuture } from 'date-fns';
 
@@ -65,7 +64,7 @@ watch(
     >
         <md-ripple></md-ripple>
         <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-        <h1 class="exam-name">{{ props.exam.name }}</h1>
+        <p class="exam-name">{{ props.exam.name }}</p>
         <p class="countdown-text">{{ timeTillExam }}</p>
         <div class="exam-details" v-if="examIsFuture">
             <p class="exam-date">{{ formatExamDate(props.exam.date) }}</p>
@@ -82,7 +81,7 @@ watch(
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     border-radius: 25px;
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
@@ -92,14 +91,21 @@ watch(
 }
 
 .exam-name {
-    overflow-wrap: break-word;
-    word-break: break-all;
+    text-align: start;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .exam-date,
 .exam-seat {
-    font-weight: bold;
+    font-weight: 400;
     font-size: 1rem;
+    margin: 0;
 }
 
 .exam-details {
@@ -107,12 +113,12 @@ watch(
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 20px;
 }
 
 .countdown-text {
     font-size: 1.3rem;
-    font-weight: bold;
+    font-weight: 400;
 }
 </style>

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 
-import '@material/web/iconbutton/icon-button.js';
-import '@material/web/icon/icon.js';
+import '@m3e/web/icon-button';
+import '@m3e/web/icon';
 import '@material/web/textfield/outlined-text-field.js';
-import '@material/web/fab/fab.js';
-import '@material/web/menu/menu.js';
-import '@material/web/menu/menu-item.js';
+import '@m3e/web/fab';
+import '@m3e/web/menu';
 
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
 import { deleteOrganization, downloadMembersJson, editOrganization } from '@/utils/org_utils';
@@ -171,14 +170,14 @@ onMounted(() => {
         <form class="dialog" @submit.prevent="orgFormSubmit()">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button type="button" v-vibrate @click="triggerDeleteOrg()">
-                        <md-icon>delete</md-icon>
-                    </md-icon-button>
+                    <m3e-icon-button type="button" v-vibrate @click="triggerDeleteOrg()">
+                        <m3e-icon name="delete"></m3e-icon>
+                    </m3e-icon-button>
                 </div>
                 <div class="right-buttons">
-                    <md-icon-button type="button" v-vibrate @click="closeDialog()">
-                        <md-icon>close</md-icon>
-                    </md-icon-button>
+                    <m3e-icon-button type="button" v-vibrate @click="closeDialog()">
+                        <m3e-icon name="close"></m3e-icon>
+                    </m3e-icon-button>
                 </div>
             </div>
             <h1 class="org-header">Edit Organization</h1>
@@ -196,7 +195,7 @@ onMounted(() => {
                 <label v-vibrate class="file-upload-button" tabindex="0" @click="triggerDownloadMembers(loadedOrganization.members)" @keyup.enter="downloadMembersJson(loadedOrganization.members)" @keyup.space="downloadMembersJson(loadedOrganization.members)">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-                    <md-icon>download</md-icon>
+                    <m3e-icon name="download"></m3e-icon>
                 </label>
             </div>
             <div class="file-input">
@@ -204,16 +203,16 @@ onMounted(() => {
                 <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                     <md-ripple></md-ripple>
                     <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-                    <md-icon>upload</md-icon>
+                    <m3e-icon name="upload"></m3e-icon>
                 </label>
                 <input type="file" ref="membersPicker" name="members-csv" accept=".csv" style="display: none" @change="handleFileUpload" />
                 <p class="file-chosen">{{ uploadedMembersName }}</p>
             </div>
             <p :style="{ color: orgEditSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ orgEditMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
-            <md-fab class="submit-button" @click="pressOrgSubmit()">
-                <md-icon slot="icon">check</md-icon>
-            </md-fab>
+            <m3e-fab size="small" class="submit-button" @click="pressOrgSubmit()">
+                <m3e-icon name="check"></m3e-icon>
+            </m3e-fab>
         </form>
     </div>
 </template>

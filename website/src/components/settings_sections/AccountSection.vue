@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { logUserOut } from '@/utils/user_utils';
 import SettingsSection from '../SettingsSection.vue';
-import '@material/web/button/outlined-button.js';
-import '@material/web/icon/icon.js';
+import '@m3e/web/button';
+import '@m3e/web/icon';
 </script>
 
 <template>
     <SettingsSection title="Account">
-        <md-outlined-button @click="logUserOut()">
-            <md-icon slot="icon">logout</md-icon>
+        <md-button variant="outlined" @click="logUserOut()">
+            <m3e-icon name="logout" slot="icon"></m3e-icon>
             Logout
-        </md-outlined-button>
+        </md-button>
     </SettingsSection>
 </template>
 

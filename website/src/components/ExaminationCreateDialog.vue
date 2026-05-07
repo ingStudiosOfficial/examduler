@@ -4,9 +4,9 @@ import { ref, watch } from 'vue';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/ripple/ripple.js';
 import '@material/web/focus/md-focus-ring.js';
-import '@material/web/fab/fab.js';
-import '@material/web/icon/icon.js';
-import '@material/web/iconbutton/icon-button.js';
+import '@m3e/web/fab';
+import '@m3e/web/icon';
+import '@m3e/web/icon-button';
 import '@m3e/web/expansion-panel';
 
 import { VueDatePicker } from '@vuepic/vue-datepicker';
@@ -102,14 +102,14 @@ watch(dates, (newValue) => {
         <form class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button type="button" v-vibrate @click="triggerCreateMultiple()">
-                        <md-icon>file_copy</md-icon>
-                    </md-icon-button>
+                    <m3e-icon-button type="button" v-vibrate @click="triggerCreateMultiple()">
+                        <m3e-icon name="file_copy"></m3e-icon>
+                    </m3e-icon-button>
                 </div>
                 <div class="right-buttons">
-                    <md-icon-button type="button" v-vibrate @click="closeDialog()">
-                        <md-icon>close</md-icon>
-                    </md-icon-button>
+                    <m3e-icon-button type="button" v-vibrate @click="closeDialog()">
+                        <m3e-icon name="close"></m3e-icon>
+                    </m3e-icon-button>
                 </div>
             </div>
             <h1 class="header-title">Create Examination</h1>
@@ -127,7 +127,7 @@ watch(dates, (newValue) => {
                         <label v-vibrate class="file-upload-button" tabindex="0" @click="openFilePicker()" @keyup.enter="openFilePicker()" @keyup.space="openFilePicker()">
                             <md-ripple></md-ripple>
                             <md-focus-ring style="--md-focus-ring-shape: 25px"></md-focus-ring>
-                            <md-icon>upload</md-icon>
+                            <m3e-icon name="upload"></m3e-icon>
                         </label>
                         <input type="file" ref="seatingPicker" name="seating-csv" accept=".csv" style="display: none" @change="handleFileUploadWrapper" />
                         <p class="file-chosen">{{ uploadedSeatName }}</p>
@@ -136,9 +136,9 @@ watch(dates, (newValue) => {
             </m3e-expansion-panel>
             <p :style="{ color: examCreationSuccess ? 'var(--md-sys-color-on-primary-container)' : 'var(--md-sys-color-error)' }">{{ examCreationMessage }}</p>
             <button class="hidden-submit" type="submit" ref="submitButton"></button>
-            <md-fab class="submit-button" @click="pressExamSubmit()">
-                <md-icon slot="icon">check</md-icon>
-            </md-fab>
+            <m3e-fab size="small" class="submit-button" @click="pressExamSubmit()">
+                <m3e-icon name="check"></m3e-icon>
+            </m3e-fab>
         </form>
     </div>
 </template>

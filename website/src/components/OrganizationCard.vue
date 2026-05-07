@@ -1,9 +1,6 @@
 <script setup lang="ts">
-//import { ref, watch } from 'vue';
-
 import '@material/web/ripple/ripple.js';
 import '@material/web/focus/md-focus-ring.js';
-import '@material/web/button/filled-button.js';
 
 import type { Organization } from '@/interfaces/Org';
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import '@material/web/dialog/dialog.js';
-import '@material/web/button/text-button.js';
-import '@material/web/button/filled-tonal-button.js';
+import '@m3e/web/button';
 import { nextTick, onMounted, ref } from 'vue';
 import { vibrate } from '@/utils/vibrate';
 
@@ -65,8 +64,8 @@ onMounted(() => {
             {{ props.message }}
         </div>
         <div slot="actions">
-            <md-filled-tonal-button v-vibrate @click="sendResult(false)">Cancel</md-filled-tonal-button>
-            <md-filled-button v-vibrate @click="sendResult(true)">OK</md-filled-button>
+            <m3e-button variant="text" @click="sendResult(false)">Cancel</m3e-button>
+            <m3e-button variant="filled" @click="sendResult(true)">OK</m3e-button>
         </div>
     </md-dialog>
 </template>

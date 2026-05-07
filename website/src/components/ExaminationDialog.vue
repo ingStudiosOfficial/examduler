@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import '@material/web/iconbutton/icon-button.js';
-import '@material/web/icon/icon.js';
+import '@m3e/web/icon-button';
+import '@m3e/web/icon';
 
 import SeatingContainer from './SeatingContainer.vue';
 
@@ -109,24 +109,24 @@ onUnmounted(() => {
         <div class="dialog">
             <div class="top-panel">
                 <div class="left-buttons">
-                    <md-icon-button v-if="userData.role === 'teacher' || userData.role === 'admin'" v-vibrate @click="triggerDeleteExam()">
-                        <md-icon>delete</md-icon>
-                    </md-icon-button>
-                    <md-icon-button v-if="userData.role === 'teacher' || userData.role === 'admin'" v-vibrate @click="triggerEditExam()">
-                        <md-icon>edit</md-icon>
-                    </md-icon-button>
+                    <m3e-icon-button v-if="userData.role === 'teacher' || userData.role === 'admin'" v-vibrate @click="triggerDeleteExam()">
+                        <m3e-icon name="delete"></m3e-icon>
+                    </m3e-icon-button>
+                    <m3e-icon-button v-if="userData.role === 'teacher' || userData.role === 'admin'" v-vibrate @click="triggerEditExam()">
+                        <m3e-icon name="edit"></m3e-icon>
+                    </m3e-icon-button>
                 </div>
                 <div class="exam-headers">
                     <h1 class="exam-name">{{ examDetails.name }}</h1>
                     <p class="exam-date">({{ formatExamDate(examDetails.date) }})</p>
                 </div>
                 <div class="right-buttons">
-                    <md-icon-button v-vibrate @click="triggerShareExam()">
-                        <md-icon>share</md-icon>
-                    </md-icon-button>
-                    <md-icon-button v-vibrate @click="closeDialog()">
-                        <md-icon>close</md-icon>
-                    </md-icon-button>
+                    <m3e-icon-button v-vibrate @click="triggerShareExam()">
+                        <m3e-icon name="share"></m3e-icon>
+                    </m3e-icon-button>
+                    <m3e-icon-button v-vibrate @click="closeDialog()">
+                        <m3e-icon name="close"></m3e-icon>
+                    </m3e-icon-button>
                 </div>
             </div>
             <div class="mobile-headers">
