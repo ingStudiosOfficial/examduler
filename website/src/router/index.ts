@@ -5,11 +5,26 @@ import DashboardView from '@/views/DashboardView.vue';
 import ExamView from '@/views/ExamView.vue';
 import type { ResponseJson } from '@/interfaces/ResponseJson';
 import SettingsView from '@/views/SettingsView.vue';
+import ExaminationDialog from '@/components/ExaminationDialog.vue';
+import ExaminationEditDialog from '@/components/ExaminationEditDialog.vue';
 
 const routes: RouteRecordRaw[] = [
     { path: '/', name: 'home', component: LoginView, meta: { title: 'Home', requiresAuth: false } },
     { path: '/login', name: 'login', component: LoginView, meta: { title: 'Login', requiresAuth: false } },
-    { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { title: 'Dashboard', requiresAuth: true } },
+    { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { title: 'Dashboard', requiresAuth: true }, children: [
+        {
+            path: 'exam/:id',
+            name: 'exam-details',
+            component: ExaminationDialog,
+            props: true,
+        },
+        {
+            path: 'exam/:id/edit',
+            name: 'exam-update',
+            component: ExaminationEditDialog,
+            props: true,
+        },
+    ] },
     { path: '/exam', name: 'exam', component: ExamView, meta: { title: 'Examination', requiresAuth: false } },
     { path: '/settings', name: 'settings', component: SettingsView, meta: { title: 'Settings', requiresAuth: true } },
 ];

@@ -40,3 +40,4 @@ __screenshots__/
 private.*
 
 cache/*
+dev-dist/

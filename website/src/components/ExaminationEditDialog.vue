@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch, watchEffect } from 'vue';
 
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/ripple/ripple.js';
@@ -18,20 +18,38 @@ import { editExam } from '@/utils/exam_utils';
 import { useCheckMobile } from '@/composables/screen_width_composables';
 import { showSnackbar } from '@/utils/snackbar';
 import { vibrate } from '@/utils/vibrate';
+import { useExams } from '@/stores/exams_store';
+
+const props = defineProps<{
+    id: string;
+}>();
 
 const emit = defineEmits(['close', 'success']);
 
-const props = defineProps<ExamEdit>();
+const examsStore = useExams();
 
 const { isMobile } = useCheckMobile();
 
-const dates = ref(new Date(props.date));
-const examToEdit = ref<ExamEdit>({ ...props });
+const dates = ref<Date>(new Date());
+const examToEdit = ref<ExamEdit | null>(null);
 const seatingPicker = ref();
 const submitButton = ref();
 const uploadedSeatName = ref<string>();
 const examCreationMessage = ref<string>();
 const examCreationSuccess = ref<boolean>(false);
+
+watchEffect(() => {
+    const found = examsStore.exams.find(e => e._id === props.id);
+    if (found && !examToEdit.value) {
+        examToEdit.value = { ...found };
+    }
+});
+
+watchEffect(() => {
+    if (examToEdit.value) {
+        dates.value = new Date(Number(examToEdit.value.date));
+    }
+});
 
 function closeDialog() {
     examToEdit.value = {
@@ -66,6 +84,8 @@ function handleFileUpload(e: Event) {
     const reader = new FileReader();
 
     reader.onload = (ef) => {
+        if (!examToEdit.value) return;
+
         if (!ef.target?.result) {
             console.error('Failed to read file.');
             return;
@@ -87,6 +107,8 @@ function handleFileUpload(e: Event) {
 }
 
 async function examFormSubmit() {
+    if (!examToEdit.value) return;
+
     const examDateObject = new Date(dates.value);
 
     examToEdit.value.date = examDateObject.getTime().toString();
@@ -114,10 +136,25 @@ function pressExamSubmit() {
 watch(dates, (newValue) => {
     console.log(newValue);
 });
+
+function onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDialog();
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('keydown', onKeyDown);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', onKeyDown);
+})
 </script>
 
 <template>
-    <div class="backdrop">
+    <div v-if="examToEdit" class="backdrop">
         <form class="dialog" @submit.prevent="examFormSubmit()">
             <div class="top-panel">
                 <md-icon-button type="button" v-vibrate @click="closeDialog()">

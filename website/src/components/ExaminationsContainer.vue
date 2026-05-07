@@ -1,12 +1,10 @@
 <script setup lang="ts">
 // Vue utils
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, watch } from 'vue';
 
 // Views
 import ExaminationCard from './ExaminationCard.vue';
-import ExaminationDialog from './ExaminationDialog.vue';
 import LoaderContainer from './LoaderContainer.vue';
-import ExaminationEditDialog from './ExaminationEditDialog.vue';
 
 // Interfaces
 import type { Exam } from '@/interfaces/Exam';
@@ -14,10 +12,10 @@ import type { User } from '@/interfaces/User';
 
 // Utils
 import { fetchAllExams, sortExams } from '@/utils/exam_utils';
-import { useDialog } from '@/composables/dialog_composables';
 import { showSnackbar } from '@/utils/snackbar';
 import { useExams } from '@/stores/exams_store';
 import { storeToRefs } from 'pinia';
+import router from '@/router';
 
 interface ComponentProps {
     user: User;
@@ -28,25 +26,18 @@ const props = defineProps<ComponentProps>();
 
 const examStore = useExams();
 
-const { dialogOpened: examOpened, openDialog: displayExamDialog, closeDialog: closeExamDialog } = useDialog();
-const { dialogOpened: editDialogOpened, openDialog: showEditDialog, closeDialog: closeEditDialog } = useDialog();
-
 const { exams } = storeToRefs(examStore);
-const examDetails = ref<Exam | null>(null);
-const examToEdit = ref<Exam | null>();
 
 function displaySb(message: string) {
     showSnackbar(message, 4000);
 }
 
 function handleDisplayExam(exam: Exam) {
-    examDetails.value = exam;
-    displayExamDialog();
+    router.push({ name: 'exam-details', params: { id: exam._id } });
 }
 
 function handleShowEdit(exam: Exam) {
-    examToEdit.value = exam;
-    showEditDialog();
+    router.push({ name: 'exam-update', params: { id: exam._id } });
 }
 
 onMounted(async () => {
@@ -82,8 +73,14 @@ watch(
         </div>
         <LoaderContainer v-else loader-color="var(--md-sys-color-primary)" loading-text="Hang on while we load your examinations..."></LoaderContainer>
 
-        <ExaminationDialog v-if="examOpened && examDetails?._id && examDetails.name && examDetails.description" :exam="examDetails" :user="props.user" @close="closeExamDialog()" @show-sb="displaySb" @refresh="examStore.refreshExams()" @edit="handleShowEdit"></ExaminationDialog>
-        <ExaminationEditDialog v-if="editDialogOpened && examToEdit" :_id="examToEdit._id" :name="examToEdit.name" :date="examToEdit.date" :description="examToEdit.description" :seating="examToEdit.seating" @show-sb="displaySb" @refresh="examStore.refreshExams()" @close="closeEditDialog()" @success="examStore.refreshExams()"></ExaminationEditDialog>
+        <RouterView
+            :user="props.user"
+            @close="router.back()"
+            @show-sb="displaySb"
+            @refresh="examStore.refreshExams()"
+            @success="examStore.refreshExams()"
+            @edit="handleShowEdit"
+        />
     </div>
 </template>
 

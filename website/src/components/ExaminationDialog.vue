@@ -10,15 +10,25 @@ import type { Seating } from '@/interfaces/Seating';
 
 import { deleteExam, formatExamDate, getUserSeat, shareExam } from '@/utils/exam_utils';
 import { DialogUtils } from '@/utils/dialog_utils';
+import { computed, onMounted, onUnmounted } from 'vue';
+import { useExams } from '@/stores/exams_store';
 
 interface ComponentProps {
-    exam: Exam;
+    id: string;
     user: User;
 }
 
 const props = defineProps<ComponentProps>();
 
 const emit = defineEmits(['close', 'showSb', 'refresh', 'edit']);
+
+const examsStore = useExams();
+
+const examDetails = computed<Exam | undefined>(() => {
+    return examsStore.exams.find(e => e._id === props.id);
+});
+
+const userData = props.user;
 
 function tryGetUserSeat(seating: Seating[][], email: string): Seating | null {
     try {
@@ -35,7 +45,9 @@ function tryGetUserSeat(seating: Seating[][], email: string): Seating | null {
 }
 
 async function triggerShareExam() {
-    const { message, success } = await shareExam(props.exam);
+    if (!examDetails.value) return;
+
+    const { message, success } = await shareExam(examDetails.value);
 
     if (!success) {
         console.error('Failed to share exam:', message);
@@ -49,9 +61,9 @@ async function triggerShareExam() {
 }
 
 async function triggerDeleteExam() {
-    if (!(await DialogUtils.confirm(`Are you sure you want to delete the examination '${props.exam.name}'?`, 'Delete Examination'))) return;
+    if (!(await DialogUtils.confirm(`Are you sure you want to delete the examination '${examDetails.value?.name}'?`, 'Delete Examination')) || !examDetails.value) return;
 
-    const { message, success } = await deleteExam(props.exam);
+    const { message, success } = await deleteExam(examDetails.value);
 
     if (!success) {
         console.error('Failed to delete exam:', message);
@@ -67,20 +79,33 @@ async function triggerDeleteExam() {
 }
 
 async function triggerEditExam() {
+    if (!examDetails.value) return;
     console.log('Attempting to edit exam...');
-    emit('edit', props.exam);
-    closeDialog();
+    emit('edit', examDetails.value);
 }
 
 function closeDialog() {
     emit('close');
 }
 
-const userData = props.user;
+function onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDialog();
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('keydown', onKeyDown);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', onKeyDown);
+})
 </script>
 
 <template>
-    <div class="backdrop">
+    <div class="backdrop" v-if="examDetails">
         <div class="dialog">
             <div class="top-panel">
                 <div class="left-buttons">
@@ -92,8 +117,8 @@ const userData = props.user;
                     </md-icon-button>
                 </div>
                 <div class="exam-headers">
-                    <h1 class="exam-name">{{ props.exam.name }}</h1>
-                    <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
+                    <h1 class="exam-name">{{ examDetails.name }}</h1>
+                    <p class="exam-date">({{ formatExamDate(examDetails.date) }})</p>
                 </div>
                 <div class="right-buttons">
                     <md-icon-button v-vibrate @click="triggerShareExam()">
@@ -105,18 +130,18 @@ const userData = props.user;
                 </div>
             </div>
             <div class="mobile-headers">
-                <h1 class="exam-name">{{ props.exam.name }}</h1>
-                <p class="exam-date">({{ formatExamDate(props.exam.date) }})</p>
+                <h1 class="exam-name">{{ examDetails.name }}</h1>
+                <p class="exam-date">({{ formatExamDate(examDetails.date) }})</p>
             </div>
             <h1 class="section-header">Description</h1>
-            <p class="exam-description">{{ props.exam.description }}</p>
-            <h1 v-if="props.exam.seating && props.exam.seating.length !== 0" class="section-header">Seating</h1>
-            <p v-if="props.exam.seating && tryGetUserSeat(props.exam.seating, props.user.email)">
+            <p class="exam-description">{{ examDetails.description }}</p>
+            <h1 v-if="examDetails.seating && examDetails.seating.length !== 0" class="section-header">Seating</h1>
+            <p v-if="examDetails.seating && tryGetUserSeat(examDetails.seating, props.user.email)">
                 Your seat:
-                <b>{{ tryGetUserSeat(props.exam.seating, props.user.email)?.seat }}</b>
+                <b>{{ tryGetUserSeat(examDetails.seating, props.user.email)?.seat }}</b>
             </p>
-            <div v-if="props.exam.seating && props.exam.seating.length !== 0" class="seating-wrapper">
-                <SeatingContainer :seating="props.exam.seating" :user-seat="tryGetUserSeat(props.exam.seating, props.user.email)" class="seating"></SeatingContainer>
+            <div v-if="examDetails.seating && examDetails.seating.length !== 0" class="seating-wrapper">
+                <SeatingContainer :seating="examDetails.seating" :user-seat="tryGetUserSeat(examDetails.seating, props.user.email)" class="seating"></SeatingContainer>
             </div>
         </div>
     </div>
