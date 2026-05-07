@@ -43,7 +43,7 @@ export function sortExams(exams: Exam[]): Exam[] {
 
         // If both are future: sort by soonest first (ascending)
         // If both are past: sort by most recent first (descending)
-        return timeA - timeB;
+        return !isPastA ? timeA - timeB : timeB - timeA;
     });
 }
 
