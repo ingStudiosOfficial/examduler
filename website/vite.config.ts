@@ -118,7 +118,7 @@ export default defineConfig({
           '**/*.{html,css,js,png,svg,ico,json}',
         ],
         globDirectory: 'dist',
-        cacheId: 'v1.0.0',
+        cacheId: 'v1.1.0',
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,

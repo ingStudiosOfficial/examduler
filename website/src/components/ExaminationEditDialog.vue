@@ -41,13 +41,14 @@ const examCreationSuccess = ref<boolean>(false);
 watchEffect(() => {
     const found = examsStore.exams.find(e => e._id === props.id);
     if (found && !examToEdit.value) {
+        console.log('Found exam:', found);
         examToEdit.value = { ...found };
     }
 });
 
-watchEffect(() => {
-    if (examToEdit.value) {
-        dates.value = new Date(Number(examToEdit.value.date));
+watch(examToEdit, (newValue) => {
+    if (newValue) {
+        dates.value = new Date(newValue.date);
     }
 });
 
