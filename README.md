@@ -111,4 +111,4 @@ Examduler is licensed under the **Apache 2.0 License**. See [LICENSE](./LICENSE)
 
 <hr />
 
-© 2025 (ing) Studios and Ethan Lee
+© 2026 (ing) Studios and Ethan Lee
