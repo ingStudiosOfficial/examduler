@@ -83,6 +83,12 @@ aiRouter.post('/magic-paste/', authenticateToken(), verifyRole('teacher'), async
 
             let parsedResult: IExam[] = JSON.parse(response.message.content);
 
+            for (const result of parsedResult) {
+                if ((!result.editors || result.editors.length === 0) && req.user) {
+                    result.editors = [req.user.email];
+                }
+            }
+
             verifyParsedResult(parsedResult);
 
             return res.status(200).json({

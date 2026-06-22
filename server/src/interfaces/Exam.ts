@@ -7,6 +7,7 @@ export interface IExam {
     name: string;
     date: string;
     description: string;
+    editors: string[];
     seating?: ISeating[][];
 }
 

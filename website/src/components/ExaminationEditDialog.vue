@@ -19,6 +19,7 @@ import { useCheckMobile } from '@/composables/screen_width_composables';
 import { showSnackbar } from '@/utils/snackbar';
 import { vibrate } from '@/utils/vibrate';
 import { useExams } from '@/stores/exams_store';
+import { useAccount } from '@/stores/account_store.ts';
 
 const props = defineProps<{
     id: string;
@@ -27,6 +28,8 @@ const props = defineProps<{
 const emit = defineEmits(['close', 'success']);
 
 const examsStore = useExams();
+
+const { accountData } = useAccount();
 
 const { isMobile } = useCheckMobile();
 
@@ -43,6 +46,7 @@ watchEffect(() => {
     if (found && !examToEdit.value) {
         console.log('Found exam:', found);
         examToEdit.value = { ...found };
+        dates.value = new Date(examToEdit.value.date);
     }
 });
 
@@ -57,6 +61,7 @@ function closeDialog() {
         name: '',
         date: '',
         description: '',
+        editors: [],
         seating: [],
     };
 
@@ -108,13 +113,13 @@ function handleFileUpload(e: Event) {
 }
 
 async function examFormSubmit() {
-    if (!examToEdit.value) return;
+    if (!examToEdit.value || !accountData) return;
 
     const examDateObject = new Date(dates.value);
 
     examToEdit.value.date = examDateObject.getTime().toString();
 
-    const { message, success } = await editExam(examToEdit.value);
+    const { message, success } = await editExam(examToEdit.value, accountData);
     console.log(message);
 
     examCreationMessage.value = message;

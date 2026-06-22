@@ -53,6 +53,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                     let userId: ObjectId;
                     let tokenVersion: number;
                     let role: Role;
+                    let email: string;
 
                     if (!userExists) {
                         const userDataToStore: IUser = {
@@ -74,10 +75,12 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                         userId = result.insertedId;
                         tokenVersion = userDataToStore.tokenVersion;
                         role = userDataToStore.role;
+                        email = userDataToStore.email;
                     } else {
                         userId = userExists._id;
                         tokenVersion = userExists.tokenVersion;
                         role = userExists.role;
+                        email = userExists.email;
                     }
 
                     const credsResult = await credsCollection.insertOne({
@@ -90,13 +93,14 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                         return cb(new Error('Error while inserting credential.'));
                     }
 
-                    let payload;
+                    let payload: IJWTPayload;
 
                     payload = {
                         id: userId.toString(),
                         tokenVersion: tokenVersion,
                         role: role,
-                    } as IJWTPayload;
+                        email: email,
+                    };
 
                     const jwtSecretKey: string | undefined = process.env.JWT_SECRET_KEY;
                     if (!jwtSecretKey) {
@@ -108,7 +112,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                     const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                    return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion, role: payload.role });
+                    return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion, role: payload.role, email: payload.email });
                 }
 
                 const fetchedUser = await usersCollection.findOne({ _id: credential.userId });
@@ -117,11 +121,12 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                     return cb('User does not exist.');
                 }
 
-                const payload = {
+                const payload: IJWTPayload = {
                     id: fetchedUser._id.toString(),
                     tokenVersion: fetchedUser.tokenVersion,
                     role: fetchedUser.role,
-                } as IJWTPayload;
+                    email: fetchedUser.email,
+                };
 
                 const jwtSecretKey: string | undefined = process.env.JWT_SECRET_KEY;
                 if (!jwtSecretKey) {
@@ -133,7 +138,7 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
 
                 const token = jwt.sign(payload, jwtSecretKey, { expiresIn: tokenExpiry });
 
-                return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion, role: payload.role });
+                return cb(null, { token: token, id: payload.id, tokenVersion: payload.tokenVersion, role: payload.role, email: payload.email });
             } catch (error) {
                 console.error('Error while fetching Google OAuth:', error);
                 return cb(error);

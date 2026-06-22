@@ -6,4 +6,5 @@ export interface IJWTPayload {
     id: string;
     tokenVersion: number;
     role: Role;
+    email: string;
 }

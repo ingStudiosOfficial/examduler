@@ -5,6 +5,7 @@ import type { FunctionNotifier } from '@/interfaces/FunctionNotifier';
 import { createEvent, type EventAttributes } from 'ics';
 import { addHours, format, formatDistance, isThisYear } from 'date-fns';
 import { cacheExams } from './cache_utils';
+import type { User } from '@/interfaces/User';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
@@ -138,8 +139,12 @@ export async function bulkCreateExam(exams: ExamCreate[]): Promise<FunctionNotif
     }
 }
 
-export async function editExam(examDetails: ExamEdit): Promise<FunctionNotifier> {
+export async function editExam(examDetails: ExamEdit, user: User): Promise<FunctionNotifier> {
     console.log('Editing exam:', examDetails);
+
+    if (!examDetails.editors || examDetails.editors.length === 0) {
+        examDetails.editors = [user.email];
+    }
 
     const examId = examDetails._id;
     const examBody = JSON.stringify(examDetails);

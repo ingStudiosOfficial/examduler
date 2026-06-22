@@ -5,6 +5,7 @@ export interface Exam {
     name: string;
     date: string;
     description: string;
+    editors: string[];
     seating?: Seating[][];
 }
 

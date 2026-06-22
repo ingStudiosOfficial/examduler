@@ -19,8 +19,11 @@ import { useCheckMobile } from '@/composables/screen_width_composables';
 import { showSnackbar } from '@/utils/snackbar';
 import { handleFileUpload } from '@/utils/file_utils';
 import { vibrate } from '@/utils/vibrate';
+import { useAccount } from '@/stores/account_store';
 
 const emit = defineEmits(['close', 'success', 'multiple']);
+
+const { accountData } = useAccount();
 
 const { isMobile } = useCheckMobile();
 
@@ -29,6 +32,7 @@ const examToCreate = ref<ExamCreate>({
     name: '',
     date: '',
     description: '',
+    editors: [],
     seating: '',
 });
 const seatingPicker = ref();
@@ -42,6 +46,7 @@ function closeDialog() {
         name: '',
         date: '',
         description: '',
+        editors: [],
         seating: '',
     };
 
@@ -66,6 +71,8 @@ async function examFormSubmit() {
     const examDateObject = new Date(dates.value);
 
     examToCreate.value.date = examDateObject.getTime().toString();
+
+    if (accountData) examToCreate.value.editors.push(accountData.email);
 
     const { message, success } = await createExam(examToCreate.value);
     console.log(message);

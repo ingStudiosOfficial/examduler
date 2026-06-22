@@ -150,6 +150,12 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
             });
         }
 
+        if (examination.editors && examination.editors.length !== 0 && examination.editors.includes(req.user.email)) {
+            return res.status(403).json({
+                message: 'Access denied.',
+            });
+        }
+
         const keys: (keyof IExam)[] = ['name', 'date', 'description'];
 
         const fieldsToSet: Partial<IExam> = {};
