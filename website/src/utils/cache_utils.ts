@@ -37,6 +37,7 @@ export async function cacheExams(exams: Exam[]) {
 
     const tx = db.transaction('exams', 'readwrite');
 
+    await tx.store.clear();
     await Promise.all([...exams.map((exam) => tx.store.put(exam))]);
 }
 
@@ -53,6 +54,7 @@ export async function cacheUserData(userData: User) {
 
     const db = await getDb();
 
+    await db.clear('user');
     await db.put('user', userData);
 }
 
@@ -71,6 +73,7 @@ export async function cacheOrganizations(organizations: Organization[]) {
 
     const tx = db.transaction('organizations', 'readwrite');
 
+    await tx.store.clear();
     await Promise.all([...organizations.map((organization) => tx.store.put(organization))]);
 }
 
