@@ -5,6 +5,7 @@ import 'active-table';
 import type { TableStyle } from 'active-table/dist/types/tableStyle';
 import type { ColumnDropdownSettings } from 'active-table/dist/types/columnDropdownSettings';
 import { ActiveTable } from 'active-table';
+import { useAccount } from '@/stores/account_store';
 
 interface ComponentProps {
     exams: ExamCreate[];
@@ -13,6 +14,8 @@ interface ComponentProps {
 const props = defineProps<ComponentProps>();
 
 const emit = defineEmits(['edit']);
+
+const { accountData } = useAccount();
 
 const examsToEdit = ref<string[][]>(makeActiveTableData(props.exams));
 const tableKey = ref<number>(0);
@@ -59,18 +62,26 @@ function makeActiveTableData(exams: ExamCreate[]): string[][] {
 }
 
 function onDataUpdate(data: string[][]) {
+    if (!accountData) {
+        console.error('Account data missing.');
+        return;
+    }
+
     const examData = data.slice(1);
 
     const exams: ExamCreate[] = [];
     
     for (const row of examData) {
-        const exam: ExamCreate = {
+        const exam: Omit<ExamCreate, 'editors'> = {
             name: row[0] || '',
             date: row[1] || '',
             description: row[2] || '',
             seating: JSON.parse(row[3] || ''),
         };
-        exams.push(exam);
+        exams.push({
+            ...exam,
+            editors: [accountData.email],
+        });
     }
 
     emit('edit', exams);

@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@lit/reactive-element": "^2.1.2",
-    "@m3e/web": "^2.5.1",
+    "@m3e/web": "^2.7.4",
     "@material/web": "^2.4.1",
     "@vuepic/vue-datepicker": "^12.1.0",
     "active-table": "^1.1.8",

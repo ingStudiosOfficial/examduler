@@ -68,11 +68,16 @@ async function handleFileUploadWrapper(e: Event) {
 }
 
 async function examFormSubmit() {
+    if (!accountData) {
+        console.error('Account data missing');
+        return;
+    }
+
     const examDateObject = new Date(dates.value);
 
     examToCreate.value.date = examDateObject.getTime().toString();
 
-    if (accountData) examToCreate.value.editors.push(accountData.email);
+    examToCreate.value.editors.push(accountData.email);
 
     const { message, success } = await createExam(examToCreate.value);
     console.log(message);
