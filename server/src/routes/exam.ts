@@ -150,7 +150,10 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
             });
         }
 
-        if (examination.editors && examination.editors.length !== 0 && examination.editors.includes(req.user.email)) {
+        if (examination.editors && examination.editors.length !== 0 && !examination.editors.includes(req.user.email)) {
+            console.log('Examination editors:', examination.editors);
+            console.log('Email:', req.user.email);
+            console.error('Access denied.');
             return res.status(403).json({
                 message: 'Access denied.',
             });
