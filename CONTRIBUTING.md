@@ -11,9 +11,10 @@
 </p>
 
 ## Guidelines
-1. Ensure that your code is formatted correctly (4 spaces for indentation) and follows the general style of code in this project
-2. Ensure that there are no offensive or NSFW material
+1. Ensure that your code is formatted correctly (4 spaces for indentation) and follows the general style of code in this project.
+2. Ensure that there are no offensive or NSFW material.
 3. Follow the [Material 3](https://m3.material.io) themeing for the website and use [Material Web](https://m3.material.io/develop/web) components for buttons, dividers, icons, inputs etc.
+4. No AI generated code is allowed. All AI generated code will be rejected and you will be disallowed from contributing to this project in the future.
 
 ## Checklist
 Before you submit a pull request, please ensure the following:
