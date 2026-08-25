@@ -26,7 +26,6 @@ examRouter.get('/fetch/:id/', authenticateToken(), async (req: Request, res: Res
         const examId = new ObjectId(req.params.id);
 
         const exam = await req.db.collection<IExam>('exams').findOne({ _id: examId });
-
         if (!exam) {
             return res.status(404).json({
                 message: 'Exam not found',
@@ -142,7 +141,6 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
         }
 
         const examination = await req.db.collection<IExam>('exams').findOne({ _id: examId });
-
         if (!examination) {
             console.error('Examination not found.');
             return res.status(404).json({
@@ -259,7 +257,24 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
 
         if (!user?.exams.map((e) => e.toString()).includes(examId.toString())) {
             return res.status(403).json({
-                message: 'User is forbidden from deleting the exam.',
+                message: 'User is forbidden from updating the exam.',
+            });
+        }
+
+        const examination = await req.db.collection<IExam>('exams').findOne({ _id: examId });
+        if (!examination) {
+            console.error('Examination not found.');
+            return res.status(404).json({
+                message: 'Examination not found.',
+            });
+        }
+
+        if (examination.editors && examination.editors.length !== 0 && !examination.editors.includes(req.user.email)) {
+            console.log('Examination editors:', examination.editors);
+            console.log('Email:', req.user.email);
+            console.error('Access denied.');
+            return res.status(403).json({
+                message: 'Access denied.',
             });
         }
 
