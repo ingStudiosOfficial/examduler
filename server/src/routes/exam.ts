@@ -1,11 +1,11 @@
-import { Router, type Request, type Response } from 'express';
+import { response, Router, type Request, type Response } from 'express';
 import { authenticateToken, verifyRole } from '../middleware/auth.js';
 import { ObjectId, type AnyBulkWriteOperation } from 'mongodb';
 import type { IExam, IExamCreate, IEXamUpdate } from '../interfaces/Exam.js';
 import { validateCreateExamSchema, validateUpdateExamSchema } from '../middleware/validate_schema.js';
 import { assignExamToUsers, parseExamSeating } from '../utils/exam_utils.js';
-import type { ExamsCollection } from '../types/mongodb.js';
 import type { IUser } from '../interfaces/User.js';
+import { RouteError } from '../classes/RouteError.js';
 
 export const examRouter = Router();
 
@@ -85,9 +85,7 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
             const result = await req.db.collection<IExam>('exams').insertOne(exam);
             if (!result.insertedId) {
                 console.error('Failed to insert exam.');
-                return res.status(500).json({
-                    message: 'Failed to insert exam.',
-                });
+                throw new RouteError('Failed to insert exam', 500);
             }
             if (exam._id) await req.db.collection<IUser>('users').updateOne({ _id: userId }, { $addToSet: { exams: exam._id } });
         });
@@ -99,9 +97,18 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
         });
     } catch (error) {
         console.error('Error while inserting exam:', error);
+
+        if (error instanceof RouteError) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            });
+        }
+
         return res.status(500).json({
             message: 'An internal server error occurred.',
         });
+    } finally {
+        await session.endSession();
     }
 });
 
@@ -226,13 +233,21 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
         });
     } catch (error) {
         console.error('An error occurred while updating the exam:', error);
+
+        if (error instanceof RouteError) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            });
+        }
+
         return res.status(500).json({
             message: 'An internal server error occurred while updating the exam.',
         });
+    } finally {
+        await session.endSession();
     }
 });
 
-// TODO: Wrap this in a transaction
 examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), async (req: Request, res: Response) => {
     if (!req.params.id || !ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
@@ -245,6 +260,8 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
             message: 'User ID missing or invalid.',
         });
     }
+
+    const session = req.client.startSession();
 
     try {
         const userId = new ObjectId(req.user.id);
@@ -278,23 +295,32 @@ examRouter.delete('/delete/:id/', authenticateToken(), verifyRole('teacher'), as
             });
         }
 
-        const deleteResult = await req.db.collection<IExam>('exams').deleteOne({ _id: examId });
+        await session.withTransaction(async () => {
+            const deleteResult = await req.db.collection<IExam>('exams').deleteOne({ _id: examId });
+            if (deleteResult.deletedCount === 0) {
+                throw new RouteError('Exam to delete not found', 404);
+            }
 
-        if (deleteResult.deletedCount === 0) {
-            return res.status(404).json({
-                message: 'Exam to delete not found.',
-            });
-        }
-
-        await req.db.collection<IUser>('users').updateMany({ exams: examId }, { $pull: { exams: examId } });
+            // Update users exams
+            await req.db.collection<IUser>('users').updateMany({ exams: examId }, { $pull: { exams: examId } });
+        });
 
         return res.status(200).json({
             message: 'Exam deleted successfully.',
         });
     } catch (error) {
         console.error('An error occurred while deleting the exam:', error);
+        
+        if (error instanceof RouteError) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+            });
+        }
+
         return res.status(500).json({
             message: 'An internal server error occurred while deleting the exam.',
         });
+    } finally {
+        await session.endSession();
     }
 });

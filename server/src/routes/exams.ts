@@ -144,5 +144,7 @@ examsRouter.post('/bulk-create/', authenticateToken(), verifyRole('teacher'), va
         return res.status(500).json({
             message: 'An internal server error occurred.',
         });
+    } finally {
+        await session.endSession();
     }
 });
