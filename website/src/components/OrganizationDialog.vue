@@ -6,6 +6,7 @@ import '@m3e/web/icon';
 import '@material/web/textfield/outlined-text-field.js';
 import '@m3e/web/fab';
 import '@m3e/web/menu';
+import '@m3e/web/button';
 
 import type { Organization, OrganizationEdit } from '@/interfaces/Org';
 import { deleteOrganization, downloadMembersJson, editOrganization } from '@/utils/org_utils';
@@ -186,7 +187,7 @@ onMounted(() => {
             <h2 class="subheader">Domains</h2>
             <div class="domains">
                 <DomainItem v-for="(domain, index) in loadedOrganization.domains" :key="domain.keyId" :domain="domain" :index="index" :org-id="loadedOrganization._id" :key-id="domain.keyId" @domain-change="updateDomainState" @display-snack-bar="triggerShowSnackBar" @delete-domain="deleteDomain"></DomainItem>
-                <md-filled-button v-vibrate type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
+                <m3e-button v-vibrate type="button" @click="addDomain()" class="domain-button" variant="filled">Add a domain</m3e-button>
             </div>
             <h2 class="subheader">Members</h2>
             <p>{{ loadedOrganization.members.length }} members</p>

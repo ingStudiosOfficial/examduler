@@ -5,6 +5,7 @@ import '@m3e/web/icon-button';
 import '@m3e/web/icon';
 import '@material/web/textfield/outlined-text-field.js';
 import '@m3e/web/fab';
+import '@m3e/web/button';
 
 import type { OrganizationCreate } from '@/interfaces/Org';
 
@@ -123,7 +124,7 @@ async function orgFormSubmit() {
                     </m3e-icon-button>
                 </div>
             </div>
-            <md-filled-button v-vibrate type="button" @click="addDomain()" class="domain-button">Add a domain</md-filled-button>
+            <m3e-button v-vibrate type="button" @click="addDomain()" class="domain-button" variant="filled">Add a domain</m3e-button>
             <h2 class="subheader">Members</h2>
             <div class="file-input">
                 <p>Your members</p>
