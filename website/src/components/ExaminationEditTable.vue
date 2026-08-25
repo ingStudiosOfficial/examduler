@@ -62,6 +62,8 @@ function makeActiveTableData(exams: ExamCreate[]): string[][] {
 }
 
 function onDataUpdate(data: string[][]) {
+    console.log('On data update called.');
+
     if (!accountData) {
         console.error('Account data missing.');
         return;
