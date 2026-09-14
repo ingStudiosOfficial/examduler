@@ -7,6 +7,7 @@ import '@m3e/web/button';
 import '@m3e/web/menu';
 import '@m3e/web/icon';
 import { showSnackbar } from '@/utils/snackbar';
+import router from '@/router';
 
 const examDetails = ref<PublicExam>();
 const examId = ref<string | null>();
@@ -76,25 +77,34 @@ onMounted(async () => {
             <LoaderContainer loading-text="Hang on while we fetch your examination." loader-color="var(--md-sys-color-primary)"></LoaderContainer>
         </div>
         <div v-if="examDetails && !isLoading" class="exam-card">
-            <h1 class="exam-name">{{ examDetails.name }}</h1>
-            <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
-            <div class="description-wrapper">
-                <p class="exam-description">{{ examDetails.description }}</p>
+            <div class="card-top">
+                <h1 class="exam-name">{{ examDetails.name }}</h1>
+                <p class="exam-date">{{ formatExamDate(examDetails.date) }}</p>
+                <div class="description-wrapper">
+                    <p class="exam-description">{{ examDetails.description }}</p>
+                </div>
             </div>
-            <m3e-button variant="outlined" v-vibrate id="download-button" class="download-button">
-                <m3e-menu-trigger for="download-menu">Add event</m3e-menu-trigger>
-            </m3e-button>
-            <m3e-menu id="download-menu" position-y="above">
-                <m3e-menu-item v-vibrate @click="triggerAddExamToGoogleCalendar()">
-                    Add to Google Calendar
-                    <m3e-icon name="calendar_add_on" slot="icon"></m3e-icon>
-                </m3e-menu-item>
-                <m3e-menu-item v-vibrate @click="triggerDownloadExam()">
-                    Download as event
-                    <m3e-icon name="download" slot="icon"></m3e-icon>
-                </m3e-menu-item>
-            </m3e-menu>
-            <p class="examduler-footer">Powered by Examduler</p>
+            <div class="card-bottom">
+                <m3e-button variant="filled" @click="router.push('/login')">
+                    <m3e-icon slot="icon" name="login"></m3e-icon>
+                    Student login
+                </m3e-button>
+                <m3e-button variant="outlined" v-vibrate id="download-button" class="download-button">
+                    <m3e-icon slot="icon" name="calendar_add_on"></m3e-icon>
+                    <m3e-menu-trigger for="download-menu">Add event</m3e-menu-trigger>
+                </m3e-button>
+                <m3e-menu id="download-menu" position-y="above">
+                    <m3e-menu-item v-vibrate @click="triggerAddExamToGoogleCalendar()">
+                        Add to Google Calendar
+                        <m3e-icon name="calendar_add_on" slot="icon"></m3e-icon>
+                    </m3e-menu-item>
+                    <m3e-menu-item v-vibrate @click="triggerDownloadExam()">
+                        Download as event
+                        <m3e-icon name="download" slot="icon"></m3e-icon>
+                    </m3e-menu-item>
+                </m3e-menu>
+                <p class="examduler-footer">Powered by Examduler</p>
+            </div>
         </div>
         <div v-else-if="examId && !isLoading" class="exam-card not-found">
             <p>Exam with ID '{{ examId }}' not found.</p>
@@ -131,10 +141,20 @@ onMounted(async () => {
     box-sizing: border-box;
     padding: 20px;
     transition: box-shadow 0.3s ease;
+    overflow-y: scroll;
 }
 
 .exam-card:hover {
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.card-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    flex-grow: 1;
 }
 
 .exam-card p {
@@ -168,18 +188,6 @@ onMounted(async () => {
     justify-content: center;
 }
 
-.download-button {
-    position: absolute;
-    bottom: 25px;
-    left: 25px;
-}
-
-.examduler-footer {
-    position: absolute;
-    bottom: 25px;
-    right: 25px;
-}
-
 .exam-description {
     width: 80%;
     overflow-wrap: break-word;
@@ -194,6 +202,15 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.card-bottom {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    width: 100%;
 }
 
 @media (max-width: 768px) {
