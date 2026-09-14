@@ -98,7 +98,7 @@ async function connectToMongo() {
 
 async function startServer() {
     await connectToMongo();
-    setupPassport(database.collection('users'), database.collection('creds'));
+    setupPassport(database.collection('users'), database.collection('creds'), database.collection('unloggedin'));
     app.listen(Number(process.env.PORT), () => {
         console.log('Server started successfully!');
     });

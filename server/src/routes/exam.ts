@@ -68,15 +68,17 @@ examRouter.post('/create/', authenticateToken(), verifyRole('teacher'), validate
 
         let exam: IExam;
 
+        const examId = new ObjectId();
+
         const { seating, ...tempExam } = examBody;
         if (examBody.seating) {
-            const parsedSeating = await parseExamSeating(examBody.seating, req);
+            const parsedSeating = await parseExamSeating(examBody.seating, req, examId);
             exam = { ...tempExam, seating: parsedSeating } as IExam;
         } else {
             exam = tempExam;
         }
 
-        exam._id = new ObjectId();
+        exam._id = examId;
 
         console.log('Exam:', exam);
         console.log('Type of date:', typeof exam.date);
@@ -185,7 +187,7 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
 
         // Email seating logic
         if (examToUpdate.uploadedSeating) {
-            const parsedSeating = await parseExamSeating(examToUpdate.uploadedSeating, req);
+            const parsedSeating = await parseExamSeating(examToUpdate.uploadedSeating, req, examId);
 
             const existingEmails = await req.db.collection<IUser>('users').find({ exams: examId }).project<Pick<IUser, 'email'>>({ email: 1 }).toArray();
 

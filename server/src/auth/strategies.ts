@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import type { ObjectId } from 'mongodb';
 import type { Profile } from 'passport';
-import type { CredsCollection, UsersCollection } from '../types/mongodb.js';
+import type { CredsCollection, UnverifiedUsersCollection, UsersCollection } from '../types/mongodb.js';
 import { constructName, getDomain } from '../utils/user_utils.js';
 import type { IUser } from '../interfaces/User.js';
 import type { IJWTPayload } from '../interfaces/JWTPayload.js';
@@ -24,7 +24,7 @@ dotenv.config({
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
-export function createGoogleStrategy(usersCollection: UsersCollection, credsCollection: CredsCollection): GoogleOAuthStrategy {
+export function createGoogleStrategy(usersCollection: UsersCollection, credsCollection: CredsCollection, unverifiedUsersCollection: UnverifiedUsersCollection): GoogleOAuthStrategy {
     return new GoogleStrategy(
         {
             clientID: googleClientId,
@@ -56,11 +56,16 @@ export function createGoogleStrategy(usersCollection: UsersCollection, credsColl
                     let email: string;
 
                     if (!userExists) {
+                        const unverifiedUser = await unverifiedUsersCollection.findOne({ email: userEmail });
+                        if (unverifiedUser) {
+                            await unverifiedUsersCollection.deleteOne({ email: userEmail });
+                        }
+
                         const userDataToStore: IUser = {
                             email: userEmail,
                             domain: userDomain,
                             name: userName,
-                            exams: [],
+                            exams: unverifiedUser?.exams || [],
                             organizations: [],
                             role: 'admin',
                             tokenVersion: 0,

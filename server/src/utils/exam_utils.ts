@@ -4,6 +4,7 @@ import type { IExam } from '../interfaces/Exam.js';
 import type { UsersCollection } from '../types/mongodb.js';
 import type { ISeating } from '../interfaces/Seating.js';
 import type { IUser } from '../interfaces/User.js';
+import type { UnverifiedUser } from '../interfaces/UnverifiedUser.js';
 
 interface UserExamUpdate {
     email: string;
@@ -70,7 +71,7 @@ export async function assignExamToUsers(exam: IExam, req: Request, res: Response
     }
 }
 
-export async function parseExamSeating(seatingString: string, req: Request): Promise<ISeating[][]> {
+export async function parseExamSeating(seatingString: string, req: Request, examId: ObjectId): Promise<ISeating[][]> {
     console.log('Seating from body:', seatingString);
 
     // Parses seating
@@ -111,6 +112,9 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
 
     const userMap = new Map(users.map((u) => [u.email, u.name]));
 
+    const missing = Array.from(emailsToFetch).filter((e) => !userMap.has(e));
+    await updateMissingEmails(missing, req, examId);    
+
     for (const item of parsedRows) {
         const formattedSeat: ISeating = {
             seat: item.seat,
@@ -135,4 +139,24 @@ export async function parseExamSeating(seatingString: string, req: Request): Pro
         const rowSeats = seatingMap.get(rowKey)!;
         return rowSeats.sort((a, b) => a.seat.localeCompare(b.seat, undefined, { numeric: true }));
     });
+}
+
+async function updateMissingEmails(emails: string[], req: Request, examId: ObjectId) {
+    try {
+        const result = await req.db.collection<UnverifiedUser>('unloggedin').bulkWrite(
+            emails.map((email) => ({
+                updateOne: {
+                    filter: { email: email },
+                    update: { $addToSet: { exams: examId } },
+                    upsert: true,
+                },
+            })),
+        );
+
+        if (result.hasWriteErrors()) {
+            console.error('Error while assigning exam to unverified users.');
+        }
+    } catch (error) {
+        console.error('An error occurred while assigning exam to unverified users:', error);
+    }
 }
