@@ -359,13 +359,13 @@ orgRouter.get('/fetch/:id/', authenticateToken(), verifyRole('admin'), async (re
 /*
 FOR THIS ROUTE:
 TODO: BATCH EVERYTHING INTO 1 NETWORK REQUEST
-~ 1. Verify whether user can edit organization
-~2. Compare members to keep vs original org
-~3. Delete members that are NOT part of the organization
-~4. Parse members again
-~5. DO NOT recreate verification token and keep verification status for existing domains the same
-~6. Add NEW domains (unverified) to the organization
-~7. Compare diff and update
+- 1. Verify whether user can edit organization
+- 2. Compare members to keep vs original org
+- 3. Delete members that are NOT part of the organization
+- 4. Parse members again
+- 5. DO NOT recreate verification token and keep verification status for existing domains the same
+- 6. Add NEW domains (unverified) to the organization
+- 7. Compare diff and update
 */
 
 orgRouter.patch('/update/:id/', authenticateToken(), verifyRole('admin'), validateUpdateOrgSchema, async (req: Request, res: Response) => {

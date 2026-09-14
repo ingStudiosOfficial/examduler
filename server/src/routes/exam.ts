@@ -224,6 +224,7 @@ examRouter.patch('/update/:id/', authenticateToken(), verifyRole('teacher'), val
         await session.withTransaction(async () => {
             if (examOps.length !== 0) await req.db.collection<IExam>('exams').bulkWrite(examOps);
             if (userOps.length !== 0) await req.db.collection<IUser>('users').bulkWrite(userOps);
+            if (examination._id) await req.db.collection<IUser>('users').updateOne({ _id: userId }, { $addToSet: { exams: examination._id } });
         });
 
         console.log('Successfully updated the exam.');
